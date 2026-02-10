@@ -17,8 +17,8 @@ import java.util.function.DoubleSupplier;
 public class TurretIOReal implements TurretIO {
     public static final int motorCanId = 6;
         private static final double motorReduction = 0;
-            private final SparkMax motor = new SparkMax(motorCanId, MotorType.kBrushless);
-        private final RelativeEncoder encoder = motor.getEncoder();
+            protected final SparkMax azimuthMotor = new SparkMax(motorCanId, MotorType.kBrushless);
+        private final RelativeEncoder encoder = azimuthMotor.getEncoder();
       
         @SuppressWarnings("removal")
         public TurretIOReal() {
@@ -32,23 +32,23 @@ public class TurretIOReal implements TurretIO {
             .uvwMeasurementPeriod(10)
             .uvwAverageDepth(2);
   
-        tryUntilOk(motor, 5, () ->
-            motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+        tryUntilOk(azimuthMotor, 5, () ->
+            azimuthMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
     }
   
     @Override
     public void updateInputs(TurretIOInputs inputs) {
-        ifOk(motor, encoder::getPosition, (value) -> inputs.positionRad = value);
-        ifOk(motor, encoder::getVelocity, (value) -> inputs.velocityRadPerSec = value);
+        ifOk(azimuthMotor, encoder::getPosition, (value) -> inputs.positionRad = value);
+        ifOk(azimuthMotor, encoder::getVelocity, (value) -> inputs.velocityRadPerSec = value);
         ifOk(
-            motor,
-            new DoubleSupplier[] {motor::getAppliedOutput, motor::getBusVoltage},
+            azimuthMotor,
+            new DoubleSupplier[] {azimuthMotor::getAppliedOutput, azimuthMotor::getBusVoltage},
             (values) -> inputs.appliedVolts = values[0] * values[1]);
-        ifOk(motor, motor::getOutputCurrent, (value) -> inputs.currentAmps = value);
+        ifOk(azimuthMotor, azimuthMotor::getOutputCurrent, (value) -> inputs.currentAmps = value);
     }
   
     @Override
     public void setPower(double power) {
-        motor.set(power);
+        azimuthMotor.set(power);
     }
 }
