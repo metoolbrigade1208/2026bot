@@ -20,8 +20,8 @@ public class ThroughBumberIntake extends SubsystemBase {
 
 
   public ThroughBumberIntake() {
-    intakeMotor = new SparkMax(Constants.Intake.motorCanId, MotorType.kBrushless); // Replace 1 with the actual CAN ID of your motor controller
-    
+    intakeMotor = new SparkMax(Constants.Intake.motorCanId, MotorType.kBrushless);
+
   }
 
   @Override
