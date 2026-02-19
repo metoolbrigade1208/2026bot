@@ -18,6 +18,21 @@ import edu.wpi.first.units.measure.Distance;
 import static edu.wpi.first.units.Units.Inches;
 import swervelib.math.Matter;
 
+public class Constants {
+  public static final double kTrackWidth = Units.inchesToMeters(20.0);
+  public static final double kWheelBase = Units.inchesToMeters(20.0);
+  public static final double kWheelDiameter = Units.inchesToMeters(4.0);
+  public static final double kWheelCircumference = kWheelDiameter * Math.PI;
+  public static final double kMaxSpeed = 3.0; // meters per second
+  public static final double kMaxAngularVelocity = Math.PI; // radians per second
+  
+  public class Intake {
+    public static final int motorCanId = 50; 
+    public static final double motorReduction = 15.0;
+    public static final int currentLimit = 40;
+    public static final double intakeSpeed = 0.9; // Adjust as needed
+  }
+}
 /* public static class TurretConstants {
     public static final int motorCanId = 0; //change this twin
     public static final double motorReduction = 15.0;
