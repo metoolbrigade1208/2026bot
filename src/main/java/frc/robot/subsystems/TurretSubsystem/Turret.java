@@ -7,10 +7,15 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Seconds;
+
+import java.util.function.Supplier;
+
 import static edu.wpi.first.units.Units.Rotations;
 import com.ctre.phoenix6.hardware.TalonFXS;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.math.system.plant.DCMotor;
 import yams.gearing.GearBox;
@@ -33,6 +38,14 @@ public class Turret {
 public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
 
 SparkMax turretMotor = new SparkMax(1, null); //swap to NEO motor
+SparkMax enc2TurretMotor = new SparkMax(1, null); //swap to NEO motor
+AbsoluteEncoder enc1 = turretMotor.getAbsoluteEncoder(); 
+AbsoluteEncoder enc2 = enc2TurretMotor.getAbsoluteEncoder(); // Replace with a second encoder if available
+
+Supplier<Angle> enc1Supplier = () -> Degrees.of(enc1.getPosition()); // Assuming getPosition returns rotations
+Supplier<Angle> enc2Supplier = () -> Degrees.of(enc2.getPosition()); // Assuming getPosition returns rotations
+
+
 SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig()
       .withControlMode(ControlMode.CLOSED_LOOP)
       .withClosedLoopController(4, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
