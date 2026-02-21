@@ -7,9 +7,11 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Rotations;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.math.system.plant.DCMotor;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -21,8 +23,15 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 import yams.motorcontrollers.remote.TalonFXSWrapper;
+import yams.units.EasyCRT;
+import yams.units.EasyCRTConfig;
+
+
 
 public class Turret {
+
+public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
+
 SparkMax turretMotor = new SparkMax(1, null); //swap to NEO motor
 SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig()
       .withControlMode(ControlMode.CLOSED_LOOP)
@@ -49,4 +58,41 @@ PivotConfig m_config = new PivotConfig(motor)
       .withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
 
 
+
+// Suppose: mechanism : drive gear = 12:1, drive gear = 50T, encoders use 19T and 23T pinions.
+EasyCRTConfig easyCrt =
+    new EasyCRTConfig(enc1Supplier, enc2Supplier)
+        .withCommonDriveGear(
+            /* commonRatio (mech:drive) */ 12.0,
+            /* driveGearTeeth */ 50,
+            /* encoder1Pinion */ 19,
+            /* encoder2Pinion */ 23)
+        .withAbsoluteEncoderOffsets(Rotations.of(0.0), Rotations.of(0.0)) // set after mechanical zero
+        .withMechanismRange(Rotations.of(-1.0), Rotations.of(2.0)) // -360 deg to +720 deg
+        .withMatchTolerance(Rotations.of(0.06)) // ~1.08 deg at encoder2 for the example ratio
+        .withAbsoluteEncoderInversions(false, false)
+        .withCrtGearRecommendationConstraints(
+            /* coverageMargin */ 1.2,
+            /* minTeeth */ 15,
+            /* maxTeeth */ 45,
+            /* maxIterations */ 30);
+
+// you can inspect:
+//easyCrt.getUniqueCoverage();          // Optional<Angle> coverage from prime counts and common scale
+//easyCrt.coverageSatisfiesRange();     // Does coverage exceed maxMechanismAngle?
+//easyCrt.getRecommendedCrtGearPair();  // Suggested pair within constraints
+
+// Create the solver:
+EasyCRT easyCrtSolver = new EasyCRT(easyCrt);
+
+public void periodic() {
+      if (motor.getRotorVelocity().compareTo(threshold) < 0) { // Only update when the mechanism is moving slowly to ensure accurate readings
+      easyCrtSolver.getAngleOptional().ifPresent(angle -> {
+    // Use the angle for your application
+   motor.setEncoderPosition(angle); // Set the motor's encoder position to the calculated angle
+      
+});
+}}
 }
+
+
