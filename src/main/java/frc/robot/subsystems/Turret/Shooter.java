@@ -17,6 +17,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -59,10 +60,13 @@ public class Shooter extends SubsystemBase {
   .withStatorCurrentLimit(Amps.of(40));
 
   // Vendor motor controller object
-  private SparkMax spark = new SparkMax(4, MotorType.kBrushless);
+  private SparkFlex spark1 = new SparkFlex(52, MotorType.kBrushless);
+  private SparkFlex spark2 = new SparkFlex(53, MotorType.kBrushless);
+
+  
 
   // Create our SmartMotorController from our Spark and config with the NEO.
-  private SmartMotorController sparkSmartMotorController = new SparkWrapper(spark, DCMotor.getNEO(1), smcConfig);
+  private SmartMotorController sparkSmartMotorController = new SparkWrapper(spark1, DCMotor.getNeo550(1), smcConfig);
 
  private final FlyWheelConfig shooterConfig = new FlyWheelConfig(sparkSmartMotorController)
   // Diameter of the flywheel.
