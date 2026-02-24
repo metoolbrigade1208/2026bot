@@ -19,6 +19,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.system.plant.DCMotor;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -37,10 +38,10 @@ import yams.units.EasyCRTConfig;
 
 public class Turret {
 
-public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
+static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
 
-SparkMax turretMotor = new SparkMax(1, null); //swap to NEO motor
-SparkMax enc2TurretMotor = new SparkMax(1, null); //swap to NEO motor
+SparkMax turretMotor = new SparkMax(55, null); 
+SparkMax enc2TurretMotor = new SparkMax(50, null); 
 AbsoluteEncoder enc1 = turretMotor.getAbsoluteEncoder(); 
 AbsoluteEncoder enc2 = enc2TurretMotor.getAbsoluteEncoder(); // Replace with a second encoder if available
 
@@ -78,13 +79,13 @@ PivotConfig m_config = new PivotConfig(motor)
 EasyCRTConfig easyCrt =
     new EasyCRTConfig(enc1Supplier, enc2Supplier)
         .withCommonDriveGear(
-            /* commonRatio (mech:drive) */ 12.0,
-            /* driveGearTeeth */ 50,
+            /* commonRatio (mech:drive) */ 10/3.0,
+            /* driveGearTeeth */ 20,
             /* encoder1Pinion */ 19,
-            /* encoder2Pinion */ 23)
+            /* encoder2Pinion */ 21)
         .withAbsoluteEncoderOffsets(Rotations.of(0.0), Rotations.of(0.0)) // set after mechanical zero
-        .withMechanismRange(Rotations.of(-1.0), Rotations.of(2.0)) // -360 deg to +720 deg
-        .withMatchTolerance(Rotations.of(0.06)) // ~1.08 deg at encoder2 for the example ratio
+        .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5)) // -180 deg to +180 deg
+        .withMatchTolerance(Rotations.of(0.0265)) // ~1.08 deg at encoder2 for the example ratio
         .withAbsoluteEncoderInversions(false, false)
         .withCrtGearRecommendationConstraints(
             /* coverageMargin */ 1.2,
