@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.TurretSubsystem.Turret;
 
 public class RobotContainer {
     private double MaxSpeed = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -70,10 +71,11 @@ public class RobotContainer {
         joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        
 
         // Bindings for the turret subsystem
-     /*   joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
-        joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
+        joystick.povLeft().whileTrue(Turret.getSetpointCommand(Degrees.of(-90))); // Point turret left at 90 degrees
+        joystick.povRight().whileTrue(Turret.getSetpointCommand(Degrees.of(90))); // Point turret right at 90 degrees
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));

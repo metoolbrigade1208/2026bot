@@ -17,6 +17,8 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.math.system.plant.DCMotor;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -98,14 +100,20 @@ EasyCRTConfig easyCrt =
 // Create the solver:
 EasyCRT easyCrtSolver = new EasyCRT(easyCrt);
 
+
+
 public void periodic() {
       if (motor.getRotorVelocity().compareTo(threshold) < 0) { // Only update when the mechanism is moving slowly to ensure accurate readings
       easyCrtSolver.getAngleOptional().ifPresent(angle -> {
     // Use the angle for your application
    motor.setEncoderPosition(angle); // Set the motor's encoder position to the calculated angle
       
-});
+});}}
+public Command getSetpointCommand(Angle targetAngle) {
+    return new InstantCommand(() -> {
+        motor.setEncoderPosition(targetAngle);
+    });
+
 }}
-}
 
 
