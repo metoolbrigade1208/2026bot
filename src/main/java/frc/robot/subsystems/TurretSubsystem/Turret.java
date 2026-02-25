@@ -13,17 +13,21 @@ import java.util.function.Supplier;
 import static edu.wpi.first.units.Units.Rotations;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.math.system.plant.DCMotor;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.PivotConfig;
+import yams.mechanisms.positional.Pivot;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
 import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
@@ -36,14 +40,15 @@ import yams.units.EasyCRTConfig;
 
 
 
-public class Turret {
+public class Turret extends SubsystemBase {
 
 static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
+//static public Angle toleranceAngle = Degrees.of(0.1); // Set a threshold
 
-SparkMax turretMotor = new SparkMax(55, null); 
-SparkMax enc2TurretMotor = new SparkMax(50, null); 
+SparkMax turretMotor = new SparkMax(55, MotorType.kBrushless); 
+SparkMax enc2TurretMotor = new SparkMax(50, MotorType.kBrushless); 
 AbsoluteEncoder enc1 = turretMotor.getAbsoluteEncoder(); 
-AbsoluteEncoder enc2 = enc2TurretMotor.getAbsoluteEncoder(); // Replace with a second encoder if available
+AbsoluteEncoder enc2 = enc2TurretMotor.getAbsoluteEncoder(); // Second encoder on a different motor for CRT                                       
 
 Supplier<Angle> enc1Supplier = () -> Degrees.of(enc1.getPosition()); // Assuming getPosition returns rotations
 Supplier<Angle> enc2Supplier = () -> Degrees.of(enc2.getPosition()); // Assuming getPosition returns rotations
@@ -61,10 +66,13 @@ SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig()
       // Power Optimization
       .withStatorCurrentLimit(Amps.of(40))
       .withClosedLoopRampRate(Seconds.of(0.25))
-      .withOpenLoopRampRate(Seconds.of(0.25));
+      .withOpenLoopRampRate(Seconds.of(0.25))
+      .withSubsystem(this);
+       
 SmartMotorController motor = new SparkWrapper(turretMotor,
                                                              DCMotor.getNEO(1),
                                                              motorConfig);
+
  
 PivotConfig m_config = new PivotConfig(motor)
       .withStartingPosition(Degrees.of(0)) // Starting position of the Pivot
@@ -98,10 +106,14 @@ EasyCRTConfig easyCrt =
 //easyCrt.coverageSatisfiesRange();     // Does coverage exceed maxMechanismAngle?
 //easyCrt.getRecommendedCrtGearPair();  // Suggested pair within constraints
 
+Pivot pivot = new Pivot(m_config);
+
 // Create the solver:
 EasyCRT easyCrtSolver = new EasyCRT(easyCrt);
 
-
+public Angle getAngle(){
+    return pivot.getAngle(); // Get the current angle of the turret
+}
 
 public void periodic() {
       if (motor.getRotorVelocity().compareTo(threshold) < 0) { // Only update when the mechanism is moving slowly to ensure accurate readings
@@ -109,12 +121,11 @@ public void periodic() {
     // Use the angle for your application
    motor.setEncoderPosition(angle); // Set the motor's encoder position to the calculated angle
       
-});}}
-public Command getSetpointCommand(Angle targetAngle) {
-    return new InstantCommand(() -> {
-        motor.setEncoderPosition(targetAngle);
-    });
-
-}}
-
+});}
+   pivot.updateTelemetry(); 
+}
+public Command SetpointCommand(Angle targetAngle) {
+    return pivot.run(targetAngle);
+    };
+}
 
