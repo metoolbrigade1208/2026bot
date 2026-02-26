@@ -126,6 +126,11 @@ public void periodic() {
 }
 public Command SetpointCommand(Angle targetAngle) {
     return pivot.run(targetAngle);
-    };
+};
+
+public Command SetMotorSpeedCommand(double speed) {
+    return runOnce(() -> pivot.setDutyCycleSetpoint(speed));
+};
 }
+
 

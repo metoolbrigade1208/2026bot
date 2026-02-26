@@ -34,10 +34,12 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(1);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public final Turret turret = new Turret();
+
 
     public RobotContainer() {
         configureBindings();
@@ -66,7 +68,9 @@ public class RobotContainer {
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
-
+        operator.axisMagnitudeGreaterThan(4, 0.025).whileTrue(turret.SetMotorSpeedCommand(operator.getRawAxis(4) * 0.5));
+        operator.axisMagnitudeGreaterThan(4, 0.025).whileFalse(turret.SetMotorSpeedCommand(0.0));
+         // Control turret speed with right trigger (scaled down to 50%)
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
