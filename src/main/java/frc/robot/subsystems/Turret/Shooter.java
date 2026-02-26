@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Feet;
@@ -20,6 +22,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -40,6 +43,11 @@ import yams.motorcontrollers.local.SparkWrapper;
 
 public class Shooter extends SubsystemBase {
 
+  // Vendor motor controller object
+  private SparkFlex spark1 = new SparkFlex(52, MotorType.kBrushless);
+  private SparkFlex spark2 = new SparkFlex(53, MotorType.kBrushless);
+
+
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
   .withControlMode(ControlMode.CLOSED_LOOP)
   // Feedback Constants (PID Constants)
@@ -57,11 +65,8 @@ public class Shooter extends SubsystemBase {
   // Motor properties to prevent over currenting.
   .withMotorInverted(false)
   .withIdleMode(MotorMode.COAST)
-  .withStatorCurrentLimit(Amps.of(40));
-
-  // Vendor motor controller object
-  private SparkFlex spark1 = new SparkFlex(52, MotorType.kBrushless);
-  private SparkFlex spark2 = new SparkFlex(53, MotorType.kBrushless);
+  .withStatorCurrentLimit(Amps.of(40))
+  .withFollowers(Pair.of(spark2, true));
 
   
 
@@ -119,15 +124,20 @@ public class Shooter extends SubsystemBase {
    *
    * @return a command
    */
-  public Command exampleMethodCommand() {
-    // Inline construction of command goes here.
-    // Subsystem::RunOnce implicitly requires `this` subsystem.
+  public Command RunShooterCommand() {
     return runOnce(
         () -> {
-          /* one-time action goes here */
+          // Example of setting a velocity setpoint
+          shooter.setMeasurementVelocitySetpoint(FeetPerSecond.of(5.0));
         });
+      
   }
-
+public Command StopShooterCommand() {
+  return runOnce(
+    () -> {
+      shooter.set(0);
+    });
+}
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
    *
