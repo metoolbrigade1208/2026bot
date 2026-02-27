@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Pounds;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 
 import java.util.function.Supplier;
 
@@ -19,6 +20,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -48,7 +50,8 @@ static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a thres
 SparkMax turretMotor = new SparkMax(55, MotorType.kBrushless); 
 SparkMax enc2TurretMotor = new SparkMax(50, MotorType.kBrushless); 
 AbsoluteEncoder enc1 = turretMotor.getAbsoluteEncoder(); 
-AbsoluteEncoder enc2 = enc2TurretMotor.getAbsoluteEncoder(); // Second encoder on a different motor for CRT                                       
+AbsoluteEncoder enc2 = enc2TurretMotor.getAbsoluteEncoder(); // Second encoder on a different motor for CRT  
+                                     
 
 Supplier<Angle> enc1Supplier = () -> Degrees.of(enc1.getPosition()); // Assuming getPosition returns rotations
 Supplier<Angle> enc2Supplier = () -> Degrees.of(enc2.getPosition()); // Assuming getPosition returns rotations
@@ -56,9 +59,9 @@ Supplier<Angle> enc2Supplier = () -> Degrees.of(enc2.getPosition()); // Assuming
 
 SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig()
       .withControlMode(ControlMode.CLOSED_LOOP)
-      .withClosedLoopController(4, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
+      .withClosedLoopController(17, 0, 0, DegreesPerSecond.of(180), DegreesPerSecondPerSecond.of(90))
       // Configure Motor and Mechanism properties
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 10)))
       .withIdleMode(MotorMode.BRAKE)
       .withMotorInverted(false)
       // Setup Telemetry
@@ -79,7 +82,7 @@ PivotConfig m_config = new PivotConfig(motor)
       //.withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the pivot can spin infinitely
       .withHardLimit(Degrees.of(-180), Degrees.of(180)) // Hard limit bc wiring prevents infinite spinning
       .withTelemetry("PivotExample", TelemetryVerbosity.HIGH) // Telemetry
-      .withMOI(Meters.of(0.25), Pounds.of(4)); // MOI Calculation
+      .withMOI(Meters.of(0.25), Pounds.of(8)); // MOI Calculation
 
 
 
@@ -115,6 +118,10 @@ public Angle getAngle(){
     return pivot.getAngle(); // Get the current angle of the turret
 }
 
+public void simulationPeriodic() {
+    pivot.simIterate();
+    // Simulate the turret's behavior here if needed
+}
 public void periodic() {
       if (motor.getRotorVelocity().compareTo(threshold) < 0) { // Only update when the mechanism is moving slowly to ensure accurate readings
       easyCrtSolver.getAngleOptional().ifPresent(angle -> {
@@ -127,7 +134,9 @@ public void periodic() {
 public Command SetpointCommand(Angle targetAngle) {
     return pivot.run(targetAngle);
 };
-
+public Command SysIDCommand() {
+    return pivot.sysId(Volts.of(3), Volts.of(0.5).per(Seconds), Seconds.of(10));
+};
 public Command SetMotorSpeedCommand(double speed) {
     return runOnce(() -> pivot.setDutyCycleSetpoint(speed));
 };
