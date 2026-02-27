@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import edu.wpi.first.math.system.plant.DCMotor;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -48,7 +49,7 @@ static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a thres
 //static public Angle toleranceAngle = Degrees.of(0.1); // Set a threshold
 
 SparkMax turretMotor = new SparkMax(55, MotorType.kBrushless); 
-SparkMax enc2TurretMotor = new SparkMax(50, MotorType.kBrushless); 
+SparkMax enc2TurretMotor = RobotContainer.sharedMotor; 
 AbsoluteEncoder enc1 = turretMotor.getAbsoluteEncoder(); 
 AbsoluteEncoder enc2 = enc2TurretMotor.getAbsoluteEncoder(); // Second encoder on a different motor for CRT  
                                      

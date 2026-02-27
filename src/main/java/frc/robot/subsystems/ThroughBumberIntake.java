@@ -11,6 +11,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 public class ThroughBumberIntake extends SubsystemBase {
   /** Creates a new ThroughBumberIntake. */
@@ -20,7 +21,7 @@ public class ThroughBumberIntake extends SubsystemBase {
 
 
   public ThroughBumberIntake() {
-    intakeMotor = new SparkMax(Constants.Intake.motorCanId, MotorType.kBrushless);
+    intakeMotor = RobotContainer.sharedMotor;
 
   }
 
