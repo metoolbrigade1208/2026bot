@@ -5,7 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-
+import frc.robot.subsystems.ThroughBumberIntake;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -32,6 +32,8 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
+
+    private final ThroughBumberIntake intake = new ThroughBumberIntake();
 
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
@@ -63,6 +65,9 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
+
+        joystick.rightBumper().whileTrue(intake.startIntake());
+        joystick.rightBumper().whileFalse(intake.stopIntake());
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
