@@ -138,7 +138,7 @@ public Command SetpointCommand(Angle targetAngle) {
 };
 public Command SysIDCommand() {
     return pivot
-        .sysId(Volts.of(3), Volts.of(0.5).per(Seconds), Seconds.of(10))
+        .sysId(Volts.of(3), Volts.of(0.5).per(Seconds), Seconds.of(4))
         .finallyDo(()-> {DataLogManager.getLog().flush();});
 };
 
