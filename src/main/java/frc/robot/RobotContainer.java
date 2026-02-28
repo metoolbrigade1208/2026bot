@@ -103,6 +103,12 @@ public class RobotContainer {
         joystick.povRight().onTrue(turret.SetpointCommand(Degrees.of(90))); // Point turret right at 90 degrees
 
         // Reset the field-centric heading on left bumper press.
+=======
+     /*   joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
+        joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
+        joystick.rightTrigger(0.05).onTrue(shooter.RunShooterCommand());
+        joystick.rightTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
+>>>>>>> turret-shooter
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
