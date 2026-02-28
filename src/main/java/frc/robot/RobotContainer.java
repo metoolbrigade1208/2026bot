@@ -23,6 +23,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem.Turret;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
+import frc.robot.subsystems.Constants.OverBumperIntake;
 
 public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -39,7 +40,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final ThroughBumberIntake intake = new ThroughBumberIntake();
-
+    private final BumberIntake overBumberIntake = new BumberIntake();
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
 
@@ -71,8 +72,10 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.rightBumper().whileTrue(intake.startIntake());
-        joystick.rightBumper().whileFalse(intake.stopIntake());
+        joystick.leftBumper().whileTrue(intake.startIntake());
+        joystick.leftBumper().whileFalse(intake.stopIntake());
+        joystick.rightBumper().whileTrue(overBumberIntake.startIntake());
+        joystick.rightBumper().whileFalse(overBumberIntake.stopIntake());
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
@@ -88,8 +91,8 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         // Bindings for Arm control
-        joystick.start().onTrue(BumberIntake.getInstance().armDownCommand());
-        joystick.start().onFalse(BumberIntake.getInstance().armUpCommand());
+        joystick.start().onTrue(overBumberIntake.armDownCommand());
+        joystick.start().onFalse(overBumberIntake.armUpCommand());
 
         // Bindings for the turret subsystem
         joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-90))); // Point turret left at 90 degrees
