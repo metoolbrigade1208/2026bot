@@ -21,6 +21,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -136,8 +137,11 @@ public Command SetpointCommand(Angle targetAngle) {
     return pivot.run(targetAngle);
 };
 public Command SysIDCommand() {
-    return pivot.sysId(Volts.of(3), Volts.of(0.5).per(Seconds), Seconds.of(10));
+    return pivot
+        .sysId(Volts.of(3), Volts.of(0.5).per(Seconds), Seconds.of(10))
+        .finallyDo(()-> {DataLogManager.getLog().flush();});
 };
+
 public Command SetMotorSpeedCommand(double speed) {
     return runOnce(() -> pivot.setDutyCycleSetpoint(speed));
 };
