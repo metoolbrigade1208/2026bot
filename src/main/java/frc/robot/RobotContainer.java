@@ -15,6 +15,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,7 +28,10 @@ import frc.robot.subsystems.TurretSubsystem.Turret;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Turret.Shooter;
 
+
+import frc.robot.subsystems.Turret.Shooter;
 
 public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -52,6 +56,7 @@ public class RobotContainer {
 
     public final Turret turret = new Turret();
 
+    public final Shooter shooter = new Shooter();
 
     public RobotContainer() {
         configureBindings();
@@ -103,17 +108,15 @@ public class RobotContainer {
         joystick.povRight().onTrue(turret.SetpointCommand(Degrees.of(90))); // Point turret right at 90 degrees
 
         // Reset the field-centric heading on left bumper press.
-=======
      /*   joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
-        joystick.rightTrigger(0.05).onTrue(shooter.RunShooterCommand());
-        joystick.rightTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
->>>>>>> turret-shooter
+        joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand());
+        joystick.leftTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
-        StartEndCommand cmd = new StartEndCommand(null, null, null);
-        cmd.alongWith(hopper.startHopper(), intake.startIntake(), )
+        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper(), intake.startIntake());
+        joystick.rightTrigger(0.05).onTrue(shooterCmd);
     }
 
     public Command getAutonomousCommand() {
