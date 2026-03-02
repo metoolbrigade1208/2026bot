@@ -144,11 +144,11 @@ public class Turret extends SubsystemBase {
         return runOnce(() -> pivot.setDutyCycleSetpoint(speed));
     }
 
-    public Command StopSetpointCommand(Angle of) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'StopSetpointCommand'");
-    };
-    public Command StopSetpointCommand(Angle targetAngle) {
-        return pivot.run(double 0.0);
-     };
+//    public Command StopSetpointCommand(Angle of) {
+//        // TODO Auto-generated method stub
+//        throw new UnsupportedOperationException("Unimplemented method 'StopSetpointCommand'");
+//    };
+//   public Command StopSetpointCommand(Angle targetAngle) {
+//        return pivot.run(double 0.0);
+//     };
 }
