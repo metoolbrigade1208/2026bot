@@ -100,7 +100,7 @@ public class RobotContainer {
         //joystick.povDown().onTrue(turret.StopSetpointCommand(Degrees.of(0)));
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-        joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
+      //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
     }
 

@@ -51,7 +51,7 @@ public class Turret extends SubsystemBase {
 
     SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig()
             .withControlMode(ControlMode.CLOSED_LOOP)
-            .withClosedLoopController(10, 0, 0, DegreesPerSecond.of(900), DegreesPerSecondPerSecond.of(1800))
+            .withClosedLoopController(20, 0, 0, DegreesPerSecond.of(300), DegreesPerSecondPerSecond.of(1800))
             // Configure Motor and Mechanism properties
             .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 10)))
             .withIdleMode(MotorMode.BRAKE)
@@ -62,18 +62,18 @@ public class Turret extends SubsystemBase {
             .withStatorCurrentLimit(Amps.of(40))
             .withClosedLoopRampRate(Seconds.of(0.25))
             .withOpenLoopRampRate(Seconds.of(0.25))
-            .withFeedforward(new SimpleMotorFeedforward(0, 917.0/30.0, 0))
+            .withFeedforward(new SimpleMotorFeedforward(0.05, 3.5, 0))
             .withSubsystem(this);
 
     SmartMotorController motor = new SparkWrapper(turretMotor,
-            DCMotor.getNEO(1),
+            DCMotor.getNeo550(1),
             motorConfig);
 
     PivotConfig m_config = new PivotConfig(motor)
             .withStartingPosition(Degrees.of(0)) // Starting position of the Pivot
             // .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
             // pivot can spin infinitely
-            .withSoftLimits(Degrees.of(-10), Degrees.of(10)) // Soft limits to prevent hitting hard limits during normal operation
+            .withSoftLimits(Degrees.of(-150), Degrees.of(150)) // Soft limits to prevent hitting hard limits during normal operation
             .withHardLimit(Degrees.of(-180), Degrees.of(180)) // Hard limit bc wiring prevents infinite spinning
             .withTelemetry("PivotExample", TelemetryVerbosity.HIGH) // Telemetry
             .withMOI(Meters.of(0.25), Pounds.of(8)); // MOI Calculation
@@ -117,19 +117,11 @@ public class Turret extends SubsystemBase {
     }
 
     public void periodic() {
-        if (false && motor.getRotorVelocity().compareTo(threshold) < 0) { // Only update when the mechanism is moving 
-                                                                 // lowly to ensure accurate
-            easyCrtSolver.getAngleOptional().ifPresent(angle -> {
-                // Use the angle for your application
-                motor.setEncoderPosition(angle); // Set the motor's encoder position to the calculated angle
-
-            });
-        }
         pivot.updateTelemetry();
     }
 
     public Command SetpointCommand(Angle targetAngle) {
-        return pivot.run(targetAngle);
+        return pivot.runTo(targetAngle, Degrees.of(2));
     };
 
     public Command SysIDCommand() {
@@ -144,11 +136,5 @@ public class Turret extends SubsystemBase {
         return runOnce(() -> pivot.setDutyCycleSetpoint(speed));
     }
 
-//    public Command StopSetpointCommand(Angle of) {
-//        // TODO Auto-generated method stub
-//        throw new UnsupportedOperationException("Unimplemented method 'StopSetpointCommand'");
-//    };
-//   public Command StopSetpointCommand(Angle targetAngle) {
-//        return pivot.run(double 0.0);
-//     };
+
 }
