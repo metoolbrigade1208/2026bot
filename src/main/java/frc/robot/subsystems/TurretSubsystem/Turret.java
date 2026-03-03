@@ -53,8 +53,8 @@ public class Turret extends SubsystemBase {
     private static final int motorID = 55;
     private static final int enc1Id = 0; // DIO port of encoder 1
     private static final int enc2Id = 1; // DIO port of encoder 2
-    private static final Angle enc1Zero = Rotations.of(0.0); // actual zero location of encoder 1
-    private static final Angle enc2Zero = Rotations.of(0.0); // actual zero location of encoder 2
+    private static final Angle enc1Zero = Degrees.of(-35.89); // actual zero location of encoder 1
+    private static final Angle enc2Zero = Degrees.of(-38.74); // actual zero location of encoder 2
     private static final double kP = 2.5; // output per angle difference (V/rotation)
     private static final double kD = 0.25; // output per angle difference derivative (V/rps)
     private static final Voltage kS = Volts.of(0.5);
@@ -95,11 +95,11 @@ public class Turret extends SubsystemBase {
                     /* commonRatio (mech:drive) */ 1,
                     /* driveGearTeeth */ 200,
                     /* encoder1Pinion */ 19,
-                    /* encoder2Pinion */ 23)
+                    /* encoder2Pinion */ 21)
             .withAbsoluteEncoderOffsets(enc1Zero, enc2Zero) // set after mechanical zero
             .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5)) // -180 deg to +180 deg
             .withMatchTolerance(Rotations.of(0.0265)) // ~1.08 deg at encoder2 for the example ratio
-            .withAbsoluteEncoderInversions(false, false);
+            .withAbsoluteEncoderInversions(true, true);
 
     // you can inspect:
     // easyCrt.getUniqueCoverage(); // Optional<Angle> coverage from prime counts
@@ -134,6 +134,7 @@ public class Turret extends SubsystemBase {
                 .maxAcceleration(turretAccel.in(turretAccelerationUnit))
                 .allowedProfileError(toleranceAngle.in(Rotations));
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        easyCrtSolver.getAngleOptional().ifPresent((angle)->{turretMotor.getEncoder().setPosition(angle.in(Rotations));});
     }
 
     public Angle getAngle() {
@@ -150,10 +151,10 @@ public class Turret extends SubsystemBase {
         easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
             turretCRTAngle = crtAngle;
             crtAnglePublisher.set(turretCRTAngle.in(Degrees));
+            
+        });
             enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
             enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
-        });
-
     }
 
     public void setAngle(Angle targetAngle) {
