@@ -80,7 +80,11 @@ public class Turret extends SubsystemBase {
      */
     private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Telemetry\\Turret");
     private DoubleTopic crtAngleTopic = telemetryTable.getDoubleTopic("CRTAngle");
+    private DoubleTopic enc1AngleTopic = telemetryTable.getDoubleTopic("Enc1Angle");
+    private DoubleTopic enc2AngleTopic = telemetryTable.getDoubleTopic("Enc2Angle");
     private DoublePublisher crtAnglePublisher = crtAngleTopic.publish();
+    private DoublePublisher enc1AnglePublisher = enc1AngleTopic.publish();
+    private DoublePublisher enc2AnglePublisher = enc2AngleTopic.publish();
     private DoubleTopic setPointTopic = telemetryTable.getDoubleTopic("setPoint");
     private DoublePublisher setPointPublisher = setPointTopic.publish();
 
@@ -146,6 +150,8 @@ public class Turret extends SubsystemBase {
         easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
             turretCRTAngle = crtAngle;
             crtAnglePublisher.set(turretCRTAngle.in(Degrees));
+            enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
+            enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
         });
 
     }
