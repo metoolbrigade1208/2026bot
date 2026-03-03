@@ -32,6 +32,17 @@ import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import com.revrobotics.sim.SparkMaxSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.units.EasyCRT;
@@ -102,10 +113,72 @@ public class Turret extends SubsystemBase {
     // easyCrt.coverageSatisfiesRange(); // Does coverage exceed maxMechanismAngle?
     // easyCrt.getRecommendedCrtGearPair(); // Suggested pair within constraints
 
-    // Create the solver:
-    EasyCRT easyCrtSolver = new EasyCRT(easyCrt);
+    // Create the solver (initialized in constructor so we can swap to a sim-only supplier there)
+    EasyCRT easyCrtSolver;
+
+    // Simulation objects
+    private final SingleJointedArmSim m_turretSim;
+    private final SparkMaxSim m_turretMotorSim;
+    // Visualization
+    private final Mechanism2d m_mech2d;
+    private final MechanismRoot2d m_root;
+    private final MechanismLigament2d m_turretLigament;
 
     public Turret() {
+
+        // Setup visualization
+        m_mech2d = new Mechanism2d(60, 60);
+        m_root = m_mech2d.getRoot("TurretRoot", 30, 30);
+        m_turretLigament = m_root.append(new MechanismLigament2d("TurretArm", 30,
+                0));
+        SmartDashboard.putData("Turret Sim", m_mech2d);
+
+        // Setup simulation objects
+        // Use a single NEO motor model and a 30:1 gearing (motor:mech)
+        final DCMotor turretGearbox = DCMotor.getNEO(1);
+        final double gearingRatio = 30.0;
+        // Estimate a small moment of inertia: radius 0.2 m, mass 5 kg (conservative)
+        final double mechRadius = 0.2;
+        final double mechMass = 5.0;
+        final double mechMOI = SingleJointedArmSim.estimateMOI(mechRadius, mechMass);
+
+        m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio, mechMOI, mechRadius,
+                -Math.PI, Math.PI, /* addGearingInertia */ false,
+                Units.degreesToRadians(300), /* encoderDistPerPulse */ 1.0, 0.0);
+
+        m_turretMotorSim = new SparkMaxSim(turretMotor, turretGearbox);
+
+        // Create the CRT solver. In simulation we will provide simulated absolute-encoder
+        // suppliers which are derived from the turret simulation state so the CRT solver
+        // sees physically-correct encoder readings that reflect gearing differences.
+        if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
+            Supplier<Angle> simEnc1Supplier = () -> {
+                double mechRot = Units.radiansToRotations(m_turretSim.getAngleRads());
+                double encRot = enc1Zero.in(Rotations) + mechRot * (200.0 / 19.0);
+                return Rotations.of(encRot);
+            };
+            Supplier<Angle> simEnc2Supplier = () -> {
+                double mechRot = Units.radiansToRotations(m_turretSim.getAngleRads());
+                double encRot = enc2Zero.in(Rotations) + mechRot * (200.0 / 23.0);
+                return Rotations.of(encRot);
+            };
+
+            EasyCRTConfig simCfg = new EasyCRTConfig(simEnc1Supplier, simEnc2Supplier)
+                    .withCommonDriveGear(
+                            /* commonRatio (mech:drive) */ 1,
+                            /* driveGearTeeth */ 200,
+                            /* encoder1Pinion */ 19,
+                            /* encoder2Pinion */ 23)
+                    .withAbsoluteEncoderOffsets(enc1Zero, enc2Zero)
+                    .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5))
+                    .withMatchTolerance(Rotations.of(0.0265))
+                    .withAbsoluteEncoderInversions(false, false);
+
+            easyCrtSolver = new EasyCRT(simCfg);
+        } else {
+            easyCrtSolver = new EasyCRT(easyCrt);
+        }
+    
         turretConfig
                 .closedLoopRampRate(.25)
                 .openLoopRampRate(.25)
@@ -135,7 +208,23 @@ public class Turret extends SubsystemBase {
     }
 
     public void simulationPeriodic() {
-        // Simulate the turret's behavior here if needed
+    // Update the simulated turret model. Use the motor applied output ([-1,1]) times
+    // the current battery voltage as the input.
+    m_turretSim.setInput(turretMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
+
+    // Update the SparkMax simulation (provides simulated internal encoder values)
+    m_turretMotorSim.iterate(Units.radiansPerSecondToRotationsPerMinute(m_turretSim.getVelocityRadPerSec()),
+        RoboRioSim.getVInVoltage(), 0.020);
+
+    // Step the mechanism simulation forward one robot loop (20ms)
+    m_turretSim.update(0.020);
+
+    // Update simulated battery voltage based on current draw
+    RoboRioSim.setVInVoltage(
+        BatterySim.calculateDefaultBatteryLoadedVoltage(m_turretSim.getCurrentDrawAmps()));
+    // Update CRT visualization with the mechanism angle
+    double turretDeg = Units.radiansToDegrees(m_turretSim.getAngleRads());
+    m_turretLigament.setAngle(turretDeg);
     }
 
     public void periodic() {
