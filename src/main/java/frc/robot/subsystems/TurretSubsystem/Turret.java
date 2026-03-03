@@ -1,100 +1,100 @@
 package frc.robot.subsystems.TurretSubsystem;
 
-import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Second;
 
 import java.util.function.Supplier;
 
-import static edu.wpi.first.units.Units.Rotations;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import com.revrobotics.spark.SparkBase.ControlType;
+
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleTopic;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularAccelerationUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
-import edu.wpi.first.math.system.plant.DCMotor;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
-import yams.mechanisms.config.PivotConfig;
-import yams.mechanisms.positional.Pivot;
-import yams.motorcontrollers.SmartMotorController;
-import yams.motorcontrollers.SmartMotorControllerConfig;
-import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
-import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
-import yams.motorcontrollers.local.SparkWrapper;
 import yams.units.EasyCRT;
 import yams.units.EasyCRTConfig;
 
 public class Turret extends SubsystemBase {
 
+    // Constants
+    private static AngleUnit turretAngleUnit = Rotations;
+    private static AngularVelocityUnit turretVelocityUnit = turretAngleUnit.per(Second);
+    private static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
+    private static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
+    private static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
+    private static final Angle fwdLimit = Degrees.of(170);
+    private static final Angle revLimit = Degrees.of(-170);
+    private static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
+    private static final AngularVelocity gearSpeed = gearing.per(Second);
+    private static final int motorID = 55;
+    private static final int enc1Id = 0; // DIO port of encoder 1
+    private static final int enc2Id = 1; // DIO port of encoder 2
+    private static final Angle enc1Zero = Rotations.of(0.0); // actual zero location of encoder 1
+    private static final Angle enc2Zero = Rotations.of(0.0); // actual zero location of encoder 2
+    private static final double kP = 10; // output per angle difference (V/rotation)
+    private static final double kD = 0; // output per angle difference derivative (V/rps)
+    private static final Voltage kS = Volts.of(0.5);
+    private static final Voltage kV = Volts.of(1); // really Volts/rps, but dimensions get wonky with doing all that.
+
     static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
-    // static public Angle toleranceAngle = Degrees.of(0.1); // Set a threshold
+    static public Angle toleranceAngle = Degrees.of(0.1); // Set a threshold
 
-    SparkMax turretMotor = new SparkMax(55, MotorType.kBrushless);
-    SparkMax enc2TurretMotor = RobotContainer.sharedMotor;
-    AbsoluteEncoder enc1 = turretMotor.getAbsoluteEncoder();
-    AbsoluteEncoder enc2 = enc2TurretMotor.getAbsoluteEncoder(); // Second encoder on a different motor for CRT
+    // Motor control
+    SparkMax turretMotor = new SparkMax(motorID, MotorType.kBrushless);
+    SparkMaxConfig turretConfig = new SparkMaxConfig();
 
-    Supplier<Angle> enc1Supplier = () -> Degrees.of(enc1.getPosition()); // Assuming getPosition returns rotations
-    Supplier<Angle> enc2Supplier = () -> Degrees.of(enc2.getPosition()); // Assuming getPosition returns rotations
+    // Easy CRT
+    DutyCycleEncoder enc1Encoder = new DutyCycleEncoder(enc1Id);
+    DutyCycleEncoder enc2Encoder = new DutyCycleEncoder(enc2Id);
+    Supplier<Angle> enc1Supplier = () -> turretAngleUnit.of(enc1Encoder.get());
+    Supplier<Angle> enc2Supplier = () -> turretAngleUnit.of(enc2Encoder.get());
 
-    SmartMotorControllerConfig motorConfig = new SmartMotorControllerConfig()
-            .withControlMode(ControlMode.CLOSED_LOOP)
-            .withClosedLoopController(20, 0, 0, DegreesPerSecond.of(300), DegreesPerSecondPerSecond.of(1800))
-            // Configure Motor and Mechanism properties
-            .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 10)))
-            .withIdleMode(MotorMode.BRAKE)
-            .withMotorInverted(false)
-            // Setup Telemetry
-            .withTelemetry("TurretMotor", TelemetryVerbosity.HIGH)
-            // Power Optimization
-            .withStatorCurrentLimit(Amps.of(40))
-            .withClosedLoopRampRate(Seconds.of(0.25))
-            .withOpenLoopRampRate(Seconds.of(0.25))
-            .withFeedforward(new SimpleMotorFeedforward(0.05, 3.5, 0))
-            .withSubsystem(this);
+    Angle turretCRTAngle;
 
-    SmartMotorController motor = new SparkWrapper(turretMotor,
-            DCMotor.getNeo550(1),
-            motorConfig);
-
-    PivotConfig m_config = new PivotConfig(motor)
-            .withStartingPosition(Degrees.of(0)) // Starting position of the Pivot
-            // .withWrapping(Degrees.of(0), Degrees.of(360)) // Wrapping enabled bc the
-            // pivot can spin infinitely
-            .withSoftLimits(Degrees.of(-150), Degrees.of(150)) // Soft limits to prevent hitting hard limits during normal operation
-            .withHardLimit(Degrees.of(-180), Degrees.of(180)) // Hard limit bc wiring prevents infinite spinning
-            .withTelemetry("PivotExample", TelemetryVerbosity.HIGH) // Telemetry
-            .withMOI(Meters.of(0.25), Pounds.of(8)); // MOI Calculation
+    /**
+     * telemetry table.
+     */
+    private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Telemetry\\Turret");
+    private DoubleTopic crtAngleTopic = telemetryTable.getDoubleTopic("CRTAngle");
+    private DoublePublisher crtAnglePublisher = crtAngleTopic.publish();
+    private DoubleTopic setPointTopic = telemetryTable.getDoubleTopic("setPoint");
+    private DoublePublisher setPointPublisher = setPointTopic.publish();
 
     // Suppose: mechanism : drive gear = 12:1, drive gear = 50T, encoders use 19T
     // and 23T pinions.
     EasyCRTConfig easyCrt = new EasyCRTConfig(enc1Supplier, enc2Supplier)
             .withCommonDriveGear(
-                    /* commonRatio (mech:drive) */ 10 / 3.0,
-                    /* driveGearTeeth */ 20,
+                    /* commonRatio (mech:drive) */ 1,
+                    /* driveGearTeeth */ 200,
                     /* encoder1Pinion */ 19,
-                    /* encoder2Pinion */ 21)
-            .withAbsoluteEncoderOffsets(Rotations.of(0.0), Rotations.of(0.0)) // set after mechanical zero
+                    /* encoder2Pinion */ 23)
+            .withAbsoluteEncoderOffsets(enc1Zero, enc2Zero) // set after mechanical zero
             .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5)) // -180 deg to +180 deg
             .withMatchTolerance(Rotations.of(0.0265)) // ~1.08 deg at encoder2 for the example ratio
-            .withAbsoluteEncoderInversions(false, false)
-            .withCrtGearRecommendationConstraints(
-                    /* coverageMargin */ 1.2,
-                    /* minTeeth */ 15,
-                    /* maxTeeth */ 45,
-                    /* maxIterations */ 30);
+            .withAbsoluteEncoderInversions(false, false);
 
     // you can inspect:
     // easyCrt.getUniqueCoverage(); // Optional<Angle> coverage from prime counts
@@ -102,39 +102,64 @@ public class Turret extends SubsystemBase {
     // easyCrt.coverageSatisfiesRange(); // Does coverage exceed maxMechanismAngle?
     // easyCrt.getRecommendedCrtGearPair(); // Suggested pair within constraints
 
-    Pivot pivot = new Pivot(m_config);
-
     // Create the solver:
     EasyCRT easyCrtSolver = new EasyCRT(easyCrt);
 
+    public Turret() {
+        turretConfig
+                .closedLoopRampRate(.25)
+                .openLoopRampRate(.25)
+                .smartCurrentLimit(20) // Neo550
+                .idleMode(IdleMode.kBrake).encoder
+                .positionConversionFactor(gearing.in(turretAngleUnit))
+                .velocityConversionFactor(gearSpeed.in(turretAngleUnit.per(Minute))); // default is RPM, not RPS
+        turretConfig.softLimit
+                .forwardSoftLimit(fwdLimit.in(turretAngleUnit))
+                .reverseSoftLimit(revLimit.in(turretAngleUnit))
+                .forwardSoftLimitEnabled(true)
+                .reverseSoftLimitEnabled(true);
+        turretConfig.closedLoop
+                .pid(kP, 0, kD)
+                .allowedClosedLoopError(toleranceAngle.in(Rotations), ClosedLoopSlot.kSlot0).feedForward
+                .sv(kS.baseUnitMagnitude(), kV.magnitude());
+        turretConfig.closedLoop.maxMotion
+                .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
+                .cruiseVelocity(turretVelocity.in(turretVelocityUnit))
+                .maxAcceleration(turretAccel.in(turretAccelerationUnit))
+                .allowedProfileError(toleranceAngle.in(Rotations));
+        turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    }
+
     public Angle getAngle() {
-        return pivot.getAngle(); // Get the current angle of the turret
+        return turretAngleUnit.of(turretMotor.getEncoder().getPosition()); // Get the current angle of the turret
     }
 
     public void simulationPeriodic() {
-        pivot.simIterate();
         // Simulate the turret's behavior here if needed
     }
 
     public void periodic() {
-        pivot.updateTelemetry();
+        // set the current CRT angle and publish it
+        // TODO: use it to set the current turret readout angle
+        easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
+            turretCRTAngle = crtAngle;
+            crtAnglePublisher.set(turretCRTAngle.in(Degrees));
+        });
+
+    }
+
+    public void setAngle(Angle targetAngle) {
+        turretMotor.getClosedLoopController().setSetpoint(targetAngle.in(Rotations),
+                ControlType.kMAXMotionPositionControl);
+        setPointPublisher.set(targetAngle.in(Degrees));
     }
 
     public Command SetpointCommand(Angle targetAngle) {
-        return pivot.runTo(targetAngle, Degrees.of(2));
-    };
-
-    public Command SysIDCommand() {
-        return pivot
-                .sysId(Volts.of(3), Volts.of(0.5).per(Seconds), Seconds.of(10))
-                .finallyDo(() -> {
-                    DataLogManager.getLog().flush();
-                });
+        return runOnce(() -> setAngle(targetAngle)).withName(getName() + " setAngle");
     };
 
     public Command SetMotorSpeedCommand(double speed) {
-        return runOnce(() -> pivot.setDutyCycleSetpoint(speed));
+        return runOnce(() -> turretMotor.set(speed)).withName(getName() + " setSpeed");
     }
-
 
 }
