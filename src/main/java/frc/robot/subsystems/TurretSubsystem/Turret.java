@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 
@@ -45,8 +46,8 @@ public class Turret extends SubsystemBase {
     private static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
     private static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
     private static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
-    private static final Angle fwdLimit = Degrees.of(170);
-    private static final Angle revLimit = Degrees.of(-170);
+    private static final Angle fwdLimit = Degrees.of(180);
+    private static final Angle revLimit = Degrees.of(-180);
     private static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
     private static final AngularVelocity gearSpeed = gearing.per(Second);
     private static final int motorID = 55;
@@ -54,13 +55,13 @@ public class Turret extends SubsystemBase {
     private static final int enc2Id = 1; // DIO port of encoder 2
     private static final Angle enc1Zero = Rotations.of(0.0); // actual zero location of encoder 1
     private static final Angle enc2Zero = Rotations.of(0.0); // actual zero location of encoder 2
-    private static final double kP = 10; // output per angle difference (V/rotation)
-    private static final double kD = 0; // output per angle difference derivative (V/rps)
+    private static final double kP = 2.5; // output per angle difference (V/rotation)
+    private static final double kD = 0.25; // output per angle difference derivative (V/rps)
     private static final Voltage kS = Volts.of(0.5);
-    private static final Voltage kV = Volts.of(1); // really Volts/rps, but dimensions get wonky with doing all that.
+    private static final Voltage kV = Volts.of(5); // really Volts/rps, but dimensions get wonky with doing all that.
 
     static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
-    static public Angle toleranceAngle = Degrees.of(0.1); // Set a threshold
+    static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
 
     // Motor control
     SparkMax turretMotor = new SparkMax(motorID, MotorType.kBrushless);
@@ -120,6 +121,7 @@ public class Turret extends SubsystemBase {
                 .reverseSoftLimitEnabled(true);
         turretConfig.closedLoop
                 .pid(kP, 0, kD)
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .allowedClosedLoopError(toleranceAngle.in(Rotations), ClosedLoopSlot.kSlot0).feedForward
                 .sv(kS.baseUnitMagnitude(), kV.magnitude());
         turretConfig.closedLoop.maxMotion
@@ -150,7 +152,7 @@ public class Turret extends SubsystemBase {
 
     public void setAngle(Angle targetAngle) {
         turretMotor.getClosedLoopController().setSetpoint(targetAngle.in(Rotations),
-                ControlType.kMAXMotionPositionControl);
+                ControlType.kPosition);
         setPointPublisher.set(targetAngle.in(Degrees));
     }
 
