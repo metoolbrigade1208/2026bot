@@ -17,6 +17,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 
@@ -56,22 +57,22 @@ public class Turret extends SubsystemBase {
     private static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
     private static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
     private static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
-    private static final Angle fwdLimit = Degrees.of(170);
-    private static final Angle revLimit = Degrees.of(-170);
+    private static final Angle fwdLimit = Degrees.of(180);
+    private static final Angle revLimit = Degrees.of(-180);
     private static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
     private static final AngularVelocity gearSpeed = gearing.per(Second);
     private static final int motorID = 55;
     private static final int enc1Id = 0; // DIO port of encoder 1
     private static final int enc2Id = 1; // DIO port of encoder 2
-    private static final Angle enc1Zero = Rotations.of(0.0); // actual zero location of encoder 1
-    private static final Angle enc2Zero = Rotations.of(0.0); // actual zero location of encoder 2
-    private static final double kP = 10; // output per angle difference (V/rotation)
-    private static final double kD = 0; // output per angle difference derivative (V/rps)
+    private static final Angle enc1Zero = Degrees.of(-35.89); // actual zero location of encoder 1
+    private static final Angle enc2Zero = Degrees.of(-38.74); // actual zero location of encoder 2
+    private static final double kP = 2.5; // output per angle difference (V/rotation)
+    private static final double kD = 0.25; // output per angle difference derivative (V/rps)
     private static final Voltage kS = Volts.of(0.5);
-    private static final Voltage kV = Volts.of(1); // really Volts/rps, but dimensions get wonky with doing all that.
+    private static final Voltage kV = Volts.of(5); // really Volts/rps, but dimensions get wonky with doing all that.
 
     static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
-    static public Angle toleranceAngle = Degrees.of(0.1); // Set a threshold
+    static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
 
     // Motor control
     SparkMax turretMotor = new SparkMax(motorID, MotorType.kBrushless);
@@ -90,7 +91,11 @@ public class Turret extends SubsystemBase {
      */
     private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Telemetry\\Turret");
     private DoubleTopic crtAngleTopic = telemetryTable.getDoubleTopic("CRTAngle");
+    private DoubleTopic enc1AngleTopic = telemetryTable.getDoubleTopic("Enc1Angle");
+    private DoubleTopic enc2AngleTopic = telemetryTable.getDoubleTopic("Enc2Angle");
     private DoublePublisher crtAnglePublisher = crtAngleTopic.publish();
+    private DoublePublisher enc1AnglePublisher = enc1AngleTopic.publish();
+    private DoublePublisher enc2AnglePublisher = enc2AngleTopic.publish();
     private DoubleTopic setPointTopic = telemetryTable.getDoubleTopic("setPoint");
     private DoublePublisher setPointPublisher = setPointTopic.publish();
 
@@ -101,11 +106,11 @@ public class Turret extends SubsystemBase {
                     /* commonRatio (mech:drive) */ 1,
                     /* driveGearTeeth */ 200,
                     /* encoder1Pinion */ 19,
-                    /* encoder2Pinion */ 23)
+                    /* encoder2Pinion */ 21)
             .withAbsoluteEncoderOffsets(enc1Zero, enc2Zero) // set after mechanical zero
             .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5)) // -180 deg to +180 deg
             .withMatchTolerance(Rotations.of(0.0265)) // ~1.08 deg at encoder2 for the example ratio
-            .withAbsoluteEncoderInversions(false, false);
+            .withAbsoluteEncoderInversions(true, true);
 
     // you can inspect:
     // easyCrt.getUniqueCoverage(); // Optional<Angle> coverage from prime counts
@@ -193,6 +198,7 @@ public class Turret extends SubsystemBase {
                 .reverseSoftLimitEnabled(true);
         turretConfig.closedLoop
                 .pid(kP, 0, kD)
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .allowedClosedLoopError(toleranceAngle.in(Rotations), ClosedLoopSlot.kSlot0).feedForward
                 .sv(kS.baseUnitMagnitude(), kV.magnitude());
         turretConfig.closedLoop.maxMotion
@@ -201,6 +207,7 @@ public class Turret extends SubsystemBase {
                 .maxAcceleration(turretAccel.in(turretAccelerationUnit))
                 .allowedProfileError(toleranceAngle.in(Rotations));
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        easyCrtSolver.getAngleOptional().ifPresent((angle)->{turretMotor.getEncoder().setPosition(angle.in(Rotations));});
     }
 
     public Angle getAngle() {
@@ -233,13 +240,15 @@ public class Turret extends SubsystemBase {
         easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
             turretCRTAngle = crtAngle;
             crtAnglePublisher.set(turretCRTAngle.in(Degrees));
+            
         });
-
+            enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
+            enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
     }
 
     public void setAngle(Angle targetAngle) {
         turretMotor.getClosedLoopController().setSetpoint(targetAngle.in(Rotations),
-                ControlType.kMAXMotionPositionControl);
+                ControlType.kPosition);
         setPointPublisher.set(targetAngle.in(Degrees));
     }
 
