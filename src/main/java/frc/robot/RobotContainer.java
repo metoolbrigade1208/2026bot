@@ -23,6 +23,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem.Turret;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 
 public class RobotContainer {
@@ -43,6 +44,7 @@ public class RobotContainer {
     private final BumberIntake overBumberIntake = new BumberIntake();
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
+    private final ElevatorSubsystem elevator = new ElevatorSubsystem();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -102,6 +104,11 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        //ELevator subsystem bindings
+        joystick.button(1).whileTrue(elevator.setHeight(Meters.of(1)));
+        joystick.button(2).whileTrue(elevator.setHeight(Meters.of(0)));
+        joystick.button(3).whileTrue(elevator.sysId());
     }
 
     public Command getAutonomousCommand() {
