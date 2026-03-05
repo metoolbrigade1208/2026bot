@@ -106,9 +106,9 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
 
         //ELevator subsystem bindings
-        joystick.button(1).whileTrue(elevator.setHeight(Meters.of(1)));
-        joystick.button(2).whileTrue(elevator.setHeight(Meters.of(0)));
-        joystick.button(3).whileTrue(elevator.sysId());
+        joystick.x().whileTrue(elevator.setHeight(Meters.of(1)));
+        joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
+       // joystick.button(3).whileTrue(elevator.sysId());
     }
 
     public Command getAutonomousCommand() {

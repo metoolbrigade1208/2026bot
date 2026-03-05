@@ -17,6 +17,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,6 +36,8 @@ import yams.motorcontrollers.local.SparkWrapper;
 public class ElevatorSubsystem extends SubsystemBase
 {
   // TODO: Add detailed comments explaining the example, similar to the ExponentiallyProfiledArmSubsystem
+  private Distance winchCircumference = Inches.of(11); // TODO: change circumference
+  private double kV = winchCircumference.in(Meters) * 50.7; // Volts per (Meter per Second)
 
   private final SparkMax elevatorMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
   //  private final SmartMotorControllerTelemetryConfig motorTelemetryConfig = new SmartMotorControllerTelemetryConfig()
@@ -43,10 +46,10 @@ public class ElevatorSubsystem extends SubsystemBase
 //          .withMechanismLowerLimit()
 //          .withMechanismUpperLimit();
   private final SmartMotorControllerConfig motorConfig   = new SmartMotorControllerConfig(this)
-      .withMechanismCircumference(Meters.of(Inches.of(0.25).in(Meters) * 22))
-      .withClosedLoopController(4, 0, 0, MetersPerSecond.of(0.5), MetersPerSecondPerSecond.of(0.5))
-      .withSoftLimit(Meters.of(0), Meters.of(2))
-      .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+      .withMechanismCircumference(winchCircumference)// TODO: change circumference
+      .withClosedLoopController(60, 0, 0, MetersPerSecond.of(1), MetersPerSecondPerSecond.of(0.5))
+      .withSoftLimit(Meters.of(0), Meters.of(2)) //TODO: change soft limits
+      .withGearing(new MechanismGearing(GearBox.fromReductionStages(9, 4, 4)))
 //      .withExternalEncoder(armMotor.getAbsoluteEncoder())
       .withIdleMode(MotorMode.BRAKE)
       .withTelemetry("ElevatorMotor", TelemetryVerbosity.HIGH)
@@ -56,7 +59,7 @@ public class ElevatorSubsystem extends SubsystemBase
       .withMotorInverted(false)
 //      .withClosedLoopRampRate(Seconds.of(0.25))
 //      .withOpenLoopRampRate(Seconds.of(0.25))
-      .withFeedforward(new ElevatorFeedforward(0, 0, 0, 0))
+      .withFeedforward(new ElevatorFeedforward(0, 0, kV, 10)) //TODO: change feedforward values
       .withControlMode(ControlMode.CLOSED_LOOP);
   private final SmartMotorController motor = new SparkWrapper(elevatorMotor, DCMotor.getNEO(1), motorConfig);
 
@@ -66,10 +69,10 @@ public class ElevatorSubsystem extends SubsystemBase
       .withRelativePosition(new Translation3d(Meters.of(-0.25), Meters.of(0), Meters.of(0.5)));
   private ElevatorConfig m_config = new ElevatorConfig(motor)
       .withStartingHeight(Meters.of(0.5))
-      .withHardLimits(Meters.of(0), Meters.of(3))
+      .withHardLimits(Meters.of(0), Meters.of(3)) //TODO: change hard limits
       .withTelemetry("Elevator", TelemetryVerbosity.HIGH)
       .withMechanismPositionConfig(m_robotToMechanism)
-      .withMass(Pounds.of(16));
+      .withMass(Pounds.of(1));
   private final Elevator m_elevator = new Elevator(m_config);
 
   public ElevatorSubsystem()
