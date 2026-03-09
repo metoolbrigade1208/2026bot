@@ -102,16 +102,16 @@ public class RobotContainer {
         joystick.start().onFalse(overBumberIntake.armUpCommand());
 
         // Bindings for the turret subsystem
-        joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-90))); // Point turret left at 90 degrees
-        joystick.povRight().onTrue(turret.SetpointCommand(Degrees.of(90))); // Point turret right at 90 degrees
-
+        joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
+        joystick.povRight().onTrue(turret.SetpointCommand(Degrees.of(45))); // Point turret right at 90 degrees
+        //joystick.povDown().onTrue(turret.StopSetpointCommand(Degrees.of(0)));
         // Reset the field-centric heading on left bumper press.
      /*   joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
         joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand());
         joystick.leftTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-        joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
+      //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
         joystick.rightTrigger(0.05).onTrue(shooterCmd);
