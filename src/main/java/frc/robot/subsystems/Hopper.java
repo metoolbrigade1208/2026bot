@@ -35,7 +35,7 @@ public class Hopper extends SubsystemBase {
   }
 
   public Command startHopper() {
-    return run(() -> setHopperPower(Constants.Intake.intakeSpeed)); // Set to full power, adjust as needed
+    return run(() -> setHopperPower(Constants.Hopper.hopperSpeed)); // Set to full power, adjust as needed
   }
 
   public Command stopHopper() {
