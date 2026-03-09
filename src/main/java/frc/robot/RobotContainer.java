@@ -5,7 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import frc.robot.subsystems.ThroughBumberIntake;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.google.flatbuffers.Constants;
@@ -47,7 +46,6 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
     private final Hopper hopper = new Hopper();
-    private final ThroughBumberIntake intake = new ThroughBumberIntake();
     private final BumberIntake overBumberIntake = new BumberIntake();
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
@@ -81,8 +79,8 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.leftBumper().whileTrue(intake.startIntake());
-        joystick.leftBumper().whileFalse(intake.stopIntake());
+        joystick.leftBumper().whileTrue(hopper.startHopper());
+        joystick.leftBumper().whileFalse(hopper.stopHopper());
         joystick.rightBumper().whileTrue(overBumberIntake.startIntake());
         joystick.rightBumper().whileFalse(overBumberIntake.stopIntake());
 
@@ -115,7 +113,7 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
-        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper(), intake.startIntake());
+        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
         joystick.rightTrigger(0.05).onTrue(shooterCmd);
     }
 
