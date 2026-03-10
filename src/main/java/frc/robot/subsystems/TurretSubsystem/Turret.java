@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -56,6 +57,8 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.units.EasyCRT;
 import yams.units.EasyCRTConfig;
@@ -257,5 +260,12 @@ public Pair<Angle,Distance> turretAngleDistance(Pose2d target) {
     public Command SetMotorSpeedCommand(double speed) {
         return runOnce(() -> turretMotor.set(speed)).withName(getName() + " setSpeed");
     }
-
+    public Command AutoAimCommand (Pose2d target) {
+        return 
+        new RunCommand(()->{
+        var Tad = turretAngleDistance(target);
+        Angle targetAngleField = Tad.getFirst();
+        Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation().plus(new Rotation2d(targetAngleField));
+         setAngle(targetAngleRobot.getMeasure());},this);
+    }
 }
