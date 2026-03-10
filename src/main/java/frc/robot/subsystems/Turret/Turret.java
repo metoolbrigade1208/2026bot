@@ -74,17 +74,6 @@ public class Turret extends SubsystemBase {
 
 
 
-      private static Turret instance;
-
-  public static Turret getInstance() {
-    if (instance == null) {
-      throw new IllegalStateException("Instance not created yet");
-    }
-    return instance;
-  }
-
-
-
     private CommandSwerveDrivetrain drivetrain; // reference to drivetrain for field-relative calculations, if needed
 
     // Motor control
