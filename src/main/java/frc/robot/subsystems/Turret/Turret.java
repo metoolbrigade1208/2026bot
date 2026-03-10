@@ -1,4 +1,4 @@
-package frc.robot.subsystems.TurretSubsystem;
+package frc.robot.subsystems.Turret;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
@@ -46,10 +46,22 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import yams.mechanisms.positional.Elevator;
 import yams.units.EasyCRT;
 import yams.units.EasyCRTConfig;
 
 public class Turret extends SubsystemBase {
+
+      private static Turret instance;
+
+  public static Turret getInstance() {
+    if (instance == null) {
+      throw new IllegalStateException("Instance not created yet");
+    }
+    return instance;
+  }
+
+
 
     // Constants
     private static AngleUnit turretAngleUnit = Rotations;

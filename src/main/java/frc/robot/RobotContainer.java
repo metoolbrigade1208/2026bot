@@ -24,13 +24,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.TurretSubsystem.Turret;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Turret.Shooter;
-
-
+import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.Turret.Shooter;
 
 public class RobotContainer {
@@ -111,12 +109,12 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
      /*   joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
-        joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand());
+        joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand(FeetPerSecond.of(5.0)));
         joystick.leftTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
-        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
+        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand(FeetPerSecond.of(5)).alongWith(hopper.startHopper());
         joystick.rightTrigger(0.05).onTrue(shooterCmd);
     }
 

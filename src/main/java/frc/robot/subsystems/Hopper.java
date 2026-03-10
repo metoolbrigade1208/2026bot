@@ -12,8 +12,21 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+import yams.mechanisms.positional.Elevator;
 
 public class Hopper extends SubsystemBase {
+
+  private static Hopper instance;
+
+  public static Hopper getInstance() {
+    if (instance == null) {
+      throw new IllegalStateException("Instance not created yet");
+    }
+    return instance;
+  }
+
+
+
   /** Creates a new ThroughBumberIntake. */
   private SparkMax hopperMotor;
   

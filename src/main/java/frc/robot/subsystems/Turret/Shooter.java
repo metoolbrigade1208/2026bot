@@ -27,12 +27,14 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.SmartMechanism;
 import yams.mechanisms.config.FlyWheelConfig;
+import yams.mechanisms.positional.Elevator;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
 import yams.motorcontrollers.SmartMotorControllerConfig;
@@ -42,6 +44,17 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 
 public class Shooter extends SubsystemBase {
+
+    private static Shooter instance;
+
+  public static Shooter getInstance() {
+    if (instance == null) {
+      throw new IllegalStateException("Instance not created yet");
+    }
+    return instance;
+  }
+
+
 
   // Vendor motor controller object
   private SparkFlex spark1 = new SparkFlex(52, MotorType.kBrushless);
@@ -124,11 +137,11 @@ public class Shooter extends SubsystemBase {
    *
    * @return a command
    */
-  public Command RunShooterCommand() {
+  public Command RunShooterCommand(LinearVelocity speed) {
     return runOnce(
         () -> {
           // Example of setting a velocity setpoint
-          shooter.setMeasurementVelocitySetpoint(FeetPerSecond.of(5.0));
+          shooter.setMeasurementVelocitySetpoint(speed);
         });
       
   }
