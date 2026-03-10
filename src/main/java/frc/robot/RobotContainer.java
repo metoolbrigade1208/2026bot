@@ -49,9 +49,9 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public final Turret turret = new Turret();
+    public static final Turret turret = new Turret();
 
     public final Shooter shooter = new Shooter();
 

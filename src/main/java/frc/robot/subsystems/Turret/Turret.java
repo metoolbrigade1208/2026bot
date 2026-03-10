@@ -1,12 +1,18 @@
 package frc.robot.subsystems.Turret;
 
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Constants;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Meters;
 
 import java.util.function.Supplier;
 
@@ -28,12 +34,17 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.AngularAccelerationUnit;
 import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -63,38 +74,28 @@ public class Turret extends SubsystemBase {
 
 
 
-    // Constants
-    private static AngleUnit turretAngleUnit = Rotations;
-    private static AngularVelocityUnit turretVelocityUnit = turretAngleUnit.per(Second);
-    private static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
-    private static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
-    private static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
-    private static final Angle fwdLimit = Degrees.of(180);
-    private static final Angle revLimit = Degrees.of(-180);
-    private static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
-    private static final AngularVelocity gearSpeed = gearing.per(Second);
-    private static final int motorID = 55;
-    private static final int enc1Id = 0; // DIO port of encoder 1
-    private static final int enc2Id = 1; // DIO port of encoder 2
-    private static final Angle enc1Zero = Degrees.of(-35.89); // actual zero location of encoder 1
-    private static final Angle enc2Zero = Degrees.of(-38.74); // actual zero location of encoder 2
-    private static final double kP = 2.5; // output per angle difference (V/rotation)
-    private static final double kD = 0.25; // output per angle difference derivative (V/rps)
-    private static final Voltage kS = Volts.of(0.5);
-    private static final Voltage kV = Volts.of(5); // really Volts/rps, but dimensions get wonky with doing all that.
+      private static Turret instance;
 
-    static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
-    static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
+  public static Turret getInstance() {
+    if (instance == null) {
+      throw new IllegalStateException("Instance not created yet");
+    }
+    return instance;
+  }
+
+
+
+    private CommandSwerveDrivetrain drivetrain; // reference to drivetrain for field-relative calculations, if needed
 
     // Motor control
-    SparkMax turretMotor = new SparkMax(motorID, MotorType.kBrushless);
+    SparkMax turretMotor = new SparkMax(Constants.Turret.motorID, MotorType.kBrushless);
     SparkMaxConfig turretConfig = new SparkMaxConfig();
 
     // Easy CRT
-    DutyCycleEncoder enc1Encoder = new DutyCycleEncoder(enc1Id);
-    DutyCycleEncoder enc2Encoder = new DutyCycleEncoder(enc2Id);
-    Supplier<Angle> enc1Supplier = () -> turretAngleUnit.of(enc1Encoder.get());
-    Supplier<Angle> enc2Supplier = () -> turretAngleUnit.of(enc2Encoder.get());
+    DutyCycleEncoder enc1Encoder = new DutyCycleEncoder(Constants.Turret.enc1Id);
+    DutyCycleEncoder enc2Encoder = new DutyCycleEncoder(Constants.Turret.enc2Id);
+    Supplier<Angle> enc1Supplier = () -> Constants.Turret.turretAngleUnit.of(enc1Encoder.get());
+    Supplier<Angle> enc2Supplier = () -> Constants.Turret.turretAngleUnit.of(enc2Encoder.get());
 
     Angle turretCRTAngle;
 
@@ -119,7 +120,7 @@ public class Turret extends SubsystemBase {
                     /* driveGearTeeth */ 200,
                     /* encoder1Pinion */ 19,
                     /* encoder2Pinion */ 21)
-            .withAbsoluteEncoderOffsets(enc1Zero, enc2Zero) // set after mechanical zero
+            .withAbsoluteEncoderOffsets(Constants.Turret.enc1Zero, Constants.Turret.enc2Zero) // set after mechanical zero
             .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5)) // -180 deg to +180 deg
             .withMatchTolerance(Rotations.of(0.0265)) // ~1.08 deg at encoder2 for the example ratio
             .withAbsoluteEncoderInversions(true, true);
@@ -142,6 +143,8 @@ public class Turret extends SubsystemBase {
     private final MechanismLigament2d m_turretLigament;
 
     public Turret() {
+
+        drivetrain = RobotContainer.drivetrain; // get reference to drivetrain for field-relative calculations, if needed
 
         // Setup visualization
         m_mech2d = new Mechanism2d(60, 60);
@@ -171,12 +174,12 @@ public class Turret extends SubsystemBase {
         if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
             Supplier<Angle> simEnc1Supplier = () -> {
                 double mechRot = Units.radiansToRotations(m_turretSim.getAngleRads());
-                double encRot = enc1Zero.in(Rotations) + mechRot * (200.0 / 19.0);
+                double encRot = Constants.Turret.enc1Zero.in(Rotations) + mechRot * (200.0 / 19.0);
                 return Rotations.of(encRot);
             };
             Supplier<Angle> simEnc2Supplier = () -> {
                 double mechRot = Units.radiansToRotations(m_turretSim.getAngleRads());
-                double encRot = enc2Zero.in(Rotations) + mechRot * (200.0 / 23.0);
+                double encRot = Constants.Turret.enc2Zero.in(Rotations) + mechRot * (200.0 / 23.0);
                 return Rotations.of(encRot);
             };
 
@@ -186,7 +189,7 @@ public class Turret extends SubsystemBase {
                             /* driveGearTeeth */ 200,
                             /* encoder1Pinion */ 19,
                             /* encoder2Pinion */ 23)
-                    .withAbsoluteEncoderOffsets(enc1Zero, enc2Zero)
+                    .withAbsoluteEncoderOffsets(Constants.Turret.enc1Zero, Constants.Turret.enc2Zero)
                     .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5))
                     .withMatchTolerance(Rotations.of(0.0265))
                     .withAbsoluteEncoderInversions(false, false);
@@ -201,30 +204,36 @@ public class Turret extends SubsystemBase {
                 .openLoopRampRate(.25)
                 .smartCurrentLimit(20) // Neo550
                 .idleMode(IdleMode.kBrake).encoder
-                .positionConversionFactor(gearing.in(turretAngleUnit))
-                .velocityConversionFactor(gearSpeed.in(turretAngleUnit.per(Minute))); // default is RPM, not RPS
+                .positionConversionFactor(Constants.Turret.gearing.in(Constants.Turret.turretAngleUnit))
+                .velocityConversionFactor(Constants.Turret.gearSpeed.in(Constants.Turret.turretAngleUnit.per(Minute))); // default is RPM, not RPS
         turretConfig.softLimit
-                .forwardSoftLimit(fwdLimit.in(turretAngleUnit))
-                .reverseSoftLimit(revLimit.in(turretAngleUnit))
+                .forwardSoftLimit(Constants.Turret.fwdLimit.in(Constants.Turret.turretAngleUnit))
+                .reverseSoftLimit(Constants.Turret.revLimit.in(Constants.Turret.turretAngleUnit))
                 .forwardSoftLimitEnabled(true)
                 .reverseSoftLimitEnabled(true);
         turretConfig.closedLoop
-                .pid(kP, 0, kD)
+                .pid(Constants.Turret.kP, 0, Constants.Turret.kD)
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                .allowedClosedLoopError(toleranceAngle.in(Rotations), ClosedLoopSlot.kSlot0).feedForward
-                .sv(kS.baseUnitMagnitude(), kV.magnitude());
+                .allowedClosedLoopError(Constants.Turret.toleranceAngle.in(Rotations), ClosedLoopSlot.kSlot0).feedForward
+                .sv(Constants.Turret.kS.baseUnitMagnitude(), Constants.Turret.kV.magnitude());
         turretConfig.closedLoop.maxMotion
                 .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-                .cruiseVelocity(turretVelocity.in(turretVelocityUnit))
-                .maxAcceleration(turretAccel.in(turretAccelerationUnit))
-                .allowedProfileError(toleranceAngle.in(Rotations));
+                .cruiseVelocity(Constants.Turret.turretVelocity.in(Constants.Turret.turretVelocityUnit))
+                .maxAcceleration(Constants.Turret.turretAccel.in(Constants.Turret.turretAccelerationUnit))
+                .allowedProfileError(Constants.Turret.toleranceAngle.in(Rotations));
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         easyCrtSolver.getAngleOptional().ifPresent((angle)->{turretMotor.getEncoder().setPosition(angle.in(Rotations));});
     }
 
     public Angle getAngle() {
-        return turretAngleUnit.of(turretMotor.getEncoder().getPosition()); // Get the current angle of the turret
+        return Constants.Turret.turretAngleUnit.of(turretMotor.getEncoder().getPosition()); // Get the current angle of the turret
     }
+
+public Pair<Angle,Distance> turretAngleDistance(Pose2d target) {
+    Translation2d turretToTarget = drivetrain.turretToTargetFieldRelative(target.getTranslation(), Constants.Turret.turretOffset);
+    return Pair.of(turretToTarget.getAngle().getMeasure(), Meter.of(turretToTarget.getDistance(Translation2d.kZero)));
+}
+
 
     public void simulationPeriodic() {
     // Update the simulated turret model. Use the motor applied output ([-1,1]) times
