@@ -58,11 +58,11 @@ public class Constants {
   public static final double kMaxSpeed = 3.0; // meters per second
   public static final double kMaxAngularVelocity = Math.PI; // radians per second
   
-  public class Intake {
+  public class Hopper {
     public static final int motorCanId = 50; 
     public static final double motorReduction = 15.0;
     public static final int currentLimit = 40;
-    public static final double intakeSpeed = 0.9; // Adjust as needed
+    public static final double hopperSpeed = 0.9; // Adjust as needed
   }
     static Optional<RobotConfig> loadConfig(String path) {
     ObjectMapper objectMapper = new ObjectMapper();
