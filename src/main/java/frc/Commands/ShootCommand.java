@@ -2,6 +2,8 @@ package frc.Commands;
 
 import java.util.Set;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
@@ -21,7 +23,7 @@ public class ShootCommand extends SubsystemBase {
     Turret turret = Turret.getInstance();
     Shooter shooter = Shooter.getInstance();
 
-    public Command updateShoot() {
+   public Command updateShoot() {
         return runOnce(
          () -> {
 
@@ -31,5 +33,7 @@ public class ShootCommand extends SubsystemBase {
         
 
         return new RepeatCommand(updateShoot());
-    }
+    } 
+
+   
 }

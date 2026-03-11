@@ -54,11 +54,21 @@ public class RobotContainer {
     public static final Turret turret = new Turret();
 
     public final Shooter shooter = new Shooter();
+    public final BumberIntake bumperIntake = new BumberIntake();
 
     public RobotContainer() {
         configureBindings();
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
+
+     NamedCommands.registerCommand("Run Shooter", shooter.RunShooterCommand(FeetPerSecond.of(5.0)));
+     NamedCommands.registerCommand("Stop Shooter", shooter.StopShooterCommand());
+     NamedCommands.registerCommand("Arm Down", bumperIntake.armDownCommand());
+     NamedCommands.registerCommand("Start Intake", bumperIntake.startIntake());
+     NamedCommands.registerCommand("Arm Up", bumperIntake.armUpCommand());
+
+     
+
     }
 
     private void configureBindings() {
@@ -117,7 +127,8 @@ public class RobotContainer {
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand(FeetPerSecond.of(5)).alongWith(hopper.startHopper());
         joystick.rightTrigger(0.05).onTrue(shooterCmd);
     }
-
+    //named commands documentation from path planner lib, this should declare our commands for path planner to see
+ 
     public Command getAutonomousCommand() {
         // Simple drive forward auton
         final var idle = new SwerveRequest.Idle();
