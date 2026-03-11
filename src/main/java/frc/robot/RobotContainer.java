@@ -61,11 +61,11 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
 
-     NamedCommands.registerCommand("Run Shooter", shooter.RunShooterCommand(FeetPerSecond.of(5.0)));
-     NamedCommands.registerCommand("Stop Shooter", shooter.StopShooterCommand());
-     NamedCommands.registerCommand("Arm Down", bumperIntake.armDownCommand());
-     NamedCommands.registerCommand("Start Intake", bumperIntake.startIntake());
-     NamedCommands.registerCommand("Arm Up", bumperIntake.armUpCommand());
+     NamedCommands.registerCommand("RunShooter", shooter.RunShooterCommand(FeetPerSecond.of(5.0)));
+     NamedCommands.registerCommand("StopShooter", shooter.StopShooterCommand());
+     NamedCommands.registerCommand("ArmDown", bumperIntake.armDownCommand());
+     NamedCommands.registerCommand("StartIntake", bumperIntake.startIntake());
+     NamedCommands.registerCommand("ArmUp", bumperIntake.armUpCommand());
 
      
 
