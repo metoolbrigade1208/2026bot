@@ -33,15 +33,15 @@
     {
       "anchor": {
         "x": 8.254031690135399,
-        "y": 0.713591549297879
+        "y": 1.0251878354203927
       },
       "prevControl": {
-        "x": 8.2540316901252,
-        "y": 0.963591549297879
+        "x": 8.304215400660606,
+        "y": 1.2700992381723304
       },
       "nextControl": {
-        "x": 8.254031690145597,
-        "y": 0.46359154929787905
+        "x": 8.107745974955277,
+        "y": 0.31127012522361264
       },
       "isLocked": false,
       "linkedName": null
@@ -64,12 +64,12 @@
     },
     {
       "anchor": {
-        "x": 2.4721986800542926,
-        "y": 4.036304841072471
+        "x": 0.4655813953488368,
+        "y": 0.713591549297879
       },
       "prevControl": {
-        "x": 3.0949627645613345,
-        "y": 2.6949668129034565
+        "x": 0.8062570574671931,
+        "y": 0.6837862909233348
       },
       "nextControl": null,
       "isLocked": false,
@@ -78,13 +78,36 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 2.908212560386469,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 1.8609625668449195,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 2.5314009661835764,
+      "rotationDegrees": 0.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "ArmDown",
+      "waypointRelativePos": 0.35254237288135604,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "RunShooter",
+      "waypointRelativePos": 2.901694915254241,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "StopIntake",
+      "waypointRelativePos": 3.0101694915254242,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -95,13 +118,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Left Trench + Middle Sweep + Human Player + Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

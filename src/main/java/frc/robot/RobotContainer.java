@@ -61,11 +61,15 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
 
-     NamedCommands.registerCommand("RunShooter", shooter.RunShooterCommand(FeetPerSecond.of(5.0)));
-     NamedCommands.registerCommand("StopShooter", shooter.StopShooterCommand());
-     NamedCommands.registerCommand("ArmDown", bumperIntake.armDownCommand());
-     NamedCommands.registerCommand("StartIntake", bumperIntake.startIntake());
-     NamedCommands.registerCommand("ArmUp", bumperIntake.armUpCommand());
+        NamedCommands.registerCommand("RunShooter", shooter.RunShooterCommand(FeetPerSecond.of(5.0)));
+        NamedCommands.registerCommand("StopShooter", shooter.StopShooterCommand());
+        NamedCommands.registerCommand("ArmDown", bumperIntake.armDownCommand());
+        NamedCommands.registerCommand("StartIntake", bumperIntake.startIntake());
+        NamedCommands.registerCommand("StopIntake", bumperIntake.stopIntake());
+        NamedCommands.registerCommand("ArmUp", bumperIntake.armUpCommand());
+        NamedCommands.registerCommand("RunFullIntake", bumperIntake.runFullIntakeSystem());
+        NamedCommands.registerCommand("StopFullIntake", bumperIntake.stopFullIntakeSystem());
+
 
      
 
@@ -94,6 +98,7 @@ public class RobotContainer {
         joystick.leftBumper().whileFalse(hopper.stopHopper());
         joystick.rightBumper().whileTrue(overBumberIntake.startIntake());
         joystick.rightBumper().whileFalse(overBumberIntake.stopIntake());
+        
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
@@ -111,6 +116,7 @@ public class RobotContainer {
         // Bindings for Arm control
         joystick.start().onTrue(overBumberIntake.armDownCommand());
         joystick.start().onFalse(overBumberIntake.armUpCommand());
+
 
         // Bindings for the turret subsystem
         joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees

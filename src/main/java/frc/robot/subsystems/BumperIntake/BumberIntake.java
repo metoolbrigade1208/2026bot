@@ -176,10 +176,12 @@ public class BumberIntake extends SubsystemBase {
     return runOnce(() -> this.reachSetpoint(Constants.OverBumperIntake.kArmUpPosition));
   }
 
-  public Command armOuttakeCommand() {
-    return runOnce(() -> this.reachSetpoint(0.05));
+  public Command runFullIntakeSystem() {
+    return armDownCommand().alongWith(startIntake());
   }
 
-
+    public Command stopFullIntakeSystem() {
+    return armUpCommand().alongWith(stopIntake());
+  }
 
 }
