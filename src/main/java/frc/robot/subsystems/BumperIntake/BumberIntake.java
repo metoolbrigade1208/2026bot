@@ -43,9 +43,9 @@ public class BumberIntake extends SubsystemBase {
   private double m_armKp = Constants.OverBumperIntake.kArmKp;
   private double m_armSetpointDegrees = Constants.OverBumperIntake.kDefaultArmSetpointDegrees;
   private final DCMotor m_armGearbox = DCMotor.getNeoVortex(2);
-  private final SparkFlex m_armMotorLeader = new SparkFlex(Constants.OverBumperIntake.armmotorCanId,
+  private final SparkFlex m_armMotorLeader = new SparkFlex(Constants.OverBumperIntake.armmotorFollowerCanId,
       MotorType.kBrushless);
-  private final SparkFlex m_armMotorFollower = new SparkFlex(Constants.OverBumperIntake.armmotorCanId,
+  private final SparkFlex m_armMotorFollower = new SparkFlex(Constants.OverBumperIntake.armmotorLeaderCanId,
       MotorType.kBrushless);
   private final SparkClosedLoopController m_controller = m_armMotorLeader.getClosedLoopController();
 

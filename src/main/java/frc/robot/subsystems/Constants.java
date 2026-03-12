@@ -55,8 +55,9 @@ public class Constants {
     }
   }
   public class OverBumperIntake {
-    public static final int motorCanId = 57; 
-     public static final int armmotorCanId = 8;
+    public static final int motorCanId = 59; 
+    public static final int armmotorFollowerCanId = 58;
+    public static final int armmotorLeaderCanId = 57;
     public static final double OverBumperCurrentLimitmotorReduction = 15.0;
     public static final int overbumperCurrentLimit = 40;
     public static final double overBumperIntakeSpeed = 2300; //RPM
