@@ -20,6 +20,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.google.flatbuffers.Table;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -62,9 +63,13 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.units.EasyCRT;
 import yams.units.EasyCRTConfig;
-
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import frc.robot.subsystems.TurretSubsystem.Shooter;
 public class Turret extends SubsystemBase {
 
+    
+    InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
+ 
     private CommandSwerveDrivetrain drivetrain; // reference to drivetrain for field-relative calculations, if needed
 
     // Motor control
@@ -213,8 +218,14 @@ public Pair<Angle,Distance> turretAngleDistance(Pose2d target) {
     Translation2d turretToTarget = drivetrain.turretToTargetFieldRelative(target.getTranslation(), Constants.Turret.turretOffset);
     return Pair.of(turretToTarget.getAngle().getMeasure(), Meter.of(turretToTarget.getDistance(Translation2d.kZero)));
 }
-
-
+    public void InterpolatingDoubleTreeMap() {
+        table.put(0.0, 0.0);
+        table.put(1.0, 10.0);
+        table.put(2.0, 30.0);
+// and so on add and change as many as we need :)
+        double result = table.get(1.5); //returns 20.0 right now change if needed
+        
+    }
     public void simulationPeriodic() {
     // Update the simulated turret model. Use the motor applied output ([-1,1]) times
     // the current battery voltage as the input.
@@ -233,8 +244,10 @@ public Pair<Angle,Distance> turretAngleDistance(Pose2d target) {
     // Update CRT visualization with the mechanism angle
     double turretDeg = Units.radiansToDegrees(m_turretSim.getAngleRads());
     m_turretLigament.setAngle(turretDeg);
-    }
 
+
+    
+}
     public void periodic() {
         // set the current CRT angle and publish it
         // TODO: use it to set the current turret readout angle
@@ -260,7 +273,7 @@ public Pair<Angle,Distance> turretAngleDistance(Pose2d target) {
     public Command SetMotorSpeedCommand(double speed) {
         return runOnce(() -> turretMotor.set(speed)).withName(getName() + " setSpeed");
     }
-    public Command AutoAimCommand (Pose2d target) {
+    public Command AutoAimAndSpinCommand (Pose2d target) {
         return 
         new RunCommand(()->{
         var Tad = turretAngleDistance(target);
@@ -268,4 +281,5 @@ public Pair<Angle,Distance> turretAngleDistance(Pose2d target) {
         Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation().plus(new Rotation2d(targetAngleField));
          setAngle(targetAngleRobot.getMeasure());},this);
     }
+
 }

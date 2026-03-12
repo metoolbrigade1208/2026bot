@@ -23,14 +23,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.TurretSubsystem.Shooter;
 import frc.robot.subsystems.TurretSubsystem.Turret;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
-import frc.robot.subsystems.Turret.Shooter;
-
-
-import frc.robot.subsystems.Turret.Shooter;
 
 public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
