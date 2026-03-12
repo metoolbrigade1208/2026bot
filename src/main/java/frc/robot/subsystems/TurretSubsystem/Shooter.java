@@ -42,6 +42,16 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 public class Shooter extends SubsystemBase {
 
+  
+    private static Shooter instance;
+
+  public static Shooter getInstance() {
+    if (instance == null) {
+      throw new IllegalStateException("Instance not created yet");
+    }
+    return instance;
+  }
+  
   // Vendor motor controller object
   private SparkFlex spark1 = new SparkFlex(52, MotorType.kBrushless);
   private SparkFlex spark2 = new SparkFlex(53, MotorType.kBrushless);
