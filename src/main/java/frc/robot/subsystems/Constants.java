@@ -85,6 +85,13 @@ public class Constants {
      public static final String kArmPositionKey = "ArmPosition";
      public static final String kArmPKey = "ArmP";
 }
+public class Climber {
+  public static final int kIRsensorport = 3; //TODO: change this ID
+  public static final int kArmMotorPort = 62; //TODO: change this ID
+    public static final int kArmTwoMotorPort = 60; //TODO: change this ID
+   // public static final int kArmUpLimitPort = 4; //TODO: change this ID
+}
+
 }
 /* public static class TurretConstants {
     public static final int motorCanpId = 0; //change this twin

@@ -19,8 +19,11 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.subsystems.Constants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.ElevatorConfig;
@@ -40,6 +43,8 @@ public class ElevatorSubsystem extends SubsystemBase
   private double kV = winchCircumference.in(Meters) * 50.7; // Volts per (Meter per Second)
 
   private final SparkMax elevatorMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
+  private final DigitalInput m_upLimitIrSensor = new DigitalInput(Constants.Climber.kIRsensorport);
+
   //  private final SmartMotorControllerTelemetryConfig motorTelemetryConfig = new SmartMotorControllerTelemetryConfig()
 //          .withMechanismPosition()
 //          .withRotorPosition()
@@ -100,8 +105,23 @@ public class ElevatorSubsystem extends SubsystemBase
     return m_elevator.setHeight(height);
   }
 
+  
+  //Sets the elevator motor to 0 volts.
+  public Command stopElevator()
+  {
+    return m_elevator.setVoltage(Volts.of(0));
+  }
+
+  //Runs the elevator to climb on the bar without crushing the bot
+  public Command elevatorClimb()
+  {
+    return m_elevator.setHeight(Meters.of(0)) //TODO: change this height
+        .until(() -> m_upLimitIrSensor.get());
+  }
+
   public Command sysId()
   {
     return m_elevator.sysId(Volts.of(12), Volts.of(12).per(Second), Second.of(30));
   }
+
 }
