@@ -29,7 +29,7 @@ import frc.robot.subsystems.Constants.OverBumperIntake;
 public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 1/2 of a rotation per second max angular velocity
-    public static SparkMax sharedMotor= new SparkMax(50, MotorType.kBrushless);;
+    public static SparkMax sharedMotor= new SparkMax(9, MotorType.kBrushless);;
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
