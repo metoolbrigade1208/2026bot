@@ -15,6 +15,7 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -38,7 +39,7 @@ import frc.robot.subsystems.Constants;
 public class BumberIntake extends SubsystemBase {
 
   /** intake Motor SparkFlex */
-  private SparkFlex intakeMotor;
+  private SparkMax intakeMotor;
   private DCMotor intakeMotorSim = DCMotor.getNeoVortex(1);
   private double m_armKp = Constants.OverBumperIntake.kArmKp;
   private double m_armSetpointDegrees = Constants.OverBumperIntake.kDefaultArmSetpointDegrees;
@@ -74,7 +75,7 @@ public class BumberIntake extends SubsystemBase {
     SmartDashboard.putData("Arm Sim", m_mech2d);
     m_armTower.setColor(new Color8Bit(Color.kBlue));
 
-    intakeMotor = new SparkFlex(Constants.OverBumperIntake.motorCanId, MotorType.kBrushless);
+    intakeMotor = new SparkMax(Constants.OverBumperIntake.motorCanId, MotorType.kBrushless);
 
     // Configure the arm motor
     SparkMaxConfig armMotorLeaderConfig = new SparkMaxConfig();
