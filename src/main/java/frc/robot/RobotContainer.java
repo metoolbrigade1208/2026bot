@@ -112,6 +112,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
         joystick.rightTrigger(0.05).onTrue(shooterCmd);
+    
     }
 
     public Command getAutonomousCommand() {

@@ -69,6 +69,7 @@ import frc.robot.subsystems.TurretSubsystem.Shooter;
 
 public class Turret extends SubsystemBase {
 
+    
     private static Turret instance;
 
     public static Turret getInstance() {
