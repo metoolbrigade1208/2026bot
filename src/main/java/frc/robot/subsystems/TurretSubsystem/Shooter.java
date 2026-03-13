@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems.Turret;
+package frc.robot.subsystems.TurretSubsystem;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Degrees;
@@ -40,9 +40,18 @@ import yams.motorcontrollers.SmartMotorControllerConfig.ControlMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
-
 public class Shooter extends SubsystemBase {
 
+  
+    private static Shooter instance;
+
+  public static Shooter getInstance() {
+    if (instance == null) {
+      throw new IllegalStateException("Instance not created yet");
+    }
+    return instance;
+  }
+  
   // Vendor motor controller object
   private SparkFlex spark1 = new SparkFlex(52, MotorType.kBrushless);
   private SparkFlex spark2 = new SparkFlex(53, MotorType.kBrushless);

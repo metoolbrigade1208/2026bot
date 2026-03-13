@@ -10,14 +10,33 @@ import java.util.Optional;
 import java.util.function.Function;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pathplanner.lib.config.RobotConfig;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Minute;
+import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Meters;
 
-
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularAccelerationUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
+
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Rotations;
+
 import swervelib.math.Matter;
 
 public class Constants {
@@ -84,7 +103,33 @@ public class Constants {
     public static final double kArmEncoderDistPerPulse = 2.0 * Math.PI / 4096;
      public static final String kArmPositionKey = "ArmPosition";
      public static final String kArmPKey = "ArmP";
-}
+
+    }
+    public class Turret{
+          public static AngleUnit turretAngleUnit = Rotations;
+    public static AngularVelocityUnit turretVelocityUnit = turretAngleUnit.per(Second);
+    public static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
+    public static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
+    public static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
+    public static final Angle fwdLimit = Degrees.of(180);
+    public static final Angle revLimit = Degrees.of(-180);
+    public static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
+    public static final AngularVelocity gearSpeed = gearing.per(Second);
+    public static final int motorID = 55;
+    public static final int enc1Id = 0; // DIO port of encoder 1
+    public static final int enc2Id = 1; // DIO port of encoder 2
+    public static final Angle enc1Zero = Degrees.of(-35.89); // actual zero location of encoder 1
+    public static final Angle enc2Zero = Degrees.of(-38.74); // actual zero location of encoder 2
+    public static final double kP = 2.5; // output per angle difference (V/rotation)
+    public static final double kD = 0.25; // output per angle difference derivative (V/rps)
+    public static final Voltage kS = Volts.of(0.5);
+    public static final Voltage kV = Volts.of(5); // really Volts/rps, but dimensions get wonky with doing all that.
+    public static final Translation2d turretOffset = new Translation2d(Meters.of(1),Meters.of(0));
+
+    static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
+    static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
+
+    }
 }
 /* public static class TurretConstants {
     public static final int motorCanpId = 0; //change this twin

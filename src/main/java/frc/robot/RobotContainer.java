@@ -23,14 +23,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.TurretSubsystem.Shooter;
 import frc.robot.subsystems.TurretSubsystem.Turret;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
-import frc.robot.subsystems.Turret.Shooter;
-
-
-import frc.robot.subsystems.Turret.Shooter;
 
 public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -50,9 +47,9 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public final Turret turret = new Turret();
+    public static final Turret turret = new Turret();
 
     public final Shooter shooter = new Shooter();
 
@@ -115,6 +112,7 @@ public class RobotContainer {
         drivetrain.registerTelemetry(logger::telemeterize);
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
         joystick.rightTrigger(0.05).onTrue(shooterCmd);
+    
     }
 
     public Command getAutonomousCommand() {
