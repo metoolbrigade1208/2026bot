@@ -42,8 +42,11 @@ import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -141,7 +144,7 @@ public class Turret extends SubsystemBase {
     private final Mechanism2d m_mech2d;
     private final MechanismRoot2d m_root;
     private final MechanismLigament2d m_turretLigament;
-
+    private Pose2d tPose2d;
     public Turret() {
 
         drivetrain = RobotContainer.drivetrain; // get reference to drivetrain for field-relative calculations, if
@@ -255,11 +258,19 @@ public class Turret extends SubsystemBase {
         double result = table.get(1.5); // returns 20.0 right now change if needed
 
     }
+    public Pose2d getGoalPose2d() {
+       Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        if( alliance == Alliance.Blue) {
+            return Constants.Field.BlueGoalPose2D;
+        }
+            return Constants.Field.RedGoalPose2D;
 
+    }
     public void simulationPeriodic() {
         // Update the simulated turret model. Use the motor applied output ([-1,1])
         // times
         // the current battery voltage as the input.
+        
         m_turretSim.setInput(turretMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
 
         // Update the SparkMax simulation (provides simulated internal encoder values)

@@ -5,12 +5,16 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+
+import java.lang.annotation.Target;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.google.flatbuffers.Constants;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -110,8 +114,9 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
+        joystick.rightTrigger(0.25).onTrue(turret.AutoAimAndSpinCommand(turret.getGoalPose2d()));
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
-        joystick.rightTrigger(0.05).onTrue(shooterCmd);
+        joystick.rightTrigger(0.75).onTrue(shooterCmd);
     
     }
 
