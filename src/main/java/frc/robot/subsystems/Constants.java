@@ -69,13 +69,13 @@ public class Constants {
     public static final double kArmCos = 0;
     public static final double kArmKv = kArmEncoderGearing / 565.0;
     public static final double kArmDownPosition = 0;
-    public static final double kArmUpPosition = Units.degreesToRotations(90); //TODO: find correct angle
+    public static final double kArmUpPosition = 8.0; //TODO: find correct angle
     public static final double kArmMaxSpeed = 100;
     public static final double kArmMaxAcceleration = 150;
     public static final double kArmMaxError = Units.degreesToRotations(1);
     public static final double kArmPositionConversionFactor = 2 * Math.PI; // Adjust as needed
     public static final double kDefaultArmKp = 50.0;
-    public static final double kDefaultArmSetpointDegrees = 75.0;
+    public static final double kDefaultArmSetpointDegrees = 0;
     public static final double kArmMass = 8.0; // Kilograms
     public static final double kArmLength = Units.inchesToMeters(30);
     public static final double kMinAngleRads = Units.degreesToRadians(-15);

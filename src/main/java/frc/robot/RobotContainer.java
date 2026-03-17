@@ -93,8 +93,8 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         // Bindings for Arm control
-        joystick.start().onTrue(overBumberIntake.armDownCommand());
-        joystick.start().onFalse(overBumberIntake.armUpCommand());
+        joystick.start().whileTrue(overBumberIntake.armDownCommand());
+        joystick.start().whileFalse(overBumberIntake.armUpCommand());
 
         // Bindings for the turret subsystem
         joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
