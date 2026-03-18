@@ -37,6 +37,28 @@
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": null
+    },
+    {
+      "name": "Climber Up",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Climber Up"
+        }
+      }
+    },
+    {
+      "name": "Climber Down",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Climber Down"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -52,7 +74,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Middle + Depot + Climb",
+  "folder": "Middle + Hub + Climb",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

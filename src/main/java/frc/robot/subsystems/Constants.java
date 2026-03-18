@@ -130,6 +130,9 @@ public class Constants {
     static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
 
     }
+    public static class Climber {
+      public static final int kIRsensorport = 3;
+    }
 }
 /* public static class TurretConstants {
     public static final int motorCanpId = 0; //change this twin

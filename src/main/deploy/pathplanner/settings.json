@@ -4,9 +4,9 @@
   "holonomicMode": true,
   "pathFolders": [
     "Immediate Tower",
-    "Middle + Depot + Climb",
     "Left Trench + Middle Sweep + Human Player + Climb",
-    "Right Trench + Depot + Climb"
+    "Middle + Hub + Climb",
+    "Right Trench + Hub + Climb"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,

@@ -24,7 +24,7 @@
         "y": 5.1208450704225354
       },
       "nextControl": {
-        "x": 1.6337653445813465,
+        "x": 1.6337653445813467,
         "y": 4.997055861505847
       },
       "isLocked": false,
@@ -53,6 +53,17 @@
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
       "command": null
+    },
+    {
+      "name": "Climber Up",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Climber Up"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -68,10 +79,10 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Right Trench + Depot + Climb",
+  "folder": "Right Trench + Hub + Climb",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

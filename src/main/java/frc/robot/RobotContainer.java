@@ -72,7 +72,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("ArmUp", bumperIntake.armUpCommand());
         NamedCommands.registerCommand("RunFullIntake", bumperIntake.runFullIntakeSystem());
         NamedCommands.registerCommand("StopFullIntake", bumperIntake.stopFullIntakeSystem());
-
+        NamedCommands.registerCommand("Climber Up", elevator.setHeight(Meters.of(1)));
+        NamedCommands.registerCommand("Climber Down", elevator.elevatorClimb());
 
      
 

@@ -32,11 +32,11 @@
     },
     {
       "anchor": {
-        "x": 1.0523239436619727,
+        "x": 1.052,
         "y": 4.817447183098592
       },
       "prevControl": {
-        "x": 0.9023239436586614,
+        "x": 0.901999999996689,
         "y": 4.617447183101075
       },
       "nextControl": null,
@@ -53,6 +53,17 @@
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": null
+    },
+    {
+      "name": "Climber Up",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Climber Up"
+        }
+      }
     },
     {
       "name": "StopShooter",
