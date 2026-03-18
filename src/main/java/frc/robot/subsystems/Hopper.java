@@ -13,15 +13,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 
-public class ThroughBumberIntake extends SubsystemBase {
+public class Hopper extends SubsystemBase {
   /** Creates a new ThroughBumberIntake. */
-  private SparkMax intakeMotor;
+  private SparkMax hopperMotor;
   
-  private DCMotor intakeMotorSim;
+  private DCMotor hopperMotorSim;
 
 
-  public ThroughBumberIntake() {
-    intakeMotor = RobotContainer.sharedMotor;
+  public Hopper() {
+    hopperMotor = RobotContainer.sharedMotor;
 
   }
 
@@ -30,16 +30,16 @@ public class ThroughBumberIntake extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setIntakePower(double power) {
-    intakeMotor.set(power);
+  public void setHopperPower(double power) {
+    hopperMotor.set(power);
   }
 
-  public Command startIntake() {
-    return run(() -> setIntakePower(Constants.Intake.intakeSpeed)); // Set to full power, adjust as needed
+  public Command startHopper() {
+    return run(() -> setHopperPower(Constants.Hopper.hopperSpeed)); // Set to full power, adjust as needed
   }
 
-  public Command stopIntake() {
-    return run(() -> setIntakePower(0.0)); // Stop the intake
+  public Command stopHopper() {
+    return run(() -> setHopperPower(0.0)); // Stop the intake
   }
 
 
