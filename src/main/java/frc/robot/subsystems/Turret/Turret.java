@@ -75,6 +75,28 @@ public class Turret extends SubsystemBase {
 
 
     private CommandSwerveDrivetrain drivetrain; // reference to drivetrain for field-relative calculations, if needed
+    // Constants
+    private static AngleUnit turretAngleUnit = Rotations;
+    private static AngularVelocityUnit turretVelocityUnit = turretAngleUnit.per(Second);
+    private static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
+    private static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
+    private static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
+    private static final Angle fwdLimit = Degrees.of(170);
+    private static final Angle revLimit = Degrees.of(-150);
+    private static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
+    private static final AngularVelocity gearSpeed = gearing.per(Second);
+    private static final int motorID = 55;
+    private static final int enc1Id = 0; // DIO port of encoder 1
+    private static final int enc2Id = 1; // DIO port of encoder 2
+    private static final Angle enc1Zero = Degrees.of(-92.9); // actual zero location of encoder 1
+    private static final Angle enc2Zero = Degrees.of(-137.2); // actual zero location of encoder 2
+    private static final double kP = 2.5; // output per angle difference (V/rotation)
+    private static final double kD = 0.25; // output per angle difference derivative (V/rps)
+    private static final Voltage kS = Volts.of(0.5);
+    private static final Voltage kV = Volts.of(5); // really Volts/rps, but dimensions get wonky with doing all that.
+
+    static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
+    static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
 
     // Motor control
     SparkMax turretMotor = new SparkMax(Constants.Turret.motorID, MotorType.kBrushless);
