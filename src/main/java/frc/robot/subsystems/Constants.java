@@ -21,12 +21,6 @@ import static edu.wpi.first.units.Units.Inches;
 import swervelib.math.Matter;
 
 public class Constants {
-    public static final Optional<RobotConfig> config =
-      loadConfig(Filesystem.getDeployDirectory().toPath().resolve("config.json").toString());
-
-  private static double getConfigValue(Function<RobotConfig, Double> mapper, double defaultValue) {
-    return config.flatMap(c -> Optional.ofNullable(mapper.apply(c))).orElse(defaultValue);
-  }
   public static class RobotConfig {
     public double armKp = 1.0;
     public double armKi = 0.0;
@@ -61,9 +55,9 @@ public class Constants {
     public static final double OverBumperCurrentLimitmotorReduction = 15.0;
     public static final int overbumperCurrentLimit = 40;
     public static final double overBumperIntakeSpeed = 2300; //RPM
-    public static final double kArmKp = getConfigValue(c -> c.armKp, 1.0);
-    public static final double kArmKi = getConfigValue(c -> c.armKi, 0);
-    public static final double kArmKd = getConfigValue(c -> c.armKd, 0.01);
+    public static final double kArmKp = 1.0;
+    public static final double kArmKi = 0;
+    public static final double kArmKd =  0.01;
     public static final double kArmEncoderGearing = 23.0; 
     public static final double kArmKs = 0;
     public static final double kArmCos = 0;
