@@ -128,14 +128,16 @@ public class Shooter extends SubsystemBase {
     return runOnce(
         () -> {
           // Example of setting a velocity setpoint
-          shooter.setMeasurementVelocitySetpoint(FeetPerSecond.of(5.0));
+          shooter.setMeasurementVelocitySetpoint(FeetPerSecond.of(50.0));
         });
       
   }
 public Command StopShooterCommand() {
   return runOnce(
     () -> {
-      shooter.set(0);
+      shooter.setMeasurementVelocitySetpoint(FeetPerSecond.of(0.0));
+      shooter.getMotorController().stopClosedLoopController();
+      shooter.getMotorController().setVoltage(Volts.of(0));
     });
 }
 

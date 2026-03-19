@@ -113,9 +113,10 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
      /*   joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
-        joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand());
-        joystick.leftTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
-       // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        joystick.leftTrigger(0.05)
+            .onTrue(shooter.RunShooterCommand())
+            .onFalse(shooter.StopShooterCommand()); 
+        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
         //ELevator subsystem bindings
@@ -123,7 +124,9 @@ public class RobotContainer {
         joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
        // joystick.button(3).whileTrue(elevator.sysId());
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
-        joystick.rightTrigger(0.05).onTrue(shooterCmd);
+        joystick.rightTrigger(0.05)
+            .onTrue(shooterCmd)
+            .onFalse(shooter.StopShooterCommand());
     }
    //path planner commands 
 
