@@ -1,12 +1,10 @@
-package frc.robot.subsystems.TurretSubsystem;
+package frc.robot.subsystems.Turret;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Minute;
-import static edu.wpi.first.units.Units.Volts;
+import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Second;
 
 import java.util.function.Supplier;
 
@@ -15,6 +13,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
@@ -25,13 +24,8 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.AngularAccelerationUnit;
-import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -43,46 +37,37 @@ import com.revrobotics.sim.SparkMaxSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import yams.units.EasyCRT;
 import yams.units.EasyCRTConfig;
+import frc.robot.subsystems.Constants;
 
 public class Turret extends SubsystemBase {
-
-    // Constants
-    private static AngleUnit turretAngleUnit = Rotations;
-    private static AngularVelocityUnit turretVelocityUnit = turretAngleUnit.per(Second);
-    private static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
-    private static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
-    private static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
-    private static final Angle fwdLimit = Degrees.of(170);
-    private static final Angle revLimit = Degrees.of(-150);
-    private static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
-    private static final AngularVelocity gearSpeed = gearing.per(Second);
-    private static final int motorID = 55;
-    private static final int enc1Id = 0; // DIO port of encoder 1
-    private static final int enc2Id = 1; // DIO port of encoder 2
-    private static final Angle enc1Zero = Degrees.of(-92.9); // actual zero location of encoder 1
-    private static final Angle enc2Zero = Degrees.of(-137.2); // actual zero location of encoder 2
-    private static final double kP = 2.5; // output per angle difference (V/rotation)
-    private static final double kD = 0.25; // output per angle difference derivative (V/rps)
-    private static final Voltage kS = Volts.of(0.5);
-    private static final Voltage kV = Volts.of(5); // really Volts/rps, but dimensions get wonky with doing all that.
 
     static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
     static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
 
     // Motor control
-    SparkMax turretMotor = new SparkMax(motorID, MotorType.kBrushless);
+    SparkMax turretMotor = new SparkMax(Constants.Turret.motorID, MotorType.kBrushless);
+    RelativeEncoder turretEncoder = turretMotor.getEncoder();
     SparkMaxConfig turretConfig = new SparkMaxConfig();
 
     // Easy CRT
-    DutyCycleEncoder enc1Encoder = new DutyCycleEncoder(enc1Id);
-    DutyCycleEncoder enc2Encoder = new DutyCycleEncoder(enc2Id);
-    Supplier<Angle> enc1Supplier = () -> turretAngleUnit.of(enc1Encoder.get());
-    Supplier<Angle> enc2Supplier = () -> turretAngleUnit.of(enc2Encoder.get());
+    DutyCycleEncoder enc1Encoder = new DutyCycleEncoder(Constants.Turret.enc1Id);
+    DutyCycleEncoder enc2Encoder = new DutyCycleEncoder(Constants.Turret.enc2Id);
+    Supplier<Angle> enc1Supplier = () -> Constants.Turret.turretAngleUnit.of(enc1Encoder.get());
+    Supplier<Angle> enc2Supplier = () -> Constants.Turret.turretAngleUnit.of(enc2Encoder.get());
 
     Angle turretCRTAngle;
 
@@ -107,7 +92,8 @@ public class Turret extends SubsystemBase {
                     /* driveGearTeeth */ 200,
                     /* encoder1Pinion */ 19,
                     /* encoder2Pinion */ 21)
-            .withAbsoluteEncoderOffsets(enc1Zero, enc2Zero) // set after mechanical zero
+            .withAbsoluteEncoderOffsets(Constants.Turret.enc1Zero, Constants.Turret.enc2Zero) // set after mechanical
+                                                                                              // zero
             .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5)) // -180 deg to +180 deg
             .withMatchTolerance(Rotations.of(0.0265)) // ~1.08 deg at encoder2 for the example ratio
             .withAbsoluteEncoderInversions(true, true);
@@ -118,7 +104,8 @@ public class Turret extends SubsystemBase {
     // easyCrt.coverageSatisfiesRange(); // Does coverage exceed maxMechanismAngle?
     // easyCrt.getRecommendedCrtGearPair(); // Suggested pair within constraints
 
-    // Create the solver (initialized in constructor so we can swap to a sim-only supplier there)
+    // Create the solver (initialized in constructor so we can swap to a sim-only
+    // supplier there)
     EasyCRT easyCrtSolver;
 
     // Simulation objects
@@ -127,15 +114,31 @@ public class Turret extends SubsystemBase {
     // Visualization
     private final Mechanism2d m_mech2d;
     private final MechanismRoot2d m_root;
-    private final MechanismLigament2d m_turretLigament;
+    private final MechanismLigament2d m_shooterLigament;
+
+    // Pose publishing (publish as a typed Pose3d struct so visualizers can attach
+    // in 3D)
+    private final NetworkTable poseTable = NetworkTableInstance.getDefault().getTable("Pose");
+    private final StructPublisher<Pose3d> turretPosePublisher = poseTable.getStructTopic("turretPose", Pose3d.struct)
+            .publish();
+
+    // Shooter velocity supplier (in angular velocity units)
+    private Supplier<AngularVelocity> shooterVelocitySupplier = () -> RobotContainer.shooter.getVelocity();
+    // Turret mounting Pose3d (relative to robot origin). Default comes from
+    // Constants.kTurretOffset.
+    private Pose3d turretMountPose = Constants.Turret.kTurretOffset;
+    private Transform2d offsetTransform = new Transform2d(turretMountPose.getTranslation().toTranslation2d(),
+            Rotation2d.kZero);
+    private Rotation2d mountYaw = turretMountPose.getRotation().toRotation2d();
 
     public Turret() {
 
         // Setup visualization
         m_mech2d = new Mechanism2d(60, 60);
         m_root = m_mech2d.getRoot("TurretRoot", 30, 30);
-        m_turretLigament = m_root.append(new MechanismLigament2d("TurretArm", 30,
-                0));
+        // Shooter visualization ligament (length will be updated in periodic)
+        m_shooterLigament = m_root.append(new MechanismLigament2d("ShooterSpeed", 10, 0, 0,
+                new Color8Bit(Color.kBlue)));
         SmartDashboard.putData("Turret Sim", m_mech2d);
 
         // Setup simulation objects
@@ -148,23 +151,24 @@ public class Turret extends SubsystemBase {
         final double mechMOI = SingleJointedArmSim.estimateMOI(mechRadius, mechMass);
 
         m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio, mechMOI, mechRadius,
-                -Math.PI, Math.PI, /* addGearingInertia */ false,
-                Units.degreesToRadians(300), /* encoderDistPerPulse */ 1.0, 0.0);
+                Constants.Turret.revLimit.in(Radian), Constants.Turret.fwdLimit.in(Radian), false,
+                Units.degreesToRadians(0));
 
         m_turretMotorSim = new SparkMaxSim(turretMotor, turretGearbox);
 
-        // Create the CRT solver. In simulation we will provide simulated absolute-encoder
-        // suppliers which are derived from the turret simulation state so the CRT solver
-        // sees physically-correct encoder readings that reflect gearing differences.
+        // Create the CRT solver. In simulation we will provide simulated
+        // absolute-encoder suppliers which are derived from the turret simulation state
+        // so the CRT solver sees physically-correct encoder readings that reflect
+        // gearing differences.
         if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
             Supplier<Angle> simEnc1Supplier = () -> {
                 double mechRot = Units.radiansToRotations(m_turretSim.getAngleRads());
-                double encRot = enc1Zero.in(Rotations) + mechRot * (200.0 / 19.0);
+                double encRot = Constants.Turret.enc1Zero.in(Rotations) + mechRot * (200.0 / 19.0);
                 return Rotations.of(encRot);
             };
             Supplier<Angle> simEnc2Supplier = () -> {
                 double mechRot = Units.radiansToRotations(m_turretSim.getAngleRads());
-                double encRot = enc2Zero.in(Rotations) + mechRot * (200.0 / 23.0);
+                double encRot = Constants.Turret.enc2Zero.in(Rotations) + mechRot * (200.0 / 23.0);
                 return Rotations.of(encRot);
             };
 
@@ -174,7 +178,7 @@ public class Turret extends SubsystemBase {
                             /* driveGearTeeth */ 200,
                             /* encoder1Pinion */ 19,
                             /* encoder2Pinion */ 23)
-                    .withAbsoluteEncoderOffsets(enc1Zero, enc2Zero)
+                    .withAbsoluteEncoderOffsets(Constants.Turret.enc1Zero, Constants.Turret.enc2Zero)
                     .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5))
                     .withMatchTolerance(Rotations.of(0.0265))
                     .withAbsoluteEncoderInversions(false, false);
@@ -183,55 +187,56 @@ public class Turret extends SubsystemBase {
         } else {
             easyCrtSolver = new EasyCRT(easyCrt);
         }
-    
+
         turretConfig
                 .closedLoopRampRate(.25)
                 .openLoopRampRate(.25)
                 .smartCurrentLimit(20) // Neo550
-                .idleMode(IdleMode.kBrake).encoder
-                .positionConversionFactor(gearing.in(turretAngleUnit))
-                .velocityConversionFactor(gearSpeed.in(turretAngleUnit.per(Minute))); // default is RPM, not RPS
+                .idleMode(IdleMode.kBrake)
+                .encoder
+                .positionConversionFactor(Constants.Turret.gearing.in(Constants.Turret.turretAngleUnit))
+                .velocityConversionFactor(Constants.Turret.gearSpeed.in(Constants.Turret.turretAngleUnit.per(Minute))); 
+                // default is RPM, not RPS
         turretConfig.softLimit
-                .forwardSoftLimit(fwdLimit.in(turretAngleUnit))
-                .reverseSoftLimit(revLimit.in(turretAngleUnit))
+                .forwardSoftLimit(Constants.Turret.fwdLimit.in(Constants.Turret.turretAngleUnit))
+                .reverseSoftLimit(Constants.Turret.revLimit.in(Constants.Turret.turretAngleUnit))
                 .forwardSoftLimitEnabled(true)
                 .reverseSoftLimitEnabled(true);
         turretConfig.closedLoop
-                .pid(kP, 0, kD)
+                .pid(Constants.Turret.kP, 0, Constants.Turret.kD)
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .allowedClosedLoopError(toleranceAngle.in(Rotations), ClosedLoopSlot.kSlot0).feedForward
-                .sv(kS.baseUnitMagnitude(), kV.magnitude());
-        turretConfig.closedLoop.maxMotion
-                .positionMode(MAXMotionPositionMode.kMAXMotionTrapezoidal)
-                .cruiseVelocity(turretVelocity.in(turretVelocityUnit))
-                .maxAcceleration(turretAccel.in(turretAccelerationUnit))
-                .allowedProfileError(toleranceAngle.in(Rotations));
+                .sv(Constants.Turret.kS.baseUnitMagnitude(), Constants.Turret.kV.magnitude());
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        easyCrtSolver.getAngleOptional().ifPresent((angle)->{turretMotor.getEncoder().setPosition(angle.in(Rotations));});
+        easyCrtSolver.getAngleOptional().ifPresent((angle) -> {
+            turretMotor.getEncoder().setPosition(angle.in(Rotations));
+        });
     }
 
     public Angle getAngle() {
-        return turretAngleUnit.of(turretMotor.getEncoder().getPosition()); // Get the current angle of the turret
+        return Constants.Turret.turretAngleUnit.of(turretMotor.getEncoder().getPosition()); // Get the current angle of
+                                                                                            // the turret
     }
 
     public void simulationPeriodic() {
-    // Update the simulated turret model. Use the motor applied output ([-1,1]) times
-    // the current battery voltage as the input.
-    m_turretSim.setInput(turretMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
+        // Update the simulated turret model. Use the motor applied output ([-1,1])
+        // times the current battery voltage as the input.
+        m_turretSim.setInput(turretMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
 
-    // Update the SparkMax simulation (provides simulated internal encoder values)
-    m_turretMotorSim.iterate(Units.radiansPerSecondToRotationsPerMinute(m_turretSim.getVelocityRadPerSec()),
-        RoboRioSim.getVInVoltage(), 0.020);
+        // Update the SparkMax simulation (provides simulated internal encoder values)
+        m_turretMotorSim.iterate(m_turretSim.getVelocityRadPerSec(),
+                RoboRioSim.getVInVoltage(), 0.020);
 
-    // Step the mechanism simulation forward one robot loop (20ms)
-    m_turretSim.update(0.020);
+        // Step the mechanism simulation forward one robot loop (20ms)
+        m_turretSim.update(0.020);
 
-    // Update simulated battery voltage based on current draw
-    RoboRioSim.setVInVoltage(
-        BatterySim.calculateDefaultBatteryLoadedVoltage(m_turretSim.getCurrentDrawAmps()));
-    // Update CRT visualization with the mechanism angle
-    double turretDeg = Units.radiansToDegrees(m_turretSim.getAngleRads());
-    m_turretLigament.setAngle(turretDeg);
+        //turretEncoder.setPosition(new Rotation2d(m_turretSim.getAngleRads()).getRadians());
+
+        // Update simulated battery voltage based on current draw
+        RoboRioSim.setVInVoltage(
+                BatterySim.calculateDefaultBatteryLoadedVoltage(m_turretSim.getCurrentDrawAmps()));
+                
+                
     }
 
     public void periodic() {
@@ -240,10 +245,43 @@ public class Turret extends SubsystemBase {
         easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
             turretCRTAngle = crtAngle;
             crtAnglePublisher.set(turretCRTAngle.in(Degrees));
-            
+
         });
-            enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
-            enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
+        enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
+        enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
+
+        Pose2d robotPose = RobotContainer.drivetrain.getState().Pose;
+        Pose2d turretBasePose = robotPose.transformBy(offsetTransform);
+
+        Rotation2d turretRotation = Rotation2d.fromRotations(turretEncoder.getPosition());
+        Rotation2d turretFieldRotation = robotPose.getRotation().plus(mountYaw).plus(turretRotation);
+
+        // Publish a full Pose3d so mechanisms can attach at height (z)
+        Pose3d turretFieldPose3d = new Pose3d(turretBasePose.getX(), turretBasePose.getY(), turretMountPose.getZ(),
+                new Rotation3d(turretFieldRotation));
+        turretPosePublisher.set(turretFieldPose3d);
+
+        // Update shooter visualization length and color
+        try {
+            AngularVelocity vel = shooterVelocitySupplier.get();
+            if (vel != null) {
+                // Convert to rotations per second for a simple linear mapping
+                double rps = vel.in(edu.wpi.first.units.Units.RevolutionsPerSecond);
+                // Map rps to length: base 5 units + 20 * rps
+                double length = 5.0 + 20.0 * Math.abs(rps);
+                m_shooterLigament.setLength(length);
+                // Color: blue when stopped, green when fast
+                if (rps > 10.0) {
+                    m_shooterLigament.setColor(new Color8Bit(Color.kLime));
+                } else if (rps > 2.0) {
+                    m_shooterLigament.setColor(new Color8Bit(Color.kYellow));
+                } else {
+                    m_shooterLigament.setColor(new Color8Bit(Color.kBlue));
+                }
+            }
+        } catch (Exception e) {
+            // Defensive: if supplier not available yet, ignore
+        }
     }
 
     public void setAngle(Angle targetAngle) {

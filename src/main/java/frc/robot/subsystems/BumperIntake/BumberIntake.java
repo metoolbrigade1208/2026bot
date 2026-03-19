@@ -34,15 +34,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Constants;
 
 public class BumberIntake extends SubsystemBase {
-  /** Creates a new ThroughBumberIntake. */
-    private static BumberIntake instance;
 
-  public static BumberIntake getInstance() {
-    if (instance == null) {
-      throw new IllegalStateException("Instance not created yet");
-    }
-    return instance;
-  }
   private SparkMax intakeMotor;
   private DCMotor intakeMotorSim;
   private double m_armKp = Constants.OverBumperIntake.kArmKp;
@@ -103,10 +95,7 @@ public class BumberIntake extends SubsystemBase {
 
           Preferences.initDouble(Constants.OverBumperIntake.kArmPositionKey, m_armSetpointDegrees);
     Preferences.initDouble(Constants.OverBumperIntake.kArmPKey, m_armKp);
-    if (instance != null) {
-      throw new IllegalStateException("Cannot create new instance of singleton class");
-    }
-    instance = this;
+
     // this.setDefaultCommand(armUpCommand());
   }
  public void simulationPeriodic() {

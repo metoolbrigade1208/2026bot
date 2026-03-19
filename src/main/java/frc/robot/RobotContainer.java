@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.TurretSubsystem.Turret;
+import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Turret.Shooter;
@@ -41,19 +41,23 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
-    private final Hopper hopper = new Hopper();
-    private final BumberIntake overBumberIntake = new BumberIntake();
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
-    public final Turret turret = new Turret();
-
-    public final Shooter shooter = new Shooter();
+    public static Telemetry logger;
+    public  static Hopper hopper;
+    public  static BumberIntake overBumberIntake;
+    public static CommandSwerveDrivetrain drivetrain;
+    public static Shooter shooter;
+    public static Turret turret;
 
     public RobotContainer() {
+        logger =  new Telemetry(MaxSpeed);
+        hopper = new Hopper();
+        overBumberIntake = new BumberIntake();
+        drivetrain = TunerConstants.createDrivetrain();
+        shooter = new Shooter();
+        turret = new Turret();
         configureBindings();
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
