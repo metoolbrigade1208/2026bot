@@ -61,7 +61,7 @@ public class Constants {
     public static final int motorCanId = 50;
     public static final double motorReduction = 15.0;
     public static final int currentLimit = 40;
-    public static final double hopperSpeed = 0.9; // Adjust as needed
+    public static final double hopperSpeed = 1; // Adjust as needed
   }
 
   static Optional<RobotConfig> loadConfig(String path) {

@@ -120,7 +120,7 @@ public class RobotContainer {
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
         joystick.rightTrigger(0.05)
             .onTrue(shooterCmd)
-            .onFalse(shooter.StopShooterCommand());
+            .onFalse(shooter.StopShooterCommand().alongWith(hopper.stopHopper()));
     }
    //path planner commands 
    
