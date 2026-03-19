@@ -44,9 +44,7 @@ public class BumberIntake extends SubsystemBase {
 
   /** intake Motor SparkFlex */
   private SparkMax intakeMotor;
-  private DCMotor intakeMotorSim = DCMotor.getNeoVortex(1);
   private double m_armKp = Constants.OverBumperIntake.kArmKp;
-  private double m_armSetpointDegrees = Constants.OverBumperIntake.kDefaultArmSetpointDegrees;
   private final DCMotor m_armGearbox = DCMotor.getNeoVortex(2);
   private final SparkFlex m_armMotorLeader = new SparkFlex(Constants.OverBumperIntake.armmotorLeaderCanId,
       MotorType.kBrushless);
@@ -92,7 +90,7 @@ public void maxPivotPosition() {
     SparkMaxConfig armMotorFollowerConfig = new SparkMaxConfig();
     SparkMaxConfig intakeConfig = new SparkMaxConfig();
     armMotorLeaderConfig.smartCurrentLimit(50).idleMode(IdleMode.kCoast).inverted(false);
-    armMotorLeaderConfig.absoluteEncoder
+    armMotorLeaderConfig.encoder
         .positionConversionFactor(1.0/Constants.OverBumperIntake.kArmEncoderGearing)
         .velocityConversionFactor(1.0/Constants.OverBumperIntake.kArmEncoderGearing);
     armMotorLeaderConfig.closedLoop
@@ -120,6 +118,7 @@ public void maxPivotPosition() {
     intakeConfig
       .idleMode(IdleMode.kCoast)
       .smartCurrentLimit(40)
+      .inverted(true)
       .closedLoop
         .pid(Constants.OverBumperIntake.kIntakeKp, 0,0)
         .feedForward
@@ -127,9 +126,10 @@ public void maxPivotPosition() {
           .kV(1.0 / 565);
     intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    Preferences.initDouble(Constants.OverBumperIntake.kArmPositionKey, m_armSetpointDegrees);
+
     Preferences.initDouble(Constants.OverBumperIntake.kArmPKey, m_armKp);
     m_armMotorLeader.getEncoder().setPosition(Constants.OverBumperIntake.kArmUpPosition);
+    m_armMotorFollower.getEncoder().setPosition(Constants.OverBumperIntake.kArmUpPosition);
     // this.setDefaultCommand(armUpCommand());
       slamBottom().debounce(1).onTrue(runOnce(this::zeroPivotPosition).withName("Slam into Bottom Stop"));
       slamTop().debounce(1).onTrue(runOnce(this::maxPivotPosition).withName("Slam into Top Stop"));
@@ -160,7 +160,7 @@ public void maxPivotPosition() {
 
   public void loadPreferences() {
     // Read Preferences for Arm setpoint and kP on entering Teleop
-    m_armSetpointDegrees = Preferences.getDouble(Constants.OverBumperIntake.kArmPositionKey, m_armSetpointDegrees);
+    
   }
 
   public void reachSetpoint(Double setPoint) {
@@ -178,6 +178,11 @@ public void maxPivotPosition() {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+  
+  public void TeleopInit()
+  {
+    m_armMotorLeader.getClosedLoopController().setSetpoint(m_encoder.getPosition(), ControlType.kPosition);
   }
 
   public void setIntakePower(double power) {
@@ -205,9 +210,6 @@ public void maxPivotPosition() {
     return runOnce(() -> this.reachSetpoint(Constants.OverBumperIntake.kArmUpPosition));
   }
 
-  public Command armOuttakeCommand() {
-    return runOnce(() -> this.reachSetpoint(0.05));
-  }
   
   BooleanSupplier excessCurrent = () -> Math.abs(m_armMotorLeader.getOutputCurrent()) > 20;
   BooleanSupplier zeroVelocity = () -> m_armMotorLeader.getEncoder().getVelocity() < 1e-4;
