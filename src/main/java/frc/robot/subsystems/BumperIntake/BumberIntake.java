@@ -18,11 +18,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -98,8 +96,8 @@ public class BumberIntake extends SubsystemBase {
         .positionWrappingInputRange(0, .8888);
     armMotorLeaderConfig.closedLoop.maxMotion
         .maxAcceleration(Constants.OverBumperIntake.kArmMaxAcceleration)
-        .maxVelocity(Constants.OverBumperIntake.kArmMaxSpeed)
-        .allowedClosedLoopError(Constants.OverBumperIntake.kArmMaxError);
+        .cruiseVelocity(Constants.OverBumperIntake.kArmMaxSpeed)
+        .allowedProfileError(Constants.OverBumperIntake.kArmMaxError);
 
           armMotorFollowerConfig.idleMode(IdleMode.kCoast);
 
@@ -141,7 +139,7 @@ public class BumberIntake extends SubsystemBase {
     // setPoint += armUpPositionLimit;
     // System.out.print("Setting arm position: ");
     System.out.println(setPoint);
-    m_controller.setReference(setPoint, ControlType.kPosition);
+    m_controller.setSetpoint(setPoint, ControlType.kPosition);
     // m_controller2.setReference(setPoint, ControlType.kPosition);
   }
    public void stoparm() {
