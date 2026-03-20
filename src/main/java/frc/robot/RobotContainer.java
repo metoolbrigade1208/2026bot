@@ -45,8 +45,8 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
-    private final ElevatorSubsystem elevator = new ElevatorSubsystem();
 
+    public static ElevatorSubsystem elevator;
     public static Telemetry logger;
     public  static Hopper hopper;
     public  static BumberIntake overBumberIntake;
@@ -55,6 +55,7 @@ public class RobotContainer {
     public static Turret turret;
 
     public RobotContainer() {
+        elevator = new ElevatorSubsystem();
         logger =  new Telemetry(MaxSpeed);
         hopper = new Hopper();
         overBumberIntake = new BumberIntake();
@@ -127,7 +128,7 @@ public class RobotContainer {
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
         joystick.rightTrigger(0.05)
             .onTrue(shooterCmd)
-            .onFalse(shooter.StopShooterCommand());
+            .onFalse(shooter.StopShooterCommand().alongWith(hopper.stopHopper()));
     }
    //path planner commands 
 

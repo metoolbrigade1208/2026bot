@@ -54,7 +54,7 @@ public class Constants {
     public static final int motorCanId = 50;
     public static final double motorReduction = 15.0;
     public static final int currentLimit = 40;
-    public static final double hopperSpeed = 0.9; // Adjust as needed
+    public static final double hopperSpeed = 1; // Adjust as needed
   }
 
   static Optional<RobotConfig> loadConfig(String path) {
@@ -123,8 +123,8 @@ public class Constants {
     public static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
     public static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
     public static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
-    public static final Angle fwdLimit = Degrees.of(-170);
-    public static final Angle revLimit = Degrees.of(150);
+    public static final Angle fwdLimit = Degrees.of(170);
+    public static final Angle revLimit = Degrees.of(-150);
     public static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
     public static final AngularVelocity gearSpeed = gearing.per(Second);
     public static final int motorID = 55;
