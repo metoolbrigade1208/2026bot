@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.Vision;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotation;
@@ -36,7 +37,8 @@ public class LimelightSubsystem extends SubsystemBase {
     // and save.
     limelight.getSettings()
         .withLimelightLEDMode(LEDMode.PipelineControl)
-        .withCameraOffset(new Pose3d(Inches.of(0), Inches.of(0), Inches.of(20), Rotation3d.kZero))
+        .withCameraOffset(new Pose3d(Inches.of(0), Inches.of(0), Inches.of(20), 
+          new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(0))))
         .save();
         useAprilTags();
 
@@ -74,18 +76,18 @@ public class LimelightSubsystem extends SubsystemBase {
   private BooleanSupplier isPoseNotNull = () -> RobotContainer.drivetrain.getState().Pose.getTranslation()
       .getSquaredNorm() > 0.1;
 
-private double poseVelocity (){
-  Pose2d curPose = RobotContainer.drivetrain.getState().Pose;
-  var diffence = curPose.minus(previousPose);
+  private double poseVelocity() {
+    Pose2d curPose = RobotContainer.drivetrain.getState().Pose;
+    var diffence = curPose.minus(previousPose);
 
-  previousPose = curPose;
-return diffence.getTranslation().getSquaredNorm();
-}
+    previousPose = curPose;
+    return diffence.getTranslation().getSquaredNorm();
+  }
 
-private BooleanSupplier isPoseVelocityLow = () -> poseVelocity() < 0.1;
+  private BooleanSupplier isPoseVelocityLow = () -> poseVelocity() < 0.1;
 
   public Trigger botUninitialized() {
-    return new Trigger(() -> isUninitialized).and (isPoseNotNull).and (isPoseVelocityLow);
+    return new Trigger(() -> isUninitialized).and(isPoseNotNull).and(isPoseVelocityLow);
   }
 
   public Command useAprilTagsCommand() {
