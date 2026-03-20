@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,7 +31,6 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Turret.Shooter;
-
 
 import frc.robot.subsystems.Turret.Shooter;
 
@@ -52,9 +52,10 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
     private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+   
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
+    //private final QuestNavSubsystem questNav = new QuestNavSubsystem(drivetrain, null);
     public final Turret turret = new Turret();
 
     public final Shooter shooter = new Shooter();
@@ -123,10 +124,13 @@ public class RobotContainer {
         joystick.x().whileTrue(elevator.setHeight(Meters.of(1)));
         joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
        // joystick.button(3).whileTrue(elevator.sysId());
+       ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper());
+        joystick.rightTrigger(0.05)
+            .whileFalse(stopshootercmd); 
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
         joystick.rightTrigger(0.05)
-            .onTrue(shooterCmd)
-            .onFalse(shooter.StopShooterCommand());
+            .whileTrue(shooterCmd);
+        
     }
    //path planner commands 
 
