@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import javax.print.attribute.standard.PrinterLocation;
@@ -17,15 +13,16 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import yams.motorcontrollers.simulation.DCMotorSimSupplier;
+import frc.robot.subsystems.Constants;
+public class agitatormotor extends SubsystemBase {
+    /** Creates a new ThroughBumberIntake. */
 
-public class Hopper extends SubsystemBase {
-  /** Creates a new ThroughBumberIntake. */
-  private SparkMax hopperMotor;
-
+  private SparkMax hopperMotor2;
   private DCMotorSim hopperMotorSim;
 
-  public Hopper() {
-    hopperMotor = new SparkMax(Constants.Hopper.motorCanId, MotorType.kBrushless);
+  public agitatormotor() {
+
+    hopperMotor2 = new SparkMax(Constants.Hopper.motorCanId2, MotorType.kBrushless);
   }
 
   @Override
@@ -33,15 +30,23 @@ public class Hopper extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setHopperPower(double power) {
-    hopperMotor.set(power);
+  public void setHopper2Power(double power) {
+    hopperMotor2.set(power);
   }
 
-  public Command startHopper() {
-    return run(() -> setHopperPower(Constants.Hopper.hopperSpeed)); // Set to full power, adjust as needed
+  public Command startHopper2() {
+    return run(() -> setHopper2Power(Constants.Hopper.hopperSpeed)); // Set to full power, adjust as needed
   }
 
-  public Command stopHopper() {
-    return run(() -> setHopperPower(0.0)); // Stop the intake
+   public Command stopHopper2() {
+    return run(() -> setHopper2Power(0.0)); // Stop the intake
   }
+
+  public Command invertHopper(){
+    return run(() -> setHopper2Power(Constants.Hopper.invertedHopperSpeed));
+  }
+
 }
+
+
+
