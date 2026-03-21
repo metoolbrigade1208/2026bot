@@ -26,10 +26,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Turret.Turret;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
-import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
-import frc.robot.subsystems.Turret.Shooter;
-
 import frc.robot.subsystems.Turret.Shooter;
 
 public class RobotContainer {
@@ -46,13 +43,7 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
-    private final ElevatorSubsystem elevator = new ElevatorSubsystem();
    
-
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    //private final QuestNavSubsystem questNav = new QuestNavSubsystem(drivetrain, null);
-    public final Turret turret = new Turret();
-
     public static ElevatorSubsystem elevator;
     public static Telemetry logger;
     public  static Hopper hopper;
