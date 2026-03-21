@@ -16,13 +16,13 @@ import frc.robot.RobotContainer;
 public class Hopper extends SubsystemBase {
   /** Creates a new ThroughBumberIntake. */
   private SparkMax hopperMotor;
-  
+  private SparkMax hopperMotor2;
   private DCMotor hopperMotorSim;
 
 
   public Hopper() {
     hopperMotor = new SparkMax(8, MotorType.kBrushless);
-
+    hopperMotor2 = new SparkMax(9, MotorType.kBrushless);
   }
 
   @Override
@@ -41,6 +41,16 @@ public class Hopper extends SubsystemBase {
   public Command stopHopper() {
     return run(() -> setHopperPower(0.0)); // Stop the intake
   }
+ public void setHopper2Power(double power) {
+    hopperMotor.set(power);
+  }
 
+  public Command startHopper2() {
+    return run(() -> setHopperPower(Constants.Hopper.hopperSpeed)); // Set to full power, adjust as needed
+  }
+
+  public Command stopHopper2() {
+    return run(() -> setHopper2Power(0.0)); // Stop the intake
+  }
 
 }
