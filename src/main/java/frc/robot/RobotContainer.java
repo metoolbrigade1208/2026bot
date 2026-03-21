@@ -79,44 +79,51 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
-
-        joystick.leftBumper().whileTrue(hopper.startHopper());
-        joystick.leftBumper().whileFalse(hopper.stopHopper());
-        joystick.rightBumper().whileTrue(overBumberIntake.startIntake());
-        joystick.rightBumper().whileFalse(overBumberIntake.stopIntake());
-
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
-        operator.axisMagnitudeGreaterThan(4, 0.025).whileTrue(turret.SetMotorSpeedCommand(operator.getRawAxis(4) * 0.5));
-        operator.axisMagnitudeGreaterThan(4, 0.025).whileFalse(turret.SetMotorSpeedCommand(0.0));
+      //  operator.axisMagnitudeGreaterThan(4, 0.025).whileTrue(turret.SetMotorSpeedCommand(operator.getRawAxis(4) * 0.5));
+      // operator.axisMagnitudeGreaterThan(4, 0.025).whileFalse(turret.SetMotorSpeedCommand(0.0));
          // Control turret speed with right trigger (scaled down to 50%)
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
+
+        //Drive Code Binds
         joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-        // Bindings for Arm control
-        joystick.start().onTrue(overBumberIntake.armDownCommand());
-        joystick.start().onFalse(overBumberIntake.armUpCommand());
+       
+        // Bindings for Arm control (Operator)
+        operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
+        operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
 
-        // Bindings for the turret subsystem
-        joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
-        joystick.povRight().onTrue(turret.SetpointCommand(Degrees.of(45))); // Point turret right at 90 degrees
-        //joystick.povDown().onTrue(turret.StopSetpointCommand(Degrees.of(0)));
+
+        // Bindings for manual turret movement
+        operator.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
+        operator.povRight().onTrue(turret.SetpointCommand(Degrees.of(45))); // Point turret right at 90 degrees\
+        operator.povUp().onTrue(turret.SetpointCommand(Degrees.of(0))); //rezeros the turret
+
+    /*  joystick.povDown().onTrue(turret.StopSetpointCommand(Degrees.of(0)));
         // Reset the field-centric heading on left bumper press.
-     /*   joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
+        joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
+
+        // Bindings for Shooter (Driver)
         joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand());
         joystick.leftTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
-        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+        // Rezeroes the bot (Driver)
+        joystick.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
-        joystick.rightTrigger(0.25).onTrue(turret.AutoAimAndSpinCommand(turret.getGoalPose2d()));
+
+        // While held, autoaim (Operator)
+        operator.leftTrigger(0.25).whileTrue(turret.AutoAimMasterCommand());
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
-        joystick.rightTrigger(0.75).onTrue(shooterCmd);
+        operator.leftTrigger(0.75).onTrue(shooterCmd);
     
     }
 

@@ -4,6 +4,8 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Constants;
+import frc.robot.subsystems.Hopper;
+
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
@@ -15,6 +17,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Meters;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -65,6 +68,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import yams.units.EasyCRT;
 import yams.units.EasyCRTConfig;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -72,7 +76,6 @@ import frc.robot.subsystems.TurretSubsystem.Shooter;
 
 public class Turret extends SubsystemBase {
 
-    
     private static Turret instance;
 
     public static Turret getInstance() {
@@ -83,6 +86,7 @@ public class Turret extends SubsystemBase {
     }
 
     private static Shooter shooter = Shooter.getInstance();
+    private static Hopper hopper = Hopper.getInstance();
 
     InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
@@ -145,6 +149,7 @@ public class Turret extends SubsystemBase {
     private final MechanismRoot2d m_root;
     private final MechanismLigament2d m_turretLigament;
     private Pose2d tPose2d;
+
     public Turret() {
 
         drivetrain = RobotContainer.drivetrain; // get reference to drivetrain for field-relative calculations, if
@@ -258,19 +263,21 @@ public class Turret extends SubsystemBase {
         double result = table.get(1.5); // returns 20.0 right now change if needed
 
     }
+
     public Pose2d getGoalPose2d() {
-       Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
-        if( alliance == Alliance.Blue) {
+        Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
+        if (alliance == Alliance.Blue) {
             return Constants.Field.BlueGoalPose2D;
         }
-            return Constants.Field.RedGoalPose2D;
+        return Constants.Field.RedGoalPose2D;
 
     }
+
     public void simulationPeriodic() {
         // Update the simulated turret model. Use the motor applied output ([-1,1])
         // times
         // the current battery voltage as the input.
-        
+
         m_turretSim.setInput(turretMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
 
         // Update the SparkMax simulation (provides simulated internal encoder values)
@@ -325,6 +332,19 @@ public class Turret extends SubsystemBase {
             setAngle(targetAngleRobot.getMeasure());
             shooter.setVelocitySetpoint(RotationsPerSecond.of(table.get(targetDistanceMeters)));
         }, this, shooter);
+    }
+
+    public Command AutoAimMasterCommand() {
+        
+        Pose2d testPose = Pose2d.kZero;
+        BooleanSupplier atTurretSetpoint = () -> turretMotor.getClosedLoopController().isAtSetpoint();
+        BooleanSupplier atShooterSetpoint = ()-> shooter.isShooterAtSetSpeed();
+        boolean shooterEnabled = true;
+        new Trigger( () -> shooterEnabled).and(atShooterSetpoint).and(atTurretSetpoint)
+            .onTrue(hopper.startHopper())
+            .onFalse(hopper.stopHopper())
+        );
+        return AutoAimAndSpinCommand(testPose).finallyDo( () -> shooterEnabled = false );
     }
 
 }

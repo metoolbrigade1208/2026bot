@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.FeetPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Feet;
 import static edu.wpi.first.units.Units.Pounds;
@@ -116,6 +117,10 @@ public class Shooter extends SubsystemBase {
    * @param speed Speed to set
    */
   public void setVelocitySetpoint(AngularVelocity speed) {shooter.setMechanismVelocitySetpoint(speed);}
+
+  public boolean isShooterAtSetSpeed() {
+    return sparkSmartMotorController.getMechanismSetpointVelocity().get().minus(sparkSmartMotorController.getMechanismVelocity()).lt(RotationsPerSecond.of(50));
+  }
 
   /**
    * Set the dutycycle of the shooter.

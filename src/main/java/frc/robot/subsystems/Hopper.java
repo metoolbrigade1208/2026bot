@@ -15,6 +15,14 @@ import frc.robot.RobotContainer;
 
 public class Hopper extends SubsystemBase {
   /** Creates a new ThroughBumberIntake. */
+private static Hopper instance;
+public static Hopper getInstance() {
+    if (instance == null) {
+      throw new IllegalStateException("Instance not created yet");
+    }
+    return instance;
+  }
+
   private SparkMax hopperMotor;
   
   private DCMotor hopperMotorSim;
