@@ -116,7 +116,7 @@ public class ElevatorSubsystem extends SubsystemBase
   public Command elevatorClimb()
   {
     return m_elevator.setHeight(Meters.of(0)) //TODO: change this height
-        .until(() -> m_upLimitIrSensor.get());
+        .until(() -> !(m_upLimitIrSensor.get())).andThen(stopElevator());
   }
 
   public Command sysId()

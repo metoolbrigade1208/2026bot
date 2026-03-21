@@ -80,7 +80,7 @@ public class Constants {
     public static final double kIntakeKp = 0.0;
 }
 public class Climber {
-  public static final int kIRsensorport = 3; //TODO: change this ID
+  public static final int kIRsensorport = 8; //TODO: change this ID
   public static final int kArmMotorPort = 62; //TODO: change this ID
     public static final int kArmTwoMotorPort = 60; //TODO: change this ID
    // public static final int kArmUpLimitPort = 4; //TODO: change this ID
