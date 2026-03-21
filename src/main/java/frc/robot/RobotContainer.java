@@ -65,8 +65,8 @@ public class RobotContainer {
     public static QuestNavSubsystem QNS;
 
     public RobotContainer() {
-        LL = new LimelightSubsystem();
         QNS = new QuestNavSubsystem(drivetrain);
+        LL = new LimelightSubsystem();
         configureBindings();
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
@@ -112,6 +112,8 @@ public class RobotContainer {
         // Bindings for Arm control
         operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
         operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
+
+        operator.y().onTrue(LL.initializedCommand());
 
         // Bindings for the turret subsystem
         joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
