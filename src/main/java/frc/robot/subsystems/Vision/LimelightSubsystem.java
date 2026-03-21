@@ -42,7 +42,9 @@ public class LimelightSubsystem extends SubsystemBase {
         .save();
         useAprilTags();
 
-        botUninitialized().onTrue(useCameraCommand().alongWith(runOnce(()->isUninitialized = false)));
+        botUninitialized().onTrue(useCameraCommand()
+          .alongWith(runOnce(()->isUninitialized = false)
+          .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
   }
 
   @Override
@@ -63,7 +65,7 @@ public class LimelightSubsystem extends SubsystemBase {
     // If the pose is present
     visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
       // Add it to the pose estimator.
-      RobotContainer.drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds);
+      RobotContainer.drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,kLimelightSD);
     });
 
   }

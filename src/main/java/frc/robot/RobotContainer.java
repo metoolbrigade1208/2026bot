@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem.Turret;
+import frc.robot.subsystems.Vision.LimelightSubsystem;
+import frc.robot.subsystems.Vision.QuestNavSubsystem;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
 import frc.robot.subsystems.Constants.OverBumperIntake;
@@ -56,10 +58,14 @@ public class RobotContainer {
     public static CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public final Turret turret = new Turret();
-
     public final Shooter shooter = new Shooter();
 
+    public static LimelightSubsystem LL;
+    public static QuestNavSubsystem QNS;
+
     public RobotContainer() {
+        LL = new LimelightSubsystem();
+        QNS = new QuestNavSubsystem(drivetrain);
         configureBindings();
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));

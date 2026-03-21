@@ -24,6 +24,11 @@ public class QuestNavSubsystem extends SubsystemBase {
   private final double QUEST_NAV_HEIGHT = 23.5;
   private final double QUEST_NAV_FORWARD_CENTER_OFFSET = -11.25;
   private final double QUEST_NAV_DEGREE_YAW_OFFSET = 180;
+  private boolean enabled = false;
+
+  public boolean isEnabled() {
+    return enabled;
+  }
 
   // private Transform2d QUEST_TO_ROBOT2D = new
   // Transform2d(Units.inchesToMeters(15.0), Units.inchesToMeters(0), new
@@ -40,22 +45,9 @@ public class QuestNavSubsystem extends SubsystemBase {
       .publish();
 
   /** Creates a new QuestNav. */
-  public QuestNavSubsystem(CommandSwerveDrivetrain swerveSubsystem,
-      Pose3d initialQuestNavPose) {
+  public QuestNavSubsystem(CommandSwerveDrivetrain swerveSubsystem) {
 
     this.swerveSubsystem = swerveSubsystem;
-
-    // Set intial Position -- Right now, this assumes we're sitting in front of
-    // AprilTag 10 on the red side of the field
-    /*
-     * questNav.setPose(new Pose3d(Units.inchesToMeters(0), //
-     * Units.inchesToMeters(0),
-     * Units.inchesToMeters(0),
-     * new Rotation3d(Math.toRadians(180), Math.toRadians(0), Math.toRadians(0))));
-     */
-
-    questNav.setPose(initialQuestNavPose);
-
   }
 
   public void updateVisionMeasurement() {
@@ -134,14 +126,25 @@ public class QuestNavSubsystem extends SubsystemBase {
     return runOnce(() -> zeroQuestNavPose());
   }
 
+  /**
+   * Enables the QuestNav to start tracking. Pushes current robot pose to the QuestNav to initialize.
+   * @return
+   */
+  public Command enableQuestNavCommand() {
+    return runOnce(() -> {
+      enabled = true;
+      setQuestNavPose(swerveSubsystem.getState().Pose);
+    });
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (enabled) {
+      questNav.commandPeriodic();
+      updateVisionMeasurement();
 
-    questNav.commandPeriodic();
-    updateVisionMeasurement();
-
-    posePub.set(roboPose);
-
+      posePub.set(roboPose);
+    }
   }
 }
