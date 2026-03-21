@@ -21,7 +21,7 @@ public class Hopper extends SubsystemBase {
 
 
   public Hopper() {
-    hopperMotor = RobotContainer.sharedMotor;
+    hopperMotor = new SparkMax(8, MotorType.kBrushless);
 
   }
 

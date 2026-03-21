@@ -49,7 +49,7 @@ public class Constants {
     }
   }
   public class OverBumperIntake {
-    public static final int motorCanId = 59; 
+    public static final int motorCanId = 60; 
     public static final int armmotorFollowerCanId = 58;
     public static final int armmotorLeaderCanId = 57;
     public static final double OverBumperCurrentLimitmotorReduction = 15.0;
@@ -63,13 +63,12 @@ public class Constants {
     public static final double kArmCos = 0;
     public static final double kArmKv = kArmEncoderGearing / 565.0;
     public static final double kArmDownPosition = 0;
-    public static final double kArmUpPosition = 8.0; //TODO: find correct angle
-    public static final double kArmMaxSpeed = 100;
-    public static final double kArmMaxAcceleration = 150;
+    public static final double kArmUpPosition = 0.35; //TODO: find correct angle
+    public static final double kArmMaxSpeed = 10;
+    public static final double kArmMaxAcceleration = 15;
     public static final double kArmMaxError = Units.degreesToRotations(1);
     public static final double kArmPositionConversionFactor = 2 * Math.PI; // Adjust as needed
     public static final double kDefaultArmKp = 50.0;
-    public static final double kDefaultArmSetpointDegrees = 0;
     public static final double kArmMass = 8.0; // Kilograms
     public static final double kArmLength = Units.inchesToMeters(30);
     public static final double kMinAngleRads = Units.degreesToRadians(-15);
@@ -78,7 +77,7 @@ public class Constants {
     public static final double kArmEncoderDistPerPulse = 2.0 * Math.PI / 4096;
      public static final String kArmPositionKey = "ArmPosition";
      public static final String kArmPKey = "ArmP";
-    public static final double kIntakeKp = 1;
+    public static final double kIntakeKp = 0.0;
 }
 }
 /* public static class TurretConstants {

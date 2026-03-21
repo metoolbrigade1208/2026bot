@@ -84,8 +84,8 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-       // joystick.leftBumper().whileTrue(hopper.startHopper());
-       // joystick.leftBumper().whileFalse(hopper.stopHopper());
+        //joystick.leftBumper().whileTrue(hopper.startHopper());
+        //joystick.leftBumper().whileFalse(hopper.stopHopper());
         joystick.start().whileTrue(overBumberIntake.startIntake());
         joystick.start().whileFalse(overBumberIntake.stopIntake());
 
@@ -115,7 +115,7 @@ public class RobotContainer {
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
         joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand());
         joystick.leftTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
-       // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
         //ELevator subsystem bindings
@@ -123,9 +123,15 @@ public class RobotContainer {
         joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
        // joystick.button(3).whileTrue(elevator.sysId());
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
-        joystick.rightTrigger(0.05).onTrue(shooterCmd);
+        joystick.rightTrigger(0.05)
+            .onTrue(shooterCmd)
+            .onFalse(shooter.StopShooterCommand());
     }
    //path planner commands 
+
+   public void TeleopInit(){
+        overBumberIntake.TeleopInit();
+   }
    
 
     public Command getAutonomousCommand() {
