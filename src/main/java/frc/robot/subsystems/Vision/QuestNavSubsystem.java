@@ -123,7 +123,7 @@ public class QuestNavSubsystem extends SubsystemBase {
   }
 
   public Command zeroQuestNavPoseCommand() {
-    return runOnce(() -> zeroQuestNavPose());
+    return runOnce(() -> zeroQuestNavPose()).withName("zero QuestNav Pose");
   }
 
   /**
@@ -134,16 +134,21 @@ public class QuestNavSubsystem extends SubsystemBase {
     return runOnce(() -> {
       enabled = true;
       setQuestNavPose(swerveSubsystem.getState().Pose);
-    });
+    }).withName("QuestNav enabled");
   }
+
+public Command disableQuestNavCommand() {
+  return runOnce(()-> {
+    enabled = false;
+  }).withName("QuestNav disabled");
+}
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    // This method will be called once per scheduler run    
+    questNav.commandPeriodic();
     if (enabled) {
-      questNav.commandPeriodic();
       updateVisionMeasurement();
-
       posePub.set(roboPose);
     }
   }

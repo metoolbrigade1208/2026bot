@@ -34,12 +34,12 @@ import limelight.networktables.PoseEstimate;
 
 public class LimelightSubsystem extends SubsystemBase {
   private Limelight limelight;
-  
-    Matrix<N3, N1> kLimelightSD = VecBuilder.fill(0.1, 0.1, 0.1);
 
-   NetworkTableEntry stddevEntry = NetworkTableInstance.getDefault().getTable("limelight").getEntry("stddevs");
-   double[] stdDevArray = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                          0.1, 0.1, 0.0, 0.0, 0.0, 0.1};
+  Matrix<N3, N1> kLimelightSD = VecBuilder.fill(0.1, 0.1, 0.1);
+
+  NetworkTableEntry stddevEntry = NetworkTableInstance.getDefault().getTable("limelight").getEntry("stddevs");
+  double[] stdDevArray = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      0.1, 0.1, 0.0, 0.0, 0.0, 0.1 };
 
   /** Creates a new Limelight. */
   public LimelightSubsystem() {
@@ -47,14 +47,14 @@ public class LimelightSubsystem extends SubsystemBase {
     // and save.
     limelight.getSettings()
         .withLimelightLEDMode(LEDMode.PipelineControl)
-        .withCameraOffset(new Pose3d(Inches.of(0), Inches.of(0), Inches.of(20), 
-          new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(0))))
+        .withCameraOffset(new Pose3d(Inches.of(0), Inches.of(0), Inches.of(20),
+            new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(0))))
         .save();
-        useAprilTags();
+    useAprilTags();
 
-        botUninitialized().onTrue(useCameraCommand()
-          .alongWith(runOnce(()->isUninitialized = false)
-          .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
+    botUninitialized().onFalse(useCameraCommand()
+        .alongWith(runOnce(() -> isUninitialized = false)
+            .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
   }
 
   @Override
@@ -70,21 +70,35 @@ public class LimelightSubsystem extends SubsystemBase {
                 DegreesPerSecond.of(gyro.getAngularVelocityYDevice().getValueAsDouble()))))
         .save();
 
-        stdDevArray = stddevEntry.getDoubleArray(stdDevArray);
-        kLimelightSD = VecBuilder.fill(stdDevArray[6], stdDevArray[7], stdDevArray[11]);
+    stdDevArray = stddevEntry.getDoubleArray(stdDevArray);
+    kLimelightSD = VecBuilder.fill(stdDevArray[6], stdDevArray[7], stdDevArray[11]);
 
     // Get MegaTag2 pose
     Optional<PoseEstimate> visionEstimate = limelight.createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
     // If the pose is present
     visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
       // Add it to the pose estimator.
-      RobotContainer.drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,kLimelightSD);
+      RobotContainer.drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,
+          kLimelightSD);
     });
 
   }
 
-  private int aprilTagPiplineId = 0;
-  private int cameraPiplineId = 1;
+  enum PipelineId {
+    aprilTag(0),
+    camera(1);
+
+    private final int value;
+
+    private PipelineId(int value) {
+      this.value = value;
+    }
+
+    public int getValue() {
+      return value;
+    }
+  }
+
   private boolean isUninitialized = true;
   private Pose2d previousPose = Pose2d.kZero;
 
@@ -93,10 +107,10 @@ public class LimelightSubsystem extends SubsystemBase {
 
   private double poseVelocity() {
     Pose2d curPose = RobotContainer.drivetrain.getState().Pose;
-    var diffence = curPose.minus(previousPose);
+    var diff = curPose.minus(previousPose);
 
     previousPose = curPose;
-    return diffence.getTranslation().getSquaredNorm();
+    return diff.getTranslation().getSquaredNorm();
   }
 
   private BooleanSupplier isPoseVelocityLow = () -> poseVelocity() < 0.1;
@@ -106,19 +120,29 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 
   public Command useAprilTagsCommand() {
-    return runOnce(this::useAprilTags).ignoringDisable(true);
+    return runOnce(this::useAprilTags).ignoringDisable(true).withName("Limelight AprilTag");
   }
 
   public void useAprilTags() {
-    limelight.getSettings().withPipelineIndex(aprilTagPiplineId).save();
+    usePipeline(PipelineId.aprilTag);
+  }
+
+  private void usePipeline(PipelineId pipeline) {
+    limelight.getSettings().withPipelineIndex(pipeline.value).save();
   }
 
   public Command useCameraCommand() {
-    return runOnce(this::useCamera).ignoringDisable(true);
+    return runOnce(this::useCamera).ignoringDisable(true).withName("Limelight Camera");
   }
 
   public void useCamera() {
-    limelight.getSettings().withPipelineIndex(cameraPiplineId).save();
+    usePipeline(PipelineId.camera);
+  }
+
+  public Command reInitializeCommand () {
+    return runOnce(() -> {isUninitialized = true;})
+      .alongWith(RobotContainer.QNS.disableQuestNavCommand())
+      .withName("reinitialize bot Pose");
   }
 
 }
