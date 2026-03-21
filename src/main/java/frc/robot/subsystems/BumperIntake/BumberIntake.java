@@ -4,25 +4,28 @@
 
 package frc.robot.subsystems.BumperIntake;
 
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.sim.SparkAbsoluteEncoderSim;
-import com.revrobotics.sim.SparkMaxSim;
+
+import java.util.function.BooleanSupplier;
+
+import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
+import com.revrobotics.sim.SparkFlexSim;
+import com.revrobotics.sim.SparkRelativeEncoderSim;
 import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -33,27 +36,22 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Constants;
 
+/** Creates a new ThroughBumberIntake. */
 public class BumberIntake extends SubsystemBase {
-  /** Creates a new ThroughBumberIntake. */
-    private static BumberIntake instance;
 
-  public static BumberIntake getInstance() {
-    if (instance == null) {
-      throw new IllegalStateException("Instance not created yet");
-    }
-    return instance;
-  }
+  /** intake Motor SparkFlex */
   private SparkMax intakeMotor;
-  private DCMotor intakeMotorSim;
   private double m_armKp = Constants.OverBumperIntake.kArmKp;
-  private double m_armSetpointDegrees = Constants.OverBumperIntake.kDefaultArmSetpointDegrees;
-  private final DCMotor m_armGearbox = DCMotor.getNEO(2);
-  private final SparkMax m_armMotor = new SparkMax(Constants.OverBumperIntake.armmotorCanId, MotorType.kBrushless);
-  private final SparkClosedLoopController m_controller = m_armMotor.getClosedLoopController();
-  
-  
+  private final DCMotor m_armGearbox = DCMotor.getNeoVortex(2);
+  private final SparkFlex m_armMotorLeader = new SparkFlex(Constants.OverBumperIntake.armmotorLeaderCanId,
+      MotorType.kBrushless);
+  private final SparkFlex m_armMotorFollower = new SparkFlex(Constants.OverBumperIntake.armmotorFollowerCanId,
+      MotorType.kBrushless);
+  private final SparkClosedLoopController m_controller = m_armMotorLeader.getClosedLoopController();
+
   private final SingleJointedArmSim m_armSim = new SingleJointedArmSim(m_armGearbox,
       Constants.OverBumperIntake.kArmReduction,
       SingleJointedArmSim.estimateMOI(Constants.OverBumperIntake.kArmLength,
@@ -61,60 +59,86 @@ public class BumberIntake extends SubsystemBase {
       Constants.OverBumperIntake.kArmLength, Constants.OverBumperIntake.kMinAngleRads,
       Constants.OverBumperIntake.kMaxAngleRads, true, Units.degreesToRadians(90),
       Constants.OverBumperIntake.kArmEncoderDistPerPulse, 0.0 // Add noise with a std-dev of 1
-                                                             // tick
+                                                              // tick
   );
-  private final SparkAbsoluteEncoder m_encoder = m_armMotor.getAbsoluteEncoder();
-  private final SparkAbsoluteEncoderSim m_encoderSim = new SparkAbsoluteEncoderSim(m_armMotor);
-  private final SparkMaxSim m_armMotorSim = new SparkMaxSim(m_armMotor, m_armGearbox);
+  private final RelativeEncoder m_encoder = m_armMotorLeader.getEncoder();
+  private final SparkRelativeEncoderSim m_encoderSim = new SparkRelativeEncoderSim(m_armMotorLeader);
+  private final SparkFlexSim m_armMotorSim = new SparkFlexSim(m_armMotorLeader, m_armGearbox);
 
-  private double armUpPositionLimit = m_encoder.getPosition();
-
-    // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
+  // Create a Mechanism2d display of an Arm with a fixed ArmTower and moving Arm.
   private final Mechanism2d m_mech2d = new Mechanism2d(60, 60);
   private final MechanismRoot2d m_armPivot = m_mech2d.getRoot("ArmPivot", 30, 30);
   private final MechanismLigament2d m_armTower = m_armPivot.append(new MechanismLigament2d("ArmTower", .1, -90));
   private final MechanismLigament2d m_arm = m_armPivot
       .append(new MechanismLigament2d("Arm", Constants.OverBumperIntake.kArmLength * 3,
           Units.radiansToDegrees(m_armSim.getAngleRads()), 6, new Color8Bit(Color.kYellow)));
+public void zeroPivotPosition() {
+ m_encoder.setPosition(Constants.OverBumperIntake.kArmDownPosition);
 
-
+}
+public void maxPivotPosition() {
+  m_encoder.setPosition(Constants.OverBumperIntake.kArmUpPosition);
+}
   public BumberIntake() {
     SmartDashboard.putData("Arm Sim", m_mech2d);
     m_armTower.setColor(new Color8Bit(Color.kBlue));
 
     intakeMotor = new SparkMax(Constants.OverBumperIntake.motorCanId, MotorType.kBrushless);
 
-    
     // Configure the arm motor
     SparkMaxConfig armMotorLeaderConfig = new SparkMaxConfig();
     SparkMaxConfig armMotorFollowerConfig = new SparkMaxConfig();
-    armMotorLeaderConfig.smartCurrentLimit(50).idleMode(IdleMode.kBrake).inverted(true);
-    armMotorLeaderConfig.absoluteEncoder
-        .positionConversionFactor(Constants.OverBumperIntake.kArmEncoderGearing);
+    SparkMaxConfig intakeConfig = new SparkMaxConfig();
+    armMotorLeaderConfig.smartCurrentLimit(50).idleMode(IdleMode.kCoast).inverted(false);
+    armMotorLeaderConfig.encoder
+        .positionConversionFactor(1.0/Constants.OverBumperIntake.kArmEncoderGearing)
+        .velocityConversionFactor(1.0/Constants.OverBumperIntake.kArmEncoderGearing);
     armMotorLeaderConfig.closedLoop
         .pid(Constants.OverBumperIntake.kArmKp, Constants.OverBumperIntake.kArmKi,
             Constants.OverBumperIntake.kArmKd, ClosedLoopSlot.kSlot0)
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder).positionWrappingEnabled(true)
-        .positionWrappingInputRange(0, .8888);
+          .feedForward
+            .scr(Constants.OverBumperIntake.kArmKs, Constants.OverBumperIntake.kArmCos, 1);
+    armMotorLeaderConfig.softLimit
+      .forwardSoftLimit(Constants.OverBumperIntake.kArmUpPosition)
+      .reverseSoftLimit(Constants.OverBumperIntake.kArmDownPosition)
+      .forwardSoftLimitEnabled(true)
+      .reverseSoftLimitEnabled(true);
+      
     armMotorLeaderConfig.closedLoop.maxMotion
         .maxAcceleration(Constants.OverBumperIntake.kArmMaxAcceleration)
-        .maxVelocity(Constants.OverBumperIntake.kArmMaxSpeed)
-        .allowedClosedLoopError(Constants.OverBumperIntake.kArmMaxError);
+        .cruiseVelocity(Constants.OverBumperIntake.kArmMaxSpeed)
+        .allowedProfileError(Constants.OverBumperIntake.kArmMaxError);
 
-          armMotorFollowerConfig.idleMode(IdleMode.kCoast);
+    armMotorFollowerConfig.idleMode(IdleMode.kCoast).follow(m_armMotorLeader, true);
 
-          Preferences.initDouble(Constants.OverBumperIntake.kArmPositionKey, m_armSetpointDegrees);
+    m_armMotorLeader.configure(armMotorLeaderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_armMotorFollower.configure(armMotorFollowerConfig, ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
+
+    intakeConfig
+      .idleMode(IdleMode.kCoast)
+      .smartCurrentLimit(40)
+      .inverted(true)
+      .closedLoop
+        .pid(Constants.OverBumperIntake.kIntakeKp, 0,0)
+        .feedForward
+          .kS(0)
+          .kV(1.0 / 565);
+    intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+
     Preferences.initDouble(Constants.OverBumperIntake.kArmPKey, m_armKp);
-    if (instance != null) {
-      throw new IllegalStateException("Cannot create new instance of singleton class");
-    }
-    instance = this;
+    m_armMotorLeader.getEncoder().setPosition(Constants.OverBumperIntake.kArmUpPosition);
+    m_armMotorFollower.getEncoder().setPosition(Constants.OverBumperIntake.kArmUpPosition);
     // this.setDefaultCommand(armUpCommand());
+      slamBottom().debounce(1).onTrue(runOnce(this::zeroPivotPosition).withName("Slam into Bottom Stop"));
+      slamTop().debounce(1).onTrue(runOnce(this::maxPivotPosition).withName("Slam into Top Stop"));
   }
- public void simulationPeriodic() {
+
+  public void simulationPeriodic() {
     // In this method, we update our simulation of what our arm is doing
     // First, we set our "inputs" (voltages)
-    m_armSim.setInput(m_armMotor.getAppliedOutput() * RobotController.getBatteryVoltage());
+    m_armSim.setInput(m_armMotorLeader.getAppliedOutput() * RobotController.getBatteryVoltage());
 
     m_armMotorSim.iterate(
         Units.radiansPerSecondToRotationsPerMinute(m_armSim.getVelocityRadPerSec()),
@@ -133,37 +157,51 @@ public class BumberIntake extends SubsystemBase {
     m_arm.setAngle(Units.radiansToDegrees(m_armSim.getAngleRads()));
 
   }
-   public void loadPreferences() {
+
+  public void loadPreferences() {
     // Read Preferences for Arm setpoint and kP on entering Teleop
-    m_armSetpointDegrees = Preferences.getDouble(Constants.OverBumperIntake.kArmPositionKey, m_armSetpointDegrees);
+    
   }
-    public void reachSetpoint(Double setPoint) {
+
+  public void reachSetpoint(Double setPoint) {
     // setPoint += armUpPositionLimit;
     // System.out.print("Setting arm position: ");
     System.out.println(setPoint);
-    m_controller.setReference(setPoint, ControlType.kPosition);
+    m_controller.setSetpoint(setPoint, ControlType.kPosition);
     // m_controller2.setReference(setPoint, ControlType.kPosition);
   }
-   public void stoparm() {
-    m_armMotor.set(0.0);
+
+  public void stoparm() {
+    m_armMotorLeader.set(0.0);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
+  
+  public void TeleopInit()
+  {
+    m_armMotorLeader.getClosedLoopController().setSetpoint(m_encoder.getPosition(), ControlType.kPosition);
+  }
 
   public void setIntakePower(double power) {
     intakeMotor.set(power);
   }
 
+  public void setIntakeSpeed(double speed) {
+    intakeMotor.getClosedLoopController().setSetpoint(speed, ControlType.kVelocity);
+  }
+
   public Command startIntake() {
-    return run(() -> setIntakePower(Constants.OverBumperIntake.overBumperIntakeSpeed)); // Set to full power, adjust as needed
+    return run(() -> setIntakeSpeed(Constants.OverBumperIntake.overBumperIntakeSpeed)); // Set to full power, adjust as
+                                                                                        // needed
   }
 
   public Command stopIntake() {
-    return run(() -> setIntakePower(0.0)); // Stop the intake
+    return run(() -> setIntakeSpeed(0.0)); // Stop the intake
   }
+
   public Command armDownCommand() {
     return runOnce(() -> this.reachSetpoint(Constants.OverBumperIntake.kArmDownPosition));
   }
@@ -172,9 +210,16 @@ public class BumberIntake extends SubsystemBase {
     return runOnce(() -> this.reachSetpoint(Constants.OverBumperIntake.kArmUpPosition));
   }
 
-  public Command armOuttakeCommand() {
-    return runOnce(() -> this.reachSetpoint(0.05));
+  
+  BooleanSupplier excessCurrent = () -> Math.abs(m_armMotorLeader.getOutputCurrent()) > 20;
+  BooleanSupplier zeroVelocity = () -> m_armMotorLeader.getEncoder().getVelocity() < 1e-4;
+    BooleanSupplier negativeOutput = () -> m_armMotorLeader.getAppliedOutput() < 0;
+    BooleanSupplier positiveOutput = () -> m_armMotorLeader.getAppliedOutput() > 0;
+  
+  public Trigger slamTop() {
+    return new Trigger(excessCurrent).and(positiveOutput).and(zeroVelocity);
   }
-
-
+  public Trigger slamBottom() {
+    return new Trigger(excessCurrent).and(negativeOutput).and(zeroVelocity);
+  }  
 }
