@@ -35,7 +35,7 @@ public class agitatormotor extends SubsystemBase {
   }
 
   public Command startHopper2() {
-    return run(() -> setHopper2Power(Constants.Hopper.hopperSpeed)); // Set to full power, adjust as needed
+    return run(() -> setHopper2Power(Constants.Hopper.hopper2Speed)); // Set to full power, adjust as needed
   }
 
    public Command stopHopper2() {
