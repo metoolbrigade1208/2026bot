@@ -7,16 +7,20 @@ package frc.robot.subsystems.Vision;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Rotation;
-
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -30,6 +34,12 @@ import limelight.networktables.PoseEstimate;
 
 public class LimelightSubsystem extends SubsystemBase {
   private Limelight limelight;
+  
+    Matrix<N3, N1> kLimelightSD = VecBuilder.fill(0.1, 0.1, 0.1);
+
+   NetworkTableEntry stddevEntry = NetworkTableInstance.getDefault().getTable("limelight").getEntry("stddevs");
+   double[] stdDevArray = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                          0.1, 0.1, 0.0, 0.0, 0.0, 0.1};
 
   /** Creates a new Limelight. */
   public LimelightSubsystem() {
@@ -59,6 +69,9 @@ public class LimelightSubsystem extends SubsystemBase {
                 DegreesPerSecond.of(gyro.getAngularVelocityXDevice().getValueAsDouble()),
                 DegreesPerSecond.of(gyro.getAngularVelocityYDevice().getValueAsDouble()))))
         .save();
+
+        stdDevArray = stddevEntry.getDoubleArray(stdDevArray);
+        kLimelightSD = VecBuilder.fill(stdDevArray[6], stdDevArray[7], stdDevArray[11]);
 
     // Get MegaTag2 pose
     Optional<PoseEstimate> visionEstimate = limelight.createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
