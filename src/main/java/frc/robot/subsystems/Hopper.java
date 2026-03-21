@@ -29,7 +29,7 @@ public static Hopper getInstance() {
 
 
   public Hopper() {
-    hopperMotor = RobotContainer.sharedMotor;
+    hopperMotor = new SparkMax(8, MotorType.kBrushless);
 
   }
 

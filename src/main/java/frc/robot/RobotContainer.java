@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.google.flatbuffers.Constants;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -30,6 +31,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem.Shooter;
 import frc.robot.subsystems.TurretSubsystem.Turret;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
+import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
 
@@ -40,7 +42,7 @@ public class RobotContainer {
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.05).withRotationalDeadband(MaxAngularRate * 0.05) // Add a 10% deadband
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
@@ -50,6 +52,8 @@ public class RobotContainer {
     private final BumberIntake overBumberIntake = new BumberIntake();
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
+    private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+   
 
     public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -59,6 +63,8 @@ public class RobotContainer {
 
     public RobotContainer() {
         configureBindings();
+
+        NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
     }
 
     private void configureBindings() {
@@ -79,7 +85,13 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
-         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+
+        //joystick.leftBumper().whileTrue(hopper.startHopper());
+        //joystick.leftBumper().whileFalse(hopper.stopHopper());
+        joystick.start().whileTrue(overBumberIntake.startIntake());
+        joystick.start().whileFalse(overBumberIntake.stopIntake());
+
+        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
@@ -109,23 +121,34 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
         joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
-
-        // Bindings for Shooter (Driver)
-        joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand());
-        joystick.leftTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
-
-        // Rezeroes the bot (Driver)
-        joystick.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
+        joystick.leftTrigger(0.05)
+            .onTrue(shooter.RunShooterCommand())
+            .onFalse(shooter.StopShooterCommand()); 
+        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
+        //ELevator subsystem bindings
+        joystick.x().whileTrue(elevator.setHeight(Meters.of(1)));
+        joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
+       // joystick.button(3).whileTrue(elevator.sysId());
+       ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper());
+        joystick.rightTrigger(0.05)
+            .whileFalse(stopshootercmd); 
 
         // While held, autoaim (Operator)
         operator.leftTrigger(0.25).whileTrue(turret.AutoAimMasterCommand());
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
-        operator.leftTrigger(0.75).onTrue(shooterCmd);
+        operator.leftTrigger(0.75)
+            .whileTrue(shooterCmd);
     
+        
     }
+   //path planner commands 
+
+   public void TeleopInit(){
+        overBumberIntake.TeleopInit();
+   }
+   
 
     public Command getAutonomousCommand() {
         // Simple drive forward auton

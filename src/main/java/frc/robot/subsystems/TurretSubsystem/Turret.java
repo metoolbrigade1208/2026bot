@@ -76,15 +76,6 @@ import frc.robot.subsystems.TurretSubsystem.Shooter;
 
 public class Turret extends SubsystemBase {
 
-    private static Turret instance;
-
-    public static Turret getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("Instance not created yet");
-        }
-        return instance;
-    }
-
     private static Shooter shooter = Shooter.getInstance();
     private static Hopper hopper = Hopper.getInstance();
 
@@ -342,8 +333,7 @@ public class Turret extends SubsystemBase {
         boolean shooterEnabled = true;
         new Trigger( () -> shooterEnabled).and(atShooterSetpoint).and(atTurretSetpoint)
             .onTrue(hopper.startHopper())
-            .onFalse(hopper.stopHopper())
-        );
+            .onFalse(hopper.stopHopper());
         return AutoAimAndSpinCommand(testPose).finallyDo( () -> shooterEnabled = false );
     }
 
