@@ -119,7 +119,7 @@ public class Shooter extends SubsystemBase {
   public void setVelocitySetpoint(AngularVelocity speed) {shooter.setMechanismVelocitySetpoint(speed);}
 
   public boolean isShooterAtSetSpeed() {
-    return sparkSmartMotorController.getMechanismSetpointVelocity().get().minus(sparkSmartMotorController.getMechanismVelocity()).lt(RotationsPerSecond.of(50));
+    return sparkSmartMotorController.getMechanismSetpointVelocity().orElse(RPM.zero()).minus(sparkSmartMotorController.getMechanismVelocity()).lt(RotationsPerSecond.of(50));
   }
 
   /**

@@ -1,20 +1,13 @@
 package frc.robot.subsystems.TurretSubsystem;
 
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Constants;
-import frc.robot.subsystems.Hopper;
-
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.DegreesPerSecond;
-import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Minute;
-import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.util.function.BooleanSupplier;
@@ -24,7 +17,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.google.flatbuffers.Table;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -36,20 +28,12 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.AngularAccelerationUnit;
-import edu.wpi.first.units.AngularVelocityUnit;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularAcceleration;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -65,19 +49,16 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import yams.units.EasyCRT;
 import yams.units.EasyCRTConfig;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import frc.robot.subsystems.TurretSubsystem.Shooter;
 
 public class Turret extends SubsystemBase {
 
-    private static Shooter shooter = Shooter.getInstance();
-    private static Hopper hopper = Hopper.getInstance();
+
 
     InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
 
@@ -139,10 +120,7 @@ public class Turret extends SubsystemBase {
     private final Mechanism2d m_mech2d;
     private final MechanismRoot2d m_root;
     private final MechanismLigament2d m_turretLigament;
-    private Pose2d tPose2d;
-
     public Turret() {
-
         drivetrain = RobotContainer.drivetrain; // get reference to drivetrain for field-relative calculations, if
                                                 // needed
 
@@ -232,6 +210,12 @@ public class Turret extends SubsystemBase {
         easyCrtSolver.getAngleOptional().ifPresent((angle) -> {
             turretMotor.getEncoder().setPosition(angle.in(Rotations));
         });
+
+        //setup distance speed table
+        
+        table.put(0.0, 0.0);
+        table.put(1.0, 10.0);
+        table.put(2.0, 30.0);
     }
 
     public Angle getAngle() {
@@ -246,14 +230,6 @@ public class Turret extends SubsystemBase {
                 Meter.of(turretToTarget.getDistance(Translation2d.kZero)));
     }
 
-    public void InterpolatingDoubleTreeMap() {
-        table.put(0.0, 0.0);
-        table.put(1.0, 10.0);
-        table.put(2.0, 30.0);
-        // and so on add and change as many as we need :)
-        double result = table.get(1.5); // returns 20.0 right now change if needed
-
-    }
 
     public Pose2d getGoalPose2d() {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
@@ -321,19 +297,19 @@ public class Turret extends SubsystemBase {
             Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
                     .plus(new Rotation2d(targetAngleField));
             setAngle(targetAngleRobot.getMeasure());
-            shooter.setVelocitySetpoint(RotationsPerSecond.of(table.get(targetDistanceMeters)));
-        }, this, shooter);
+            RobotContainer.shooter.setVelocitySetpoint(RotationsPerSecond.of(table.get(targetDistanceMeters)));
+        }, this, RobotContainer.shooter);
     }
 
+    BooleanSupplier atTurretSetpoint = () -> turretMotor.getClosedLoopController().isAtSetpoint();
+    BooleanSupplier atShooterSetpoint = ()-> RobotContainer.shooter.isShooterAtSetSpeed();
+    boolean shooterEnabled = true;
     public Command AutoAimMasterCommand() {
         
         Pose2d testPose = Pose2d.kZero;
-        BooleanSupplier atTurretSetpoint = () -> turretMotor.getClosedLoopController().isAtSetpoint();
-        BooleanSupplier atShooterSetpoint = ()-> shooter.isShooterAtSetSpeed();
-        boolean shooterEnabled = true;
         new Trigger( () -> shooterEnabled).and(atShooterSetpoint).and(atTurretSetpoint)
-            .onTrue(hopper.startHopper())
-            .onFalse(hopper.stopHopper());
+            .onTrue(RobotContainer.hopper.startHopper())
+            .onFalse(RobotContainer.hopper.stopHopper());
         return AutoAimAndSpinCommand(testPose).finallyDo( () -> shooterEnabled = false );
     }
 

@@ -48,7 +48,7 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
-    private final Hopper hopper = new Hopper();
+    public  static Hopper hopper = new Hopper();
     private final BumberIntake overBumberIntake = new BumberIntake();
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
@@ -59,7 +59,7 @@ public class RobotContainer {
 
     public static final Turret turret = new Turret();
 
-    public final Shooter shooter = new Shooter();
+    public static final Shooter shooter = new Shooter();
 
     public RobotContainer() {
         configureBindings();
