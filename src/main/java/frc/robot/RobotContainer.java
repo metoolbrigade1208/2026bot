@@ -84,10 +84,10 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.leftBumper().whileTrue(hopper.startHopper());
-        joystick.leftBumper().whileFalse(hopper.stopHopper());
-        joystick.rightBumper().whileTrue(overBumberIntake.startIntake());
-        joystick.rightBumper().whileFalse(overBumberIntake.stopIntake());
+       // joystick.leftBumper().whileTrue(hopper.startHopper());
+       // joystick.leftBumper().whileFalse(hopper.stopHopper());
+        joystick.start().whileTrue(overBumberIntake.startIntake());
+        joystick.start().whileFalse(overBumberIntake.stopIntake());
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
@@ -103,8 +103,8 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         // Bindings for Arm control
-        joystick.start().whileTrue(overBumberIntake.armDownCommand());
-        joystick.start().whileFalse(overBumberIntake.armUpCommand());
+        joystick.leftBumper().whileTrue(overBumberIntake.armDownCommand());
+        joystick.leftBumper().whileFalse(overBumberIntake.armUpCommand());
 
         // Bindings for the turret subsystem
         joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
@@ -115,7 +115,7 @@ public class RobotContainer {
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
         joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand());
         joystick.leftTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
-        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+       // joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
         //ELevator subsystem bindings
