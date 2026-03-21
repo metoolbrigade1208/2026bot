@@ -110,8 +110,8 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         // Bindings for Arm control
-        joystick.leftBumper().whileTrue(overBumberIntake.armDownCommand());
-        joystick.leftBumper().whileFalse(overBumberIntake.armUpCommand());
+        operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
+        operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
 
         // Bindings for the turret subsystem
         joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
@@ -129,13 +129,21 @@ public class RobotContainer {
         //ELevator subsystem bindings
         joystick.x().whileTrue(elevator.setHeight(Meters.of(1)));
         joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
-       // joystick.button(3).whileTrue(elevator.sysId());
-       ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper());
-        joystick.rightTrigger(0.05)
+        joystick.leftBumper().whileTrue(elevator.sysId());
+       //parallel command groups that run multiple funtions at once on the driver
+    ParallelCommandGroup runeverythingcmd = shooter.RunShooterCommand().alongWith(hopper.startHopper()).alongWith(overBumberIntake.startIntake());
+            joystick.rightTrigger(0.05)
+            .whileTrue(runeverythingcmd);
+    ParallelCommandGroup stopeverythingcmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper()).alongWith(overBumberIntake.stopIntake());
+            joystick.rightTrigger(0.05)
+            .whileFalse(stopeverythingcmd);
+    ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper());
+        joystick.leftTrigger(0.05)
             .whileFalse(stopshootercmd); 
-        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
-        joystick.rightTrigger(0.05)
+    ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
+        joystick.leftTrigger(0.05)
             .whileTrue(shooterCmd);
+     
         
     }
    //path planner commands 
