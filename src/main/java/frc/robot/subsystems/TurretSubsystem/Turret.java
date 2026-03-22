@@ -1,14 +1,12 @@
 package frc.robot.subsystems.TurretSubsystem;
 
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Constants;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.util.function.BooleanSupplier;
@@ -51,7 +49,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import yams.units.EasyCRT;
@@ -59,17 +56,11 @@ import yams.units.EasyCRTConfig;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 public class Turret extends SubsystemBase {
-
-
-
     InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
-
-    private CommandSwerveDrivetrain drivetrain; // reference to drivetrain for field-relative calculations, if needed
 
     // Motor control
     SparkMax turretMotor = new SparkMax(Constants.Turret.motorID, MotorType.kBrushless);
     SparkMaxConfig turretConfig = new SparkMaxConfig();
-
     // Easy CRT
     DutyCycleEncoder enc1Encoder = new DutyCycleEncoder(Constants.Turret.enc1Id);
     DutyCycleEncoder enc2Encoder = new DutyCycleEncoder(Constants.Turret.enc2Id);
@@ -114,6 +105,7 @@ public class Turret extends SubsystemBase {
     // Create the solver (initialized in constructor so we can swap to a sim-only
     // supplier there)
     EasyCRT easyCrtSolver;
+    boolean solveCRTperiodic = false;
 
     // Simulation objects
     private final SingleJointedArmSim m_turretSim;
@@ -123,9 +115,6 @@ public class Turret extends SubsystemBase {
     private final MechanismRoot2d m_root;
     private final MechanismLigament2d m_turretLigament;
     public Turret() {
-        drivetrain = RobotContainer.drivetrain; // get reference to drivetrain for field-relative calculations, if
-                                                // needed
-
         // Setup visualization
         m_mech2d = new Mechanism2d(60, 60);
         m_root = m_mech2d.getRoot("TurretRoot", 30, 30);
@@ -209,24 +198,29 @@ public class Turret extends SubsystemBase {
                 .maxAcceleration(Constants.Turret.turretAccel.in(Constants.Turret.turretAccelerationUnit))
                 .allowedProfileError(Constants.Turret.toleranceAngle.in(Rotations));
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        //set turret position
         easyCrtSolver.getAngleOptional().ifPresent((angle) -> {
             turretMotor.getEncoder().setPosition(angle.in(Rotations));
         });
 
         //setup distance speed table
-        
+        // meters -> RPM
         table.put(0.0, 0.0);
-        table.put(1.0, 10.0);
-        table.put(2.0, 30.0);
+        table.put(1.0, 600.0);
+        table.put(2.0, 1200.0);
+        table.put(3.0, 1800.0);
+        table.put(4.0, 2400.0);
+        table.put(5.0, 3000.0);
     }
 
     public Angle getAngle() {
-        return Constants.Turret.turretAngleUnit.of(turretMotor.getEncoder().getPosition()); // Get the current angle of
-                                                                                            // the turret
+        // Get the current angle of the turret
+        return Constants.Turret.turretAngleUnit.of(turretMotor.getEncoder().getPosition()); 
     }
 
     public Pair<Angle, Distance> turretAngleDistance(Pose2d target) {
-        Translation2d turretToTarget = drivetrain.turretToTargetFieldRelative(target.getTranslation(),
+        Translation2d turretToTarget = RobotContainer.drivetrain.turretToTargetFieldRelative(target.getTranslation(),
                 Constants.Turret.turretOffset);
         return Pair.of(turretToTarget.getAngle().getMeasure(),
                 Meter.of(turretToTarget.getDistance(Translation2d.kZero)));
@@ -267,20 +261,27 @@ public class Turret extends SubsystemBase {
 
     public void periodic() {
         // set the current CRT angle and publish it
-        // TODO: use it to set the current turret readout angle
-        easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
-            turretCRTAngle = crtAngle;
-            crtAnglePublisher.set(turretCRTAngle.in(Degrees));
-
-        });
-        enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
-        enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
+        // not solving every iteration will improve loop time
+        if (solveCRTperiodic) 
+        {
+            easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
+                turretCRTAngle = crtAngle;
+                crtAnglePublisher.set(turretCRTAngle.in(Degrees));
+                turretMotor.getEncoder().setPosition(turretCRTAngle.in(Constants.Turret.turretAngleUnit));
+            });
+            enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
+            enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
+        }
     }
 
     public void setAngle(Angle targetAngle) {
         turretMotor.getClosedLoopController().setSetpoint(targetAngle.in(Rotations),
                 ControlType.kPosition);
         setPointPublisher.set(targetAngle.in(Degrees));
+    }
+
+    public Command publishCRTangle() {
+        return runOnce( () -> solveCRTperiodic = true );
     }
 
     public Command SetpointCommand(Angle targetAngle) {
@@ -300,9 +301,10 @@ public class Turret extends SubsystemBase {
                 Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
                         .plus(new Rotation2d(targetAngleField)).plus(Rotation2d.k180deg);
                 setAngle(targetAngleRobot.getMeasure());
-                RobotContainer.shooter.setVelocitySetpoint(RotationsPerSecond.of(table.get(targetDistanceMeters)));
+                RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
             },
             (interrupted) -> {
+                // turret will just go to it's last setpoint and stop, but shooter motor will keep going unless told otherwise
                 RobotContainer.shooter.setVelocitySetpoint(RPM.zero());
             }, 
             () -> false, // isFinished
@@ -312,6 +314,7 @@ public class Turret extends SubsystemBase {
     BooleanSupplier atTurretSetpoint = () -> turretMotor.getClosedLoopController().isAtSetpoint();
     BooleanSupplier atShooterSetpoint = ()-> RobotContainer.shooter.isShooterAtSetSpeed();
     boolean shooterEnabled = true;
+
     public Command AutoAimMasterCommand() {
         
         Pose2d testPose = Pose2d.kZero;
