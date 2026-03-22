@@ -41,6 +41,7 @@ public class Shooter extends SubsystemBase {
     return instance;
   }
   
+  private AngularVelocity manualRPM = RPM.of(3000);
   // Vendor motor controller object
   private SparkFlex spark1 = new SparkFlex(52, MotorType.kBrushless);
   private SparkFlex spark2 = new SparkFlex(53, MotorType.kBrushless);
@@ -98,6 +99,14 @@ public class Shooter extends SubsystemBase {
    * @return {@link edu.wpi.first.wpilibj2.command.RunCommand}
    */
   public Command setVelocity(AngularVelocity speed) {return shooter.run(speed);}
+
+  public Command setToManualVelocity(){
+    return setVelocity(manualRPM);
+  }
+
+  public Command bumpManualVelocity(AngularVelocity bump) {
+    return runOnce( () -> manualRPM.plus(bump));
+  }
   
   /**
    * Set the shooter velocity setpoint.

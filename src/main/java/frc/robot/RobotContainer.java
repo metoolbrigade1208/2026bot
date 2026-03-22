@@ -113,9 +113,15 @@ public class RobotContainer {
 
 
         // Bindings for manual turret movement
-        operator.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
-        operator.povRight().onTrue(turret.SetpointCommand(Degrees.of(45))); // Point turret right at 90 degrees\
+        operator.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-90))); // Point turret left at 90 degrees
+        operator.povRight().onTrue(turret.SetpointCommand(Degrees.of(90))); // Point turret right at 90 degrees\
         operator.povUp().onTrue(turret.SetpointCommand(Degrees.of(0))); //rezeros the turret
+
+        //Bindings for manual shooter control
+        operator.a().onTrue(shooter.setToManualVelocity());
+        operator.y().onTrue(shooter.StopShooterCommand());
+        operator.b().onTrue(shooter.bumpManualVelocity(RPM.of(-100)));
+        operator.x().onTrue(shooter.bumpManualVelocity(RPM.of(100)));
 
     /*  joystick.povDown().onTrue(turret.StopSetpointCommand(Degrees.of(0)));
         // Reset the field-centric heading on left bumper press.
