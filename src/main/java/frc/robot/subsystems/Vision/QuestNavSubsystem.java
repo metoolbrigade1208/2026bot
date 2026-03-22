@@ -152,7 +152,7 @@ public Command disableQuestNavCommand() {
   public void periodic() {
     // This method will be called once per scheduler run    
     questNav.commandPeriodic();
-    if (enabled) {
+    if (true) {
       updateVisionMeasurement();
       posePub.set(roboPose);
     }
