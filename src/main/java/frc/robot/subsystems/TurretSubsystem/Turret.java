@@ -317,11 +317,10 @@ public class Turret extends SubsystemBase {
 
     public Command AutoAimMasterCommand() {
         
-        Pose2d testPose = Pose2d.kZero;
         new Trigger( () -> shooterEnabled).and(atShooterSetpoint).and(atTurretSetpoint)
             .onTrue(RobotContainer.hopper.startHopper())
             .onFalse(RobotContainer.hopper.stopHopper());
-        return AutoAimAndSpinCommand(testPose)
+        return AutoAimAndSpinCommand(getGoalPose2d())
             .beforeStarting( () -> shooterEnabled = true)
             .finallyDo( () -> shooterEnabled = false );
     }
