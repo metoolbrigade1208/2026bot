@@ -52,6 +52,9 @@ public class LimelightSubsystem extends SubsystemBase {
             new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(0))))
         .save();
     useAprilTags();
+    botUninitialized().onTrue(useCameraCommand()
+      .alongWith(runOnce(() -> isUninitialized = false)
+          .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
   }
 
 
@@ -114,7 +117,7 @@ public class LimelightSubsystem extends SubsystemBase {
   private BooleanSupplier isPoseVelocityLow = () -> poseVelocity() < 0.5;
 
   public Trigger botUninitialized() {
-    return new Trigger(() -> isUninitialized).and(isPoseNotNull); //.and(isPoseVelocityLow);
+    return new Trigger(() -> isUninitialized).and(isPoseNotNull).and(isPoseVelocityLow);
   }
 
   public Command useAprilTagsCommand() {
