@@ -12,6 +12,7 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -63,7 +64,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-
+if (currentPipe == PipelineId.aprilTag) {
     // This method will be called once per scheduler run
     // Required for megatag2 in periodic() function before fetching pose.
     Pigeon2 gyro = RobotContainer.drivetrain.getPigeon2();
@@ -84,7 +85,7 @@ public class LimelightSubsystem extends SubsystemBase {
       // Add it to the pose estimator.
       RobotContainer.drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,
           kLimelightSD);
-    });
+    });}
 
   }
 
@@ -118,6 +119,7 @@ public class LimelightSubsystem extends SubsystemBase {
   }
 
   private BooleanSupplier isPoseVelocityLow = () -> poseVelocity() < 0.5;
+  private PipelineId currentPipe;
 
   public Trigger botUninitialized() {
     return new Trigger(() -> isUninitialized).and(isPoseNotNull).and(isPoseVelocityLow);
@@ -133,6 +135,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
   private void usePipeline(PipelineId pipeline) {
     limelight.getSettings().withPipelineIndex(pipeline.value).save();
+    currentPipe = pipeline;
   }
 
   public Command useCameraCommand() {
