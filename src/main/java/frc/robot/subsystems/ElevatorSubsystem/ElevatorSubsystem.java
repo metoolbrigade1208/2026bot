@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Constants;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -113,10 +114,14 @@ public class ElevatorSubsystem extends SubsystemBase
   }
 
   //Runs the elevator to climb on the bar without crushing the bot
+  boolean isClimbing = false;
   public Command elevatorClimb()
-  {
+  {    
+    new Trigger(() -> isClimbing).and( () -> !(m_upLimitIrSensor.get()) )
+      .onTrue(stopElevator()
+      .finallyDo(() -> isClimbing = false));
     return m_elevator.setHeight(Meters.of(0)) //TODO: change this height
-        .until(() -> !(m_upLimitIrSensor.get())).andThen(stopElevator());
+      .beforeStarting(() -> isClimbing = true); 
   }
 
   public Command sysId()
