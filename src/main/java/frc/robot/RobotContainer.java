@@ -30,6 +30,8 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem.Shooter;
 import frc.robot.subsystems.TurretSubsystem.Turret;
+import frc.robot.subsystems.Vision.LimelightSubsystem;
+import frc.robot.subsystems.Vision.QuestNavSubsystem;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
 import frc.robot.subsystems.Constants.OverBumperIntake;
@@ -61,7 +63,12 @@ public class RobotContainer {
 
     public static final Shooter shooter = new Shooter();
 
+    public static LimelightSubsystem LL;
+    public static QuestNavSubsystem QNS;
+
     public RobotContainer() {
+        QNS = new QuestNavSubsystem(drivetrain);
+        LL = new LimelightSubsystem();
         configureBindings();
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
@@ -106,10 +113,11 @@ public class RobotContainer {
         joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-       
-        // Bindings for Arm control (Operator)
+        // Bindings for Arm control
         operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
         operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
+
+        operator.y().onTrue(LL.initializedCommand());
 
 
         // Bindings for manual turret movement
@@ -136,9 +144,16 @@ public class RobotContainer {
         //ELevator subsystem bindings
         joystick.x().whileTrue(elevator.setHeight(Meters.of(1)));
         joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
-       // joystick.button(3).whileTrue(elevator.sysId());
-       ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper());
-        joystick.rightTrigger(0.05)
+        joystick.leftBumper().whileTrue(elevator.sysId());
+       //parallel command groups that run multiple funtions at once on the driver
+    ParallelCommandGroup runeverythingcmd = shooter.RunShooterCommand().alongWith(hopper.startHopper()).alongWith(overBumberIntake.startIntake());
+            joystick.rightTrigger(0.05)
+            .whileTrue(runeverythingcmd);
+    ParallelCommandGroup stopeverythingcmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper()).alongWith(overBumberIntake.stopIntake());
+            joystick.rightTrigger(0.05)
+            .whileFalse(stopeverythingcmd);
+    ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper());
+        joystick.leftTrigger(0.05)
             .whileFalse(stopshootercmd); 
 
         // While held, autoaim (Operator), and shoot
