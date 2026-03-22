@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.RobotContainer;
 import limelight.Limelight;
 import limelight.networktables.AngularVelocity3d;
+import limelight.networktables.LimelightPoseEstimator;
 import limelight.networktables.LimelightPoseEstimator.EstimationMode;
 import limelight.networktables.LimelightSettings.LEDMode;
 import limelight.networktables.Orientation3d;
@@ -34,6 +35,7 @@ import limelight.networktables.PoseEstimate;
 
 public class LimelightSubsystem extends SubsystemBase {
   private Limelight limelight;
+  private LimelightPoseEstimator poseEstimator;
 
   Matrix<N3, N1> kLimelightSD = VecBuilder.fill(0.1, 0.1, 0.1);
 
@@ -52,8 +54,9 @@ public class LimelightSubsystem extends SubsystemBase {
             new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(0))))
         .save();
     useAprilTags();
+    poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
     botUninitialized().onTrue(useCameraCommand()
-      .alongWith(runOnce(() -> isUninitialized = false)
+      .beforeStarting(runOnce(() -> isUninitialized = false)
           .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
   }
 
@@ -75,7 +78,7 @@ public class LimelightSubsystem extends SubsystemBase {
     kLimelightSD = VecBuilder.fill(stdDevArray[6], stdDevArray[7], stdDevArray[11]);
 
     // Get MegaTag2 pose
-    Optional<PoseEstimate> visionEstimate = limelight.createPoseEstimator(EstimationMode.MEGATAG2).getPoseEstimate();
+    Optional<PoseEstimate> visionEstimate = poseEstimator.getPoseEstimate();
     // If the pose is present
     visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
       // Add it to the pose estimator.
