@@ -135,13 +135,8 @@ public class RobotContainer {
         joystick.rightTrigger(0.05)
             .whileFalse(stopshootercmd); 
 
-        // While held, autoaim (Operator)
+        // While held, autoaim (Operator), and shoot
         operator.leftTrigger(0.25).whileTrue(turret.AutoAimMasterCommand());
-        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
-        operator.leftTrigger(0.75)
-            .whileTrue(shooterCmd);
-    
-        
     }
    //path planner commands 
 

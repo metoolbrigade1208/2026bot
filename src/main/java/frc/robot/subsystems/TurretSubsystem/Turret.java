@@ -6,6 +6,7 @@ import frc.robot.subsystems.Constants;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Minute;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Meters;
@@ -49,6 +50,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -154,11 +156,11 @@ public class Turret extends SubsystemBase {
         if (edu.wpi.first.wpilibj.RobotBase.isSimulation()) {
             Supplier<Angle> simEnc1Supplier = () -> {
                 double mechRot = Units.radiansToRotations(m_turretSim.getAngleRads());
-                double encRot = Constants.Turret.enc1Zero.in(Rotations) + mechRot * (200.0 / 19.0);
+                double encRot = -Constants.Turret.enc1Zero.in(Rotations) + mechRot * (200.0 / 19.0);
                 return Rotations.of(encRot);
             };
             Supplier<Angle> simEnc2Supplier = () -> {
-                double mechRot = Units.radiansToRotations(m_turretSim.getAngleRads());
+                double mechRot = -Units.radiansToRotations(m_turretSim.getAngleRads());
                 double encRot = Constants.Turret.enc2Zero.in(Rotations) + mechRot * (200.0 / 23.0);
                 return Rotations.of(encRot);
             };
@@ -290,15 +292,21 @@ public class Turret extends SubsystemBase {
     }
 
     public Command AutoAimAndSpinCommand(Pose2d target) {
-        return new RunCommand(() -> {
-            var Tad = turretAngleDistance(target);
-            Angle targetAngleField = Tad.getFirst();
-            double targetDistanceMeters = Tad.getSecond().in(Meters);
-            Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
-                    .plus(new Rotation2d(targetAngleField)).plus(Rotation2d.k180deg);
-            setAngle(targetAngleRobot.getMeasure());
-            RobotContainer.shooter.setVelocitySetpoint(RotationsPerSecond.of(table.get(targetDistanceMeters)));
-        }, this, RobotContainer.shooter);
+        return new FunctionalCommand(() -> {}, 
+            () -> {
+                var Tad = turretAngleDistance(target);
+                Angle targetAngleField = Tad.getFirst();
+                double targetDistanceMeters = Tad.getSecond().in(Meters);
+                Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
+                        .plus(new Rotation2d(targetAngleField)).plus(Rotation2d.k180deg);
+                setAngle(targetAngleRobot.getMeasure());
+                RobotContainer.shooter.setVelocitySetpoint(RotationsPerSecond.of(table.get(targetDistanceMeters)));
+            },
+            (interrupted) -> {
+                RobotContainer.shooter.setVelocitySetpoint(RPM.zero());
+            }, 
+            () -> false, // isFinished
+            this, RobotContainer.shooter);
     }
 
     BooleanSupplier atTurretSetpoint = () -> turretMotor.getClosedLoopController().isAtSetpoint();
@@ -310,7 +318,9 @@ public class Turret extends SubsystemBase {
         new Trigger( () -> shooterEnabled).and(atShooterSetpoint).and(atTurretSetpoint)
             .onTrue(RobotContainer.hopper.startHopper())
             .onFalse(RobotContainer.hopper.stopHopper());
-        return AutoAimAndSpinCommand(testPose).finallyDo( () -> shooterEnabled = false );
+        return AutoAimAndSpinCommand(testPose)
+            .beforeStarting( () -> shooterEnabled = true)
+            .finallyDo( () -> shooterEnabled = false );
     }
 
 }
