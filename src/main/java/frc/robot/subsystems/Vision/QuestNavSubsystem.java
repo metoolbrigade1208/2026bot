@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Vision;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -21,9 +23,10 @@ import gg.questnav.questnav.QuestNav;
 public class QuestNavSubsystem extends SubsystemBase {
 
   public QuestNav questNav = new QuestNav();
-  private final double QUEST_NAV_HEIGHT = 23.5;
-  private final double QUEST_NAV_FORWARD_CENTER_OFFSET = -11.25;
-  private final double QUEST_NAV_DEGREE_YAW_OFFSET = 180;
+  private final double QUEST_NAV_HEIGHT = 10.0;
+  private final double QUEST_NAV_FORWARD_CENTER_OFFSET = -16;
+  private final double QUEST_NAV_LEFT_CENTER_OFFSET = 10;
+  private final double QUEST_NAV_RADIAN_YAW_OFFSET = Math.atan2(-7.5, 6.5);
   private boolean enabled = false;
 
   public boolean isEnabled() {
@@ -33,9 +36,11 @@ public class QuestNavSubsystem extends SubsystemBase {
   // private Transform2d QUEST_TO_ROBOT2D = new
   // Transform2d(Units.inchesToMeters(15.0), Units.inchesToMeters(0), new
   // Rotation2d(0));
-  private Transform3d QUEST_TO_ROBOT = new Transform3d(Units.inchesToMeters(QUEST_NAV_FORWARD_CENTER_OFFSET), 0,
-      Units.inchesToMeters(QUEST_NAV_HEIGHT),
-      new Rotation3d(Units.degreesToRadians(0), 0, Units.degreesToRadians(QUEST_NAV_DEGREE_YAW_OFFSET)));
+  private Transform3d QUEST_TO_ROBOT = new Transform3d(
+      Inches.of(QUEST_NAV_FORWARD_CENTER_OFFSET), 
+      Inches.of(QUEST_NAV_LEFT_CENTER_OFFSET),
+      Inches.of(QUEST_NAV_HEIGHT),
+      new Rotation3d(Units.degreesToRadians(0), 0, QUEST_NAV_RADIAN_YAW_OFFSET));
   private CommandSwerveDrivetrain swerveSubsystem;
   Pose3d roboPose = new Pose3d(0, 0, 0, new Rotation3d(0, 0, 0));
 
