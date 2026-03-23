@@ -55,7 +55,7 @@ public class LimelightSubsystem extends SubsystemBase {
             new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(180))))
         .save();
     useAprilTags();
-    poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
+    poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
     botUninitialized().onTrue(useCameraCommand()
       .beforeStarting(runOnce(() -> isUninitialized = false)
           .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
@@ -82,9 +82,11 @@ if (currentPipe == PipelineId.aprilTag) {
     Optional<PoseEstimate> visionEstimate = poseEstimator.getPoseEstimate();
     // If the pose is present
     visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
+      if(poseEstimate.tagCount > 1){
       // Add it to the pose estimator.
       RobotContainer.drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,
           kLimelightSD);
+        }
     });}
 
   }
