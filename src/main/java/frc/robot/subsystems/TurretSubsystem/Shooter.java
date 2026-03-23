@@ -60,7 +60,7 @@ public class Shooter extends SubsystemBase {
   
 
   // Create our SmartMotorController from our Spark and config with the NEO.
-  private SmartMotorController sparkSmartMotorController = new SparkWrapper(spark1, DCMotor.getNeo550(1), smcConfig);
+  private SmartMotorController sparkSmartMotorController = new SparkWrapper(spark1, DCMotor.getNeoVortex(2), smcConfig);
 
  private final FlyWheelConfig shooterConfig = new FlyWheelConfig(sparkSmartMotorController)
   // Diameter of the flywheel.
