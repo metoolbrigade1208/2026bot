@@ -7,20 +7,18 @@ package frc.robot.subsystems.TurretSubsystem;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RevolutionsPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
-import static edu.wpi.first.units.Units.Volts;
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkFlex;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import yams.gearing.GearBox;
-import yams.gearing.MechanismGearing;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
@@ -30,41 +28,33 @@ import yams.motorcontrollers.SmartMotorControllerConfig.MotorMode;
 import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 public class Shooter extends SubsystemBase {
-
-  
-    private static Shooter instance;
-
-  public static Shooter getInstance() {
-    if (instance == null) {
-      throw new IllegalStateException("Instance not created yet");
-    }
-    return instance;
-  }
   
   private AngularVelocity manualRPM = RPM.of(3000);
   // Vendor motor controller object
   private SparkFlex spark1 = new SparkFlex(52, MotorType.kBrushless);
   private SparkFlex spark2 = new SparkFlex(53, MotorType.kBrushless);
 
+  private final AngularVelocity kVortexKv = RPM.of(565.0); // RPM/V
+  private final Distance kWheelDiameter = Inches.of(4);
+  private final double kShooterkV = 1.0/kVortexKv.in(RevolutionsPerSecond); //smcConfig expects V/RPS
+
 
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
   .withControlMode(ControlMode.CLOSED_LOOP)
   // Feedback Constants (PID Constants)
-  .withClosedLoopController(0, 0, 0)
-  .withSimClosedLoopController(0, 0, 0)
+  .withClosedLoopController(.25, 0, 0)
+  .withSimClosedLoopController(25, 0, 0)
   // Feedforward Constants
-  .withFeedforward(new SimpleMotorFeedforward(0, 1, 0))
-  .withSimFeedforward(new SimpleMotorFeedforward(0, 1, 0))
+  .withFeedforward(new SimpleMotorFeedforward(0, kShooterkV, 0))
+  .withSimFeedforward(new SimpleMotorFeedforward(0, kShooterkV, 0))
   // Telemetry name and verbosity level
   .withTelemetry("ShooterMotor", TelemetryVerbosity.HIGH)
   // Gearing from the motor rotor to final shaft.
-  // In this example GearBox.fromReductionStages(3,4) is the same as GearBox.fromStages("3:1","4:1") which corresponds to the gearbox attached to your motor.
-  // You could also use .withGearing(12) which does the same thing.
-  .withGearing(new MechanismGearing(GearBox.fromReductionStages(3, 4)))
+  .withGearing(1.0)
   // Motor properties to prevent over currenting.
   .withMotorInverted(false)
   .withIdleMode(MotorMode.COAST)
-  .withStatorCurrentLimit(Amps.of(40))
+  .withStatorCurrentLimit(Amps.of(80))
   .withFollowers(Pair.of(spark2, true));
 
   
@@ -74,16 +64,19 @@ public class Shooter extends SubsystemBase {
 
  private final FlyWheelConfig shooterConfig = new FlyWheelConfig(sparkSmartMotorController)
   // Diameter of the flywheel.
-  .withDiameter(Inches.of(4))
+  .withDiameter(kWheelDiameter)
   // Mass of the flywheel.
-  .withMass(Pounds.of(1))
+  .withMass(Pounds.of(3))
   // Maximum speed of the shooter.
-  .withUpperSoftLimit(RPM.of(1000))
+  .withUpperSoftLimit(RPM.of(6800))
   // Telemetry name and verbosity for the arm.
   .withTelemetry("ShooterMech", TelemetryVerbosity.HIGH);
 
   // Shooter Mechanism
   private FlyWheel shooter = new FlyWheel(shooterConfig);
+
+  /** Creates a new ExampleSubsystem. */
+  public Shooter() {}
 
   /**
    * Gets the current velocity of the shooter.
@@ -103,11 +96,11 @@ public class Shooter extends SubsystemBase {
   public Command setToManualVelocity(){
     return setVelocity(manualRPM);
   }
-
+  
   public Command bumpManualVelocity(AngularVelocity bump) {
     return runOnce( () -> manualRPM.plus(bump));
   }
-  
+
   /**
    * Set the shooter velocity setpoint.
    *
@@ -129,9 +122,6 @@ public class Shooter extends SubsystemBase {
    */
   public Command set(double dutyCycle) {return shooter.set(dutyCycle);}
 
-  /** Creates a new ExampleSubsystem. */
-  public Shooter() {}
-
   /**
    * Example command factory method.
    *
@@ -149,8 +139,7 @@ public Command StopShooterCommand() {
   return runOnce(
     () -> {
       shooter.setMeasurementVelocitySetpoint(FeetPerSecond.of(0.0));
-      shooter.getMotorController().stopClosedLoopController();
-      shooter.getMotorController().setVoltage(Volts.of(0));
+      shooter.set(0.0);
     });
 }
 
