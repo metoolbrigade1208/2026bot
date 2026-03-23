@@ -122,7 +122,10 @@ if (currentPipe == PipelineId.aprilTag) {
   private PipelineId currentPipe;
 
   public Trigger botUninitialized() {
-    return new Trigger(() -> isUninitialized).and(isPoseNotNull).and(isPoseVelocityLow);
+    return new Trigger(() -> isUninitialized)
+      .and(isPoseNotNull)
+      .and(isPoseVelocityLow)
+      .and(RobotContainer.QNS::isTracking);
   }
 
   public Command useAprilTagsCommand() {
