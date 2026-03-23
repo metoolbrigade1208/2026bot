@@ -40,7 +40,7 @@ import yams.motorcontrollers.local.SparkWrapper;
 public class ElevatorSubsystem extends SubsystemBase
 {
   // TODO: Add detailed comments explaining the example, similar to the ExponentiallyProfiledArmSubsystem
-  private Distance winchCircumference = Inches.of(11); // TODO: change circumference
+  private Distance winchCircumference = Inches.of(1.6); // TODO: change circumference
   private double kV = winchCircumference.in(Meters) * 50.7; // Volts per (Meter per Second)
 
   private final SparkMax elevatorMotor = new SparkMax(50, SparkLowLevel.MotorType.kBrushless);
