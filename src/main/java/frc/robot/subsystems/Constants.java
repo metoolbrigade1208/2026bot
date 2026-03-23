@@ -133,7 +133,7 @@ public static class TurretConstants {
     public static final double kD = 0.25; // output per angle difference derivative (V/rps)
     public static final Voltage kS = Volts.of(0.5);
     public static final Voltage kV = Volts.of(5); // really Volts/rps, but dimensions get wonky with doing all that.
-    public static final Translation2d turretOffset = new Translation2d(Meters.of(1), Meters.of(0));
+    public static final Translation2d turretOffset = new Translation2d(Inches.of(10), Inches.of(0));
     static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
     static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
     public static final Translation3d TurretPos = new Translation3d(Inches.of(-8.0), Inches.of(0.0), Inches.of(20.0));
