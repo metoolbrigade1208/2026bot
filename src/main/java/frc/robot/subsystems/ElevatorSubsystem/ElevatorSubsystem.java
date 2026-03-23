@@ -7,6 +7,8 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Pounds;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RevolutionsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
 import static yams.mechanisms.SmartMechanism.gearbox;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.DistanceUnit;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,8 +43,10 @@ import yams.motorcontrollers.local.SparkWrapper;
 public class ElevatorSubsystem extends SubsystemBase
 {
   // TODO: Add detailed comments explaining the example, similar to the ExponentiallyProfiledArmSubsystem
-  private Distance winchCircumference = Inches.of(1.6); // TODO: change circumference
-  private double kV = winchCircumference.in(Meters) * 50.7; // Volts per (Meter per Second)
+  private Distance winchCircumference = Inches.of(1.6); 
+  private AngularVelocity kNeoKv = RPM.of(473);
+  private AngularVelocity kPostGearbox = kNeoKv.div(144);
+  private double kV = (1.0 / kPostGearbox.in(RevolutionsPerSecond))/winchCircumference.in(Meters); // Volts per (Meter per Second)
 
   private final SparkMax elevatorMotor = new SparkMax(50, SparkLowLevel.MotorType.kBrushless);
   private final DigitalInput m_upLimitIrSensor = new DigitalInput(Constants.Climber.kIRsensorport);
@@ -52,9 +57,9 @@ public class ElevatorSubsystem extends SubsystemBase
 //          .withMechanismLowerLimit()
 //          .withMechanismUpperLimit();
   private final SmartMotorControllerConfig motorConfig   = new SmartMotorControllerConfig(this)
-      .withMechanismCircumference(winchCircumference)// TODO: change circumference
+      .withMechanismCircumference(winchCircumference)
       .withClosedLoopController(60, 0, 0, MetersPerSecond.of(1), MetersPerSecondPerSecond.of(0.5))
-      .withSoftLimit(Meters.of(0), Meters.of(2)) //TODO: change soft limits
+      .withSoftLimit(Inches.zero(), Inches.of(7)) 
       .withGearing(new MechanismGearing(GearBox.fromReductionStages(9, 4, 4)))
 //      .withExternalEncoder(armMotor.getAbsoluteEncoder())
       .withIdleMode(MotorMode.BRAKE)
@@ -65,7 +70,7 @@ public class ElevatorSubsystem extends SubsystemBase
       .withMotorInverted(false)
 //      .withClosedLoopRampRate(Seconds.of(0.25))
 //      .withOpenLoopRampRate(Seconds.of(0.25))
-      .withFeedforward(new ElevatorFeedforward(0, 0, kV, 10)) //TODO: change feedforward values
+      .withFeedforward(new ElevatorFeedforward(0, 0, kV, 10)) 
       .withControlMode(ControlMode.CLOSED_LOOP);
   private final SmartMotorController motor = new SparkWrapper(elevatorMotor, DCMotor.getNEO(1), motorConfig);
 
@@ -75,7 +80,7 @@ public class ElevatorSubsystem extends SubsystemBase
       .withRelativePosition(new Translation3d(Meters.of(-0.25), Meters.of(0), Meters.of(0.5)));
   private ElevatorConfig m_config = new ElevatorConfig(motor)
       .withStartingHeight(Meters.of(0.5))
-      .withHardLimits(Meters.of(0), Meters.of(3)) //TODO: change hard limits
+      .withHardLimits(Inches.zero(), Inches.of(7.5)) 
       .withTelemetry("Elevator", TelemetryVerbosity.HIGH)
       .withMechanismPositionConfig(m_robotToMechanism)
       .withMass(Pounds.of(1));
@@ -120,7 +125,7 @@ public class ElevatorSubsystem extends SubsystemBase
     new Trigger(() -> isClimbing).and( () -> !(m_upLimitIrSensor.get()) )
       .onTrue(stopElevator()
       .finallyDo(() -> isClimbing = false));
-    return m_elevator.setHeight(Meters.of(0)) //TODO: change this height
+    return m_elevator.setHeight(Inches.of(2)) 
       .beforeStarting(() -> isClimbing = true); 
   }
 
