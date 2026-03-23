@@ -52,7 +52,7 @@ public class LimelightSubsystem extends SubsystemBase {
     limelight.getSettings()
         .withLimelightLEDMode(LEDMode.PipelineControl)
         .withCameraOffset(new Pose3d(Inches.of(0), Inches.of(0), Inches.of(20),
-            new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(0))))
+            new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(180))))
         .save();
     useAprilTags();
     poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
