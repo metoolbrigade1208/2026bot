@@ -82,9 +82,11 @@ if (currentPipe == PipelineId.aprilTag) {
     Optional<PoseEstimate> visionEstimate = poseEstimator.getPoseEstimate();
     // If the pose is present
     visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
+      if(poseEstimate.tagCount > 1){
       // Add it to the pose estimator.
       RobotContainer.drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,
           kLimelightSD);
+        }
     });}
 
   }
