@@ -13,9 +13,12 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
@@ -28,6 +31,10 @@ public class QuestNavSubsystem extends SubsystemBase {
   private final double QUEST_NAV_LEFT_CENTER_OFFSET = 10;
   private final double QUEST_NAV_RADIAN_YAW_OFFSET = Math.atan2(-7.5, 6.5);
   private boolean enabled = false;
+
+  public boolean isTracking() {
+    return questNav.isTracking();
+  }
 
   public boolean isEnabled() {
     return enabled;
@@ -51,6 +58,12 @@ public class QuestNavSubsystem extends SubsystemBase {
 
   /** Creates a new QuestNav. */
   public QuestNavSubsystem(CommandSwerveDrivetrain swerveSubsystem) {
+    new Trigger(this::isTracking).debounce(1).onFalse(RobotContainer.LL.reInitializeCommand());
+    
+    // Warn when battery reaches 20% or below
+    questNav.onLowBattery(20, level ->
+        DriverStation.reportWarning("Quest battery low: " + level + "%", false)
+    );
 
     this.swerveSubsystem = swerveSubsystem;
   }
@@ -152,7 +165,7 @@ public Command disableQuestNavCommand() {
   public void periodic() {
     // This method will be called once per scheduler run    
     questNav.commandPeriodic();
-    if (true) {
+    if (enabled) {
       updateVisionMeasurement();
       posePub.set(roboPose);
     }
