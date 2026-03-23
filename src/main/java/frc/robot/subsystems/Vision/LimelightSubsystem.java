@@ -55,7 +55,7 @@ public class LimelightSubsystem extends SubsystemBase {
             new Rotation3d(Degrees.of(180), Degrees.of(0), Degrees.of(180))))
         .save();
     useAprilTags();
-    poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG2);
+    poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
     botUninitialized().onTrue(useCameraCommand()
       .beforeStarting(runOnce(() -> isUninitialized = false)
           .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
