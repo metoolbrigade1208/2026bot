@@ -42,7 +42,7 @@ public class Shooter extends SubsystemBase {
   private SmartMotorControllerConfig smcConfig = new SmartMotorControllerConfig(this)
   .withControlMode(ControlMode.CLOSED_LOOP)
   // Feedback Constants (PID Constants)
-  .withClosedLoopController(.25, 0, 0)
+  .withClosedLoopController(.025, 0, 0)
   .withSimClosedLoopController(25, 0, 0)
   // Feedforward Constants
   .withFeedforward(new SimpleMotorFeedforward(0, kShooterkV, 0))
