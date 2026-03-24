@@ -274,6 +274,7 @@ public class Turret extends SubsystemBase {
         }
     }
 
+
     public void setAngle(Angle targetAngle) {
         turretMotor.getClosedLoopController().setSetpoint(targetAngle.in(Rotations),
                 ControlType.kPosition);
