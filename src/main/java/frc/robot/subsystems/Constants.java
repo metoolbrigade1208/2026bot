@@ -60,13 +60,15 @@ public class Constants {
   public static final double kMaxAngularVelocity = Math.PI; // radians per second
 
   public class Hopper {
-    public static final int motorCanId = 50;
+    public static final int motorCanId = 8; 
+    public static final int motorCanId2 = 9;
     public static final double motorReduction = 15.0;
     public static final int currentLimit = 40;
-    public static final double hopperSpeed = 0.9; // Adjust as needed
-  }
-
-  static Optional<RobotConfig> loadConfig(String path) {
+    public static final double hopperSpeed = 0.9;
+    public static final double hopper2Speed = -0.9; // Adjust as needed
+    public static final double invertedHopperSpeed = 0.9;
+      }
+    static Optional<RobotConfig> loadConfig(String path) {
     ObjectMapper objectMapper = new ObjectMapper();
     try {
       return Optional.of(objectMapper.readValue(new File(path), RobotConfig.class));
@@ -105,7 +107,7 @@ public class Constants {
     public static final double kArmEncoderDistPerPulse = 2.0 * Math.PI / 4096;
      public static final String kArmPositionKey = "ArmPosition";
      public static final String kArmPKey = "ArmP";
-    public static final double kIntakeKp = 0.0;
+    public static final double kIntakeKp = 0.0; 
 }
 
 public static class TurretConstants {
