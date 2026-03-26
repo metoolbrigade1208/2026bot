@@ -63,6 +63,7 @@ public class RobotContainer {
     public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public static final Turret turret = new Turret();
+    public static final LimelightSubsystem LIMELIGHT = new LimelightSubsystem();
 
     public static final Shooter shooter = new Shooter();
     public static final agitatormotor agitator = new agitatormotor();
@@ -85,6 +86,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("ArmUp", overBumberIntake.armUpCommand());
         NamedCommands.registerCommand("RunFullIntake", overBumberIntake.startIntake());
         NamedCommands.registerCommand("StopFullIntake", overBumberIntake.stopIntake());
+        NamedCommands.registerCommand("Initialize Vision", LIMELIGHT.initializedCommand());
   
      
 
