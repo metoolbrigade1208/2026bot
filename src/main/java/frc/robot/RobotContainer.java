@@ -182,8 +182,8 @@ public class RobotContainer {
             .whileFalse(stopshootercmd); 
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper().alongWith(agitator.startHopper2()));
         joystick.rightTrigger(0.05)
-            .onTrue(new InstantCommand( ()-> {MaxSpeed = MaxSpeed * driveSpeedPercentage;} ))
-            .onFalse(new InstantCommand( () -> {MaxSpeed = MaxSpeed/driveSpeedPercentage;}))
+            //.onTrue(new InstantCommand( ()-> {MaxSpeed = MaxSpeed * driveSpeedPercentage;} ))
+            //.onFalse(new InstantCommand( () -> {MaxSpeed = MaxSpeed/driveSpeedPercentage;}))
             .whileTrue(shooterCmd);
     
 

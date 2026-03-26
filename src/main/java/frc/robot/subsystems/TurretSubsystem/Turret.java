@@ -76,11 +76,13 @@ public class Turret extends SubsystemBase {
     private DoubleTopic crtAngleTopic = telemetryTable.getDoubleTopic("CRTAngle");
     private DoubleTopic enc1AngleTopic = telemetryTable.getDoubleTopic("Enc1Angle");
     private DoubleTopic enc2AngleTopic = telemetryTable.getDoubleTopic("Enc2Angle");
+    private DoubleTopic distanceTopic = telemetryTable.getDoubleTopic("Target Distance");
     private DoublePublisher crtAnglePublisher = crtAngleTopic.publish();
     private DoublePublisher enc1AnglePublisher = enc1AngleTopic.publish();
     private DoublePublisher enc2AnglePublisher = enc2AngleTopic.publish();
     private DoubleTopic setPointTopic = telemetryTable.getDoubleTopic("setPoint");
     private DoublePublisher setPointPublisher = setPointTopic.publish();
+    private DoublePublisher distancePublisher = distanceTopic.publish();
 
     // Suppose: mechanism : drive gear = 12:1, drive gear = 50T, encoders use 19T
     // and 23T pinions.
@@ -272,6 +274,7 @@ public class Turret extends SubsystemBase {
             enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
             enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
         }
+        distancePublisher.set(turretAngleDistance(getGoalPose2d()).getSecond().baseUnitMagnitude());
     }
 
 
