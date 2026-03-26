@@ -56,9 +56,9 @@ public class LimelightSubsystem extends SubsystemBase {
         .save();
     useAprilTags();
     poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
-    botUninitialized().onTrue(useCameraCommand()
-      .beforeStarting(runOnce(() -> isUninitialized = false)
-          .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
+    // botUninitialized().onTrue(useCameraCommand()
+    //   .beforeStarting(runOnce(() -> isUninitialized = false)
+    //       .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
   }
 
 
@@ -76,7 +76,7 @@ if (currentPipe == PipelineId.aprilTag) {
         .save();
 
     stdDevArray = stddevEntry.getDoubleArray(stdDevArray);
-    kLimelightSD = VecBuilder.fill(stdDevArray[6], stdDevArray[7], stdDevArray[11]);
+    kLimelightSD = VecBuilder.fill(stdDevArray[6]*2, stdDevArray[7]*2, stdDevArray[11]*2);
 
     // Get MegaTag2 pose
     Optional<PoseEstimate> visionEstimate = poseEstimator.getPoseEstimate();

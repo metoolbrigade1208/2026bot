@@ -175,7 +175,7 @@ public class RobotContainer {
         joystick.leftBumper().whileTrue(elevator.sysId());
 
         // While held, autoaim (Operator), and shoot
-        operator.leftTrigger(0.25).whileTrue(turret.AutoAimMasterCommand());
+        operator.leftTrigger(0.25).whileTrue(turret.AutoAimAndSpinCommand(turret.getGoalPose2d()));
        // joystick.button(3).whileTrue(elevator.sysId());
        ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper().alongWith(agitator.stopHopper2()));
         joystick.rightTrigger(0.05)

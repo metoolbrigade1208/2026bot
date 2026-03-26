@@ -325,14 +325,14 @@ public class Turret extends SubsystemBase {
                 Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
                         .plus(new Rotation2d(targetAngleField));
                 setAngle(targetAngleRobot.getMeasure());
-                RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
+                //RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
             },
             (interrupted) -> {
                 // turret will just go to it's last setpoint and stop, but shooter motor will keep going unless told otherwise
                 RobotContainer.shooter.setVelocitySetpoint(RPM.zero());
             }, 
             () -> false, // isFinished
-            this, RobotContainer.shooter);
+            this); //, RobotContainer.shooter);
     }
 
     BooleanSupplier atTurretSetpoint = () -> turretMotor.getClosedLoopController().isAtSetpoint();
