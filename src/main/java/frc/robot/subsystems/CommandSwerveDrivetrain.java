@@ -14,6 +14,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -143,7 +144,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
      * @param odometryUpdateFrequency The frequency to run the odometry loop. If
      *                                unspecified or set to 0 Hz, this is 250 Hz on
      *                                CAN FD, and 100 Hz on CAN 2.0.
-     * @param modules                 Constants for each specific module
+     * @param modules       pppp          Constants for each specific module
      */
     public CommandSwerveDrivetrain(
         SwerveDrivetrainConstants drivetrainConstants,
@@ -300,4 +301,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     public Optional<Pose2d> samplePoseAt(double timestampSeconds) {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
     }
+public Translation2d turretToTargetFieldRelative(Translation2d targetPosition, Translation2d turretOffset) {
+     Pose2d robotPose = getState().Pose;
+     Translation2d turretFieldRelative = robotPose.getTranslation().plus(turretOffset);
+     return targetPosition.minus(turretFieldRelative);
+    }
+
+
+
+    
+
 }

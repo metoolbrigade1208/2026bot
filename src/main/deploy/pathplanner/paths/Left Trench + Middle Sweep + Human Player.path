@@ -1,0 +1,130 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.5593485915492966,
+        "y": 7.468186619711903
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.9485915492957755,
+        "y": 7.292535211267606
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.254031690135399,
+        "y": 7.260598591549296
+      },
+      "prevControl": {
+        "x": 8.25403169012474,
+        "y": 7.510598591549296
+      },
+      "nextControl": {
+        "x": 8.254031690146057,
+        "y": 7.010598591549296
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.254031690135399,
+        "y": 1.0251878354203927
+      },
+      "prevControl": {
+        "x": 8.304215400660606,
+        "y": 1.2700992381723304
+      },
+      "nextControl": {
+        "x": 8.107745974955277,
+        "y": 0.31127012522361264
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.1441725352136376,
+        "y": 0.5698767605654849
+      },
+      "prevControl": {
+        "x": 4.394443464263355,
+        "y": 0.5955162388923795
+      },
+      "nextControl": {
+        "x": 1.8277449961455496,
+        "y": 0.5428805995154014
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.4655813953488368,
+        "y": 0.713591549297879
+      },
+      "prevControl": {
+        "x": 0.8062570574671931,
+        "y": 0.6837862909233348
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.8609625668449195,
+      "rotationDegrees": 90.0
+    },
+    {
+      "waypointRelativePos": 2.5314009661835764,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "ArmDown",
+      "waypointRelativePos": 0.35254237288135604,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "RunShooter",
+      "waypointRelativePos": 2.901694915254241,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "StopIntake",
+      "waypointRelativePos": 3.0101694915254242,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": "Left Trench + Middle Sweep + Human Player + Climb",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

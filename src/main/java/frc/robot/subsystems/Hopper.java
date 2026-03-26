@@ -4,25 +4,36 @@
 
 package frc.robot.subsystems;
 
+import javax.print.attribute.standard.PrinterLocation;
+
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+import yams.motorcontrollers.simulation.DCMotorSimSupplier;
 
 public class Hopper extends SubsystemBase {
   /** Creates a new ThroughBumberIntake. */
-  private SparkMax hopperMotor;
-  
-  private DCMotor hopperMotorSim;
+private static Hopper instance;
+public static Hopper getInstance() {
+    if (instance == null) {
+      throw new IllegalStateException("Instance not created yet");
+    }
+    return instance;
+  }
 
+  private SparkMax hopperMotor;
+
+  private DCMotorSim hopperMotorSim;
 
   public Hopper() {
-    hopperMotor = new SparkMax(8, MotorType.kBrushless);
-
+    hopperMotor = new SparkMax(Constants.Hopper.motorCanId, MotorType.kBrushless);
   }
 
   @Override
@@ -41,6 +52,4 @@ public class Hopper extends SubsystemBase {
   public Command stopHopper() {
     return run(() -> setHopperPower(0.0)); // Stop the intake
   }
-
-
 }
