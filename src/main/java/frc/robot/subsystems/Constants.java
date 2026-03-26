@@ -25,9 +25,12 @@ import static edu.wpi.first.units.Units.Meters;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Filesystem;
 import frc.robot.subsystems.TurretSubsystem.Turret;
@@ -41,6 +44,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Rotations;
 
 import swervelib.math.Matter;
@@ -139,16 +143,28 @@ public static class TurretConstants {
     static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
     static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
     public static final Translation3d TurretPos = new Translation3d(Inches.of(-8.0), Inches.of(0.0), Inches.of(20.0));
+
    
   }
   public class Field{
+  public static final Rectangle2d blueAlianceHubZone = new Rectangle2d(Translation2d.kZero, new Translation2d(Meters.of(4.0), Meters.of(8.0)));
+  public static final Rectangle2d redAlianceHubZone = new Rectangle2d(new Translation2d(Meters.of(12.50), Meters.of(0.0)), new Translation2d(Meters.of(4.0), Meters.of(8.0)));
+  public static final Rectangle2d topZone = new Rectangle2d(new Translation2d(Meters.of(0.0), Meters.of(4.0)), new Translation2d(Meters.of(16.50), Meters.of(8.0)));
+  public static final Rectangle2d bottomZone = new Rectangle2d(Translation2d.kZero, new Translation2d(Meters.of(16.5), Meters.of(4.0)));
+  
  public static final AprilTagFieldLayout Field = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+ public static final Transform2d sideTopOffset = new Transform2d(Meters.of(0.0), Meters.of(1.0), Rotation2d.kZero);
+ public static final Transform2d sideBottomOffset = new Transform2d(Meters.of(0.0), Meters.of(-1.0), Rotation2d.kZero);
     public static final Pose2d RedGoalPose2D = Field.getTagPose(4).get()
         .interpolate(Field.getTagPose(10).get(), .5)
         .toPose2d();
     public static final Pose2d BlueGoalPose2D = Field.getTagPose(20).get()
         .interpolate(Field.getTagPose(26).get(), .5)
         .toPose2d();
+    public static final Pose2d BlueSideTop = Field.getTagPose(26).get().toPose2d().plus(sideTopOffset);
+    public static final Pose2d BlueSideBottom = Field.getTagPose(26).get().toPose2d().plus(sideBottomOffset);
+    public static final Pose2d RedSideTop = Field.getTagPose(10).get().toPose2d().plus(sideTopOffset);
+    public static final Pose2d RedSideBottom = Field.getTagPose(10).get().toPose2d().plus(sideBottomOffset);
   }
 }
 /*
