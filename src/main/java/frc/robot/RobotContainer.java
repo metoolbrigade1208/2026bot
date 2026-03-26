@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -46,7 +47,7 @@ import frc.robot.subsystems.agitatormotor;
 public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 1/2 of a rotation per second max angular velocity
-
+    private double driveSpeedPercentage = 1/3;
     private final SendableChooser<Command> autoChooser;
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -177,17 +178,15 @@ public class RobotContainer {
         operator.leftTrigger(0.25).whileTrue(turret.AutoAimMasterCommand());
        // joystick.button(3).whileTrue(elevator.sysId());
        ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper().alongWith(agitator.stopHopper2()));
-        joystick.leftTrigger(0.05)
+        joystick.rightTrigger(0.05)
             .whileFalse(stopshootercmd); 
         ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper().alongWith(agitator.startHopper2()));
-        joystick.leftTrigger(0.05)
+        joystick.rightTrigger(0.05)
+            .onTrue(new InstantCommand( ()-> {MaxSpeed = MaxSpeed * driveSpeedPercentage;} ))
+            .onFalse(new InstantCommand( () -> {MaxSpeed = MaxSpeed/driveSpeedPercentage;}))
             .whileTrue(shooterCmd);
-       ParallelCommandGroup  stopeverythingcommand = shooter.StopShooterCommand().alongWith(hopper.stopHopper().alongWith(agitator.stopHopper2()).alongWith(overBumberIntake.stopIntake()));
-        joystick.rightTrigger(0.05)
-            .whileFalse(stopeverythingcommand); 
-       ParallelCommandGroup runeverythingcommand = shooter.RunShooterCommand().alongWith(hopper.startHopper().alongWith(agitator.startHopper2()).alongWith(overBumberIntake.startIntake()));
-        joystick.rightTrigger(0.05)
-           .whileTrue(runeverythingcommand);
+    
+
     //Binds for reversing the hopper motor
         joystick.rightBumper().whileTrue(agitator.invertHopper());
         joystick.rightBumper().whileFalse(agitator.stopHopper2());
