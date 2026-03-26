@@ -158,7 +158,7 @@ if (currentPipe == PipelineId.aprilTag) {
   }
 
   public Command initializedCommand () {
-    return useCameraCommand()
+    return useCameraCommand().ignoringDisable(true)
             .alongWith(RobotContainer.QNS.enableQuestNavCommand());
   }
 

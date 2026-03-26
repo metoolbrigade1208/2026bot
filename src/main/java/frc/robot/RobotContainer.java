@@ -166,6 +166,7 @@ public class RobotContainer {
     //Binds for reversing the hopper motor
         joystick.rightBumper().whileTrue(agitator.invertHopper());
         joystick.rightBumper().whileFalse(agitator.stopHopper2());
+       
         
     }
    //path planner commands 
