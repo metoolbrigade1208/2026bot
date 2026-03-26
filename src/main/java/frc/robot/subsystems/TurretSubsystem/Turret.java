@@ -232,10 +232,30 @@ public class Turret extends SubsystemBase {
     public Pose2d getGoalPose2d() {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
         if (alliance == Alliance.Blue) {
+            if (Constants.Field.blueAlianceHubZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
+                return Constants.Field.BlueGoalPose2D;
+            } else {
+                if (Constants.Field.topZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
+                    return Constants.Field.BlueSideTop;
+                }
+                if (Constants.Field.bottomZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
+                    return Constants.Field.BlueSideBottom;
+                }
+            }
             return Constants.Field.BlueGoalPose2D;
+        } else {
+            if (Constants.Field.redAlianceHubZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
+                return Constants.Field.RedGoalPose2D;
+            } else {
+                if (Constants.Field.topZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
+                    return Constants.Field.RedSideTop;
+                }
+                if (Constants.Field.bottomZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
+                    return Constants.Field.RedSideBottom;
+                }
+            }
+            return Constants.Field.RedGoalPose2D;
         }
-        return Constants.Field.RedGoalPose2D;
-
     }
 
     public void simulationPeriodic() {
