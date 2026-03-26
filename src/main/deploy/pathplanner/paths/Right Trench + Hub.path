@@ -41,7 +41,7 @@
       },
       "nextControl": {
         "x": 8.134810602170745,
-        "y": 7.391051661096592
+        "y": 7.391051661096593
       },
       "isLocked": false,
       "linkedName": null
@@ -153,7 +153,7 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Right Trench + Hub + Climb",
+  "folder": "Right Trench + Hub",
   "idealStartingState": {
     "velocity": 0.0,
     "rotation": -90.0
