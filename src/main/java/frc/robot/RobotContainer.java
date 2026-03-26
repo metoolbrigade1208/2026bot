@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -30,7 +31,7 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Turret.Shooter;
-import frc.robot.subsystems.Turret.Turret;
+
 import frc.robot.subsystems.Turret.Shooter;
 
 public class RobotContainer {
@@ -51,10 +52,11 @@ public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
     private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+   
 
-    public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
-    public static final Turret turret = new Turret();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    //private final QuestNavSubsystem questNav = new QuestNavSubsystem(drivetrain, null);
+    public final Turret turret = new Turret();
 
     public final Shooter shooter = new Shooter();
     public final BumberIntake bumperIntake = new BumberIntake();
@@ -100,11 +102,10 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        joystick.leftBumper().whileTrue(hopper.startHopper());
-        joystick.leftBumper().whileFalse(hopper.stopHopper());
-        joystick.rightBumper().whileTrue(overBumberIntake.startIntake());
-        joystick.rightBumper().whileFalse(overBumberIntake.stopIntake());
-        
+        //joystick.leftBumper().whileTrue(hopper.startHopper());
+        //joystick.leftBumper().whileFalse(hopper.stopHopper());
+        joystick.start().whileTrue(overBumberIntake.startIntake());
+        joystick.start().whileFalse(overBumberIntake.stopIntake());
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
@@ -120,9 +121,8 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         // Bindings for Arm control
-        joystick.start().onTrue(overBumberIntake.armDownCommand());
-        joystick.start().onFalse(overBumberIntake.armUpCommand());
-
+        joystick.leftBumper().whileTrue(overBumberIntake.armDownCommand());
+        joystick.leftBumper().whileFalse(overBumberIntake.armUpCommand());
 
         // Bindings for the turret subsystem
         joystick.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
@@ -131,20 +131,32 @@ public class RobotContainer {
         // Reset the field-centric heading on left bumper press.
      /*   joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
-        joystick.leftTrigger(0.05).onTrue(shooter.RunShooterCommand(FeetPerSecond.of(5.0)));
-        joystick.leftTrigger(0.05).onFalse(shooter.StopShooterCommand()); 
+        joystick.leftTrigger(0.05)
+            .onTrue(shooter.RunShooterCommand())
+            .onFalse(shooter.StopShooterCommand()); 
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
-
         //ELevator subsystem bindings
         joystick.y().onTrue(elevator.setHeight(Meters.of(1)));
         joystick.x().onTrue(elevator.setHeight(Meters.of(0)));
         joystick.leftBumper().whileTrue(elevator.elevatorClimb()); 
        // joystick.button(3).whileTrue(elevator.sysId());
+       ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper());
+        joystick.rightTrigger(0.05)
+            .whileFalse(stopshootercmd); 
+        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper());
+        joystick.rightTrigger(0.05)
+            .whileTrue(shooterCmd);
+        
     }
-    //named commands documentation from path planner lib, this should declare our commands for path planner to see
- 
+   //path planner commands 
+
+   public void TeleopInit(){
+        overBumberIntake.TeleopInit();
+   }
+   
+
     public Command getAutonomousCommand() {
         // Simple drive forward auton
         final var idle = new SwerveRequest.Idle();
