@@ -14,6 +14,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -31,9 +32,6 @@ import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Turret.Shooter;
-
-import frc.robot.subsystems.Turret.Shooter;
-
 public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 1/2 of a rotation per second max angular velocity
@@ -72,10 +70,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("StartIntake", bumperIntake.startIntake());
         NamedCommands.registerCommand("StopIntake", bumperIntake.stopIntake());
         NamedCommands.registerCommand("ArmUp", bumperIntake.armUpCommand());
-        NamedCommands.registerCommand("RunFullIntake", bumperIntake.runFullIntakeSystem());
-        NamedCommands.registerCommand("StopFullIntake", bumperIntake.stopFullIntakeSystem());
-        NamedCommands.registerCommand("Climber Up", elevator.setHeight(Meters.of(1)));
-        NamedCommands.registerCommand("Climber Down", elevator.elevatorClimb());
+        NamedCommands.registerCommand("RunFullIntake", bumperIntake.startIntake());
+        NamedCommands.registerCommand("StopFullIntake", bumperIntake.stopIntake());
+  
+     
 
      
 
@@ -132,7 +130,7 @@ public class RobotContainer {
      /*   joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
         joystick.leftTrigger(0.05)
-            .onTrue(shooter.RunShooterCommand())
+            .onTrue(shooter.RunShooterCommand(LinearVelocity speed))
             .onFalse(shooter.StopShooterCommand()); 
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
