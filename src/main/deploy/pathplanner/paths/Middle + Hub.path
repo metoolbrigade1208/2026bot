@@ -137,7 +137,7 @@
     "rotation": -90.0
   },
   "reversed": false,
-  "folder": "Middle + Hub + Climb",
+  "folder": "Middle + Hub",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0
