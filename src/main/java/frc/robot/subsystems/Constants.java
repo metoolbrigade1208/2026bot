@@ -79,18 +79,6 @@ public class Constants {
      public static final String kArmPKey = "ArmP";
     public static final double kIntakeKp = 0.0;
 }
-public class Turret {
-    public static final int motorID = 55;
-    public static final double motorReduction = 15.0;
-    public static final int currentLimit = 40;
-
-}
-public class QuestNav {
-    public static final Transform3d ROBOT_TO_QUEST = new Transform3d();
-}
-public class Climber {
-    public static final int kIRsensorport = 8;
-}
 }
 /* public static class TurretConstants {
     public static final int motorCanpId = 0; //change this twin
