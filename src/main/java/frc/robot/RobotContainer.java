@@ -10,12 +10,14 @@ import java.lang.annotation.Target;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import com.pathplanner.lib.auto.NamedCommands;
+import com.google.flatbuffers.Constants;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -29,11 +31,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem.Shooter;
-import frc.robot.subsystems.TurretSubsystem.Turret;
 import frc.robot.subsystems.Vision.LimelightSubsystem;
 import frc.robot.subsystems.Vision.QuestNavSubsystem;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
+import frc.robot.subsystems.TurretSubsystem.Turret;
 import frc.robot.subsystems.Constants.OverBumperIntake;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.agitatormotor;
@@ -41,7 +43,7 @@ import frc.robot.subsystems.agitatormotor;
 public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 1/2 of a rotation per second max angular velocity
-    public static SparkMax sharedMotor= new SparkMax(50, MotorType.kBrushless);;
+
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -72,6 +74,22 @@ public class RobotContainer {
         QNS = new QuestNavSubsystem(drivetrain);
         LL = new LimelightSubsystem();
         configureBindings();
+
+        NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
+
+        NamedCommands.registerCommand("RunShooter", shooter.RunShooterCommand());
+        NamedCommands.registerCommand("StopShooter", shooter.StopShooterCommand());
+        NamedCommands.registerCommand("ArmDown", overBumberIntake.armDownCommand());
+        NamedCommands.registerCommand("StartIntake", overBumberIntake.startIntake());
+        NamedCommands.registerCommand("StopIntake", overBumberIntake.stopIntake());
+        NamedCommands.registerCommand("ArmUp", overBumberIntake.armUpCommand());
+        NamedCommands.registerCommand("RunFullIntake", overBumberIntake.startIntake());
+        NamedCommands.registerCommand("StopFullIntake", overBumberIntake.stopIntake());
+  
+     
+
+     
+
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
     }
