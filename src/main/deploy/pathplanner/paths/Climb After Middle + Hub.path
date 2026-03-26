@@ -36,7 +36,12 @@
       "name": "ArmUp",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmUp"
+        }
+      }
     },
     {
       "name": "Climber Up",
@@ -74,7 +79,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Middle + Hub + Climb",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0

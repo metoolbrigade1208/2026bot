@@ -41,7 +41,7 @@
       },
       "nextControl": {
         "x": 8.134810602170745,
-        "y": 7.391051661096592
+        "y": 7.391051661096593
       },
       "isLocked": false,
       "linkedName": null
@@ -113,31 +113,67 @@
       "name": "ArmDown",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmDown"
+        }
+      }
+    },
+    {
+      "name": "Initialize Vision",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Initialize Vision"
+        }
+      }
     },
     {
       "name": "StartIntake",
       "waypointRelativePos": 0.6328358208955229,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StartIntake"
+        }
+      }
     },
     {
       "name": "StopIntake",
-      "waypointRelativePos": 2.376119402985072,
+      "waypointRelativePos": 2.0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StopIntake"
+        }
+      }
     },
     {
       "name": "RunShooter",
       "waypointRelativePos": 2.770149253731343,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RunShooter"
+        }
+      }
     },
     {
       "name": "StartIntake",
       "waypointRelativePos": 3.7164179104477624,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StartIntake"
+        }
+      }
     }
   ],
   "globalConstraints": {

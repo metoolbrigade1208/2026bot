@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.447570422535212,
-        "y": 4.035
+        "x": 3.508903471622304,
+        "y": 4.045493950979979
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.559348891072888,
-        "y": 4.370334407200907
+        "x": 3.62068194015998,
+        "y": 4.380828358180886
       },
       "isLocked": false,
       "linkedName": null
@@ -85,6 +85,17 @@
       }
     },
     {
+      "name": "Initialize Vision",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Initialize Vision"
+        }
+      }
+    },
+    {
       "name": "StartIntake",
       "waypointRelativePos": 0.6711864406779725,
       "endWaypointRelativePos": null,
@@ -121,7 +132,12 @@
       "name": "StopShooter",
       "waypointRelativePos": 3.0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StopShooter"
+        }
+      }
     }
   ],
   "globalConstraints": {

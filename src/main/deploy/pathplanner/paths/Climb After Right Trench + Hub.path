@@ -52,7 +52,12 @@
       "name": "StopShooter",
       "waypointRelativePos": 0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StopShooter"
+        }
+      }
     },
     {
       "name": "Climber Up",
@@ -79,7 +84,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Right Trench + Hub + Climb",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

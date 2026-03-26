@@ -52,7 +52,12 @@
       "name": "ArmUp",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmUp"
+        }
+      }
     },
     {
       "name": "Climber Up",
@@ -69,7 +74,12 @@
       "name": "StopShooter",
       "waypointRelativePos": 1.0208955223880598,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StopShooter"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -85,7 +95,7 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Left Trench + Middle Sweep + Human Player + Climb",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

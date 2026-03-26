@@ -13,11 +13,14 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.google.flatbuffers.Constants;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -44,7 +47,7 @@ public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 1/2 of a rotation per second max angular velocity
 
-
+    private final SendableChooser<Command> autoChooser;
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -63,7 +66,7 @@ public class RobotContainer {
     public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     public static final Turret turret = new Turret();
-    public static final LimelightSubsystem LIMELIGHT = new LimelightSubsystem();
+    //public static final LimelightSubsystem LIMELIGHT = new LimelightSubsystem();
 
     public static final Shooter shooter = new Shooter();
     public static final agitatormotor agitator = new agitatormotor();
@@ -86,9 +89,11 @@ public class RobotContainer {
         NamedCommands.registerCommand("ArmUp", overBumberIntake.armUpCommand());
         NamedCommands.registerCommand("RunFullIntake", overBumberIntake.startIntake());
         NamedCommands.registerCommand("StopFullIntake", overBumberIntake.stopIntake());
-        NamedCommands.registerCommand("Initialize Vision", LIMELIGHT.initializedCommand());
-  
-     
+        NamedCommands.registerCommand("Initialize Vision", LL.initializedCommand());
+        
+    autoChooser = AutoBuilder.buildAutoChooser("Middle to Hub");
+    SmartDashboard.putData("Autonomous/Select Autonomous Path", autoChooser);
+
 
      
 
@@ -197,21 +202,24 @@ public class RobotContainer {
    
 
     public Command getAutonomousCommand() {
-        // Simple drive forward auton
-        final var idle = new SwerveRequest.Idle();
-        return Commands.sequence(
-            // Reset our field centric heading to match the robot
-            // facing away from our alliance station wall (0 deg).
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-            // Then slowly drive forward (away from us) for 5 seconds.
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(0.5)
-                    .withVelocityY(0)
-                    .withRotationalRate(0)
-            )
-            .withTimeout(5.0),
-            // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle)
-        );
+      
+        //final var idle = new SwerveRequest.Idle();
+        // return Commands.sequence(
+        //     // Reset our field centric heading to match the robot
+        //     // facing away from our alliance station wall (0 deg).
+        //     drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+        //     // Then slowly drive forward (away from us) for 5 seconds.
+        //     drivetrain.applyRequest(() ->
+        //         drive.withVelocityX(0.5)
+        //             .withVelocityY(0)
+        //             .withRotationalRate(0)
+        //     )
+        //     .withTimeout(5.0),
+         
+        //     // Finally idle for the rest of auton
+        //     drivetrain.applyRequest(() -> idle)
+            
+        // );
+        return autoChooser.getSelected(); 
     }
 }

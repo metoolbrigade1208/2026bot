@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.2035027417106807,
-        "y": 7.214663796581573
+        "x": 3.499731663685152,
+        "y": 7.35309481216458
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.482501283744131,
-        "y": 7.438867508436033
+        "x": 4.778730205718606,
+        "y": 7.57729852401904
       },
       "isLocked": false,
       "linkedName": null
@@ -20,12 +20,12 @@
         "y": 7.214663796581573
       },
       "prevControl": {
-        "x": 7.724850443808686,
-        "y": 7.957961826951291
+        "x": 7.004418604651163,
+        "y": 7.35309481216458
       },
       "nextControl": {
-        "x": 7.864513765869811,
-        "y": 6.397008881593409
+        "x": 8.599862654634673,
+        "y": 7.072438378468511
       },
       "isLocked": false,
       "linkedName": null
@@ -52,12 +52,12 @@
         "y": 7.107346775968311
       },
       "prevControl": {
-        "x": 8.020831371677094,
-        "y": 6.734242188397459
+        "x": 8.169639309949131,
+        "y": 6.886512883867066
       },
       "nextControl": {
-        "x": 7.3501455674149065,
-        "y": 7.824710194762325
+        "x": 7.036869409660108,
+        "y": 7.547799642218246
       },
       "isLocked": false,
       "linkedName": null
@@ -81,34 +81,70 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "Initialize Vision",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Initialize Vision"
+        }
+      }
+    },
+    {
       "name": "ArmDown",
       "waypointRelativePos": 0.3912082514734773,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmDown"
+        }
+      }
     },
     {
       "name": "StartIntake",
       "waypointRelativePos": 0.5975257858546167,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StartIntake"
+        }
+      }
     },
     {
       "name": "StopIntake",
       "waypointRelativePos": 3.263844548133586,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StopIntake"
+        }
+      }
     },
     {
       "name": "ArmUp",
       "waypointRelativePos": 3.27,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmUp"
+        }
+      }
     },
     {
       "name": "RunShooter",
       "waypointRelativePos": 3.571310166994107,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RunShooter"
+        }
+      }
     }
   ],
   "globalConstraints": {
