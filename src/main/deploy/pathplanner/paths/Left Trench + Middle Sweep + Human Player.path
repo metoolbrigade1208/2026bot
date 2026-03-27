@@ -78,6 +78,10 @@
   ],
   "rotationTargets": [
     {
+      "waypointRelativePos": 0.95,
+      "rotationDegrees": 90.0
+    },
+    {
       "waypointRelativePos": 1.8609625668449195,
       "rotationDegrees": 90.0
     },
@@ -112,7 +116,7 @@
       }
     },
     {
-      "name": "RunShooter",
+      "name": "AutoAimMaster",
       "waypointRelativePos": 2.901694915254241,
       "endWaypointRelativePos": null,
       "command": {
@@ -150,7 +154,7 @@
   "folder": "Left Trench + Middle Sweep + Human Player",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

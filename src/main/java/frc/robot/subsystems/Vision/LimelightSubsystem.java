@@ -56,9 +56,9 @@ public class LimelightSubsystem extends SubsystemBase {
         .save();
     useAprilTags();
     poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
-    // botUninitialized().onTrue(useCameraCommand()
-    //   .beforeStarting(runOnce(() -> isUninitialized = false)
-    //       .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
+    botUninitialized().onTrue(useCameraCommand()
+      .beforeStarting(runOnce(() -> isUninitialized = false)));
+   //       .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
   }
 
 
@@ -126,8 +126,8 @@ if (currentPipe == PipelineId.aprilTag) {
   public Trigger botUninitialized() {
     return new Trigger(() -> isUninitialized)
       .and(isPoseNotNull)
-      .and(isPoseVelocityLow)
-      .and(RobotContainer.QNS::isTracking);
+      .and(isPoseVelocityLow);
+      // .and(RobotContainer.QNS::isTracking);
   }
 
   public Command useAprilTagsCommand() {
