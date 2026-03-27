@@ -82,7 +82,6 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
 
-        NamedCommands.registerCommand("RunShooter", shooter.RunShooterCommand());
         NamedCommands.registerCommand("StopShooter", shooter.StopShooterCommand());
         NamedCommands.registerCommand("ArmDown", overBumberIntake.armDownCommand());
         NamedCommands.registerCommand("StartIntake", overBumberIntake.startIntake());
@@ -91,6 +90,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("RunFullIntake", overBumberIntake.startIntake());
         NamedCommands.registerCommand("StopFullIntake", overBumberIntake.stopIntake());
         NamedCommands.registerCommand("Initialize Vision", LL.initializedCommand());
+        NamedCommands.registerCommand("AutoAimMaster", turret.AutoAimMasterCommand());
         
     autoChooser = AutoBuilder.buildAutoChooser("Middle to Hub");
     SmartDashboard.putData("Autonomous/Select Autonomous Path", autoChooser);
@@ -177,10 +177,10 @@ public class RobotContainer {
         // While held, autoaim (Operator), and shoot
         operator.leftTrigger(0.25).whileTrue(turret.AutoAimAndSpinCommand(turret.getGoalPose2d()));
        // joystick.button(3).whileTrue(elevator.sysId());
-       ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper().alongWith(agitator.stopHopper2()));
+       ParallelCommandGroup  stopshootercmd = (hopper.stopHopper().alongWith(agitator.stopHopper2()));
         joystick.rightTrigger(0.05)
             .whileFalse(stopshootercmd); 
-        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper().alongWith(agitator.startHopper2()));
+        ParallelCommandGroup shooterCmd = (hopper.startHopper().alongWith(agitator.startHopper2()));
         joystick.rightTrigger(0.05)
             //.onTrue(new InstantCommand( ()-> {MaxSpeed = MaxSpeed * driveSpeedPercentage;} ))
             //.onFalse(new InstantCommand( () -> {MaxSpeed = MaxSpeed/driveSpeedPercentage;}))
