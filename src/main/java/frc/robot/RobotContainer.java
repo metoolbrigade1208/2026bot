@@ -170,9 +170,9 @@ public class RobotContainer {
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
         //ELevator subsystem bindings
-        joystick.x().whileTrue(elevator.setHeight(Meters.of(1)));
-        joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
-        joystick.leftBumper().whileTrue(elevator.sysId());
+      //  joystick.x().whileTrue(elevator.setHeight(Meters.of(1)));
+       // joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
+      //  joystick.leftBumper().whileTrue(elevator.sysId());
 
         // While held, autoaim (Operator), and shoot
         operator.leftTrigger(0.25).whileTrue(turret.AutoAimAndSpinCommand(turret.getGoalPose2d()));
