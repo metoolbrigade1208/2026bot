@@ -208,12 +208,12 @@ public class Turret extends SubsystemBase {
 
         //setup distance speed table
         // meters -> RPM
-        table.put(0.0, 0.0);
-        table.put(1.0, 600.0);
-        table.put(2.0, 1200.0);
-        table.put(3.0, 1800.0);
-        table.put(4.0, 2400.0);
-        table.put(5.0, 3000.0);
+        table.put(0.0, 3000.0);
+        table.put(3.2, 3000.0);
+        table.put(3.7, 3200.0);
+        table.put(4.7, 3600.0);
+        table.put(5.56, 3900.0);
+        table.put (6.7, 4200.0);
     }
 
     public Angle getAngle() {
@@ -325,14 +325,14 @@ public class Turret extends SubsystemBase {
                 Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
                         .plus(new Rotation2d(targetAngleField));
                 setAngle(targetAngleRobot.getMeasure());
-                //RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
+                RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
             },
             (interrupted) -> {
                 // turret will just go to it's last setpoint and stop, but shooter motor will keep going unless told otherwise
                 RobotContainer.shooter.setVelocitySetpoint(RPM.zero());
             }, 
             () -> false, // isFinished
-            this); //, RobotContainer.shooter);
+            this, RobotContainer.shooter);
     }
 
     BooleanSupplier atTurretSetpoint = () -> turretMotor.getClosedLoopController().isAtSetpoint();
@@ -341,7 +341,7 @@ public class Turret extends SubsystemBase {
 
     public Command AutoAimMasterCommand() {
         
-        new Trigger( () -> shooterEnabled).and(atShooterSetpoint).and(atTurretSetpoint)
+        new Trigger( () -> shooterEnabled)
             .onTrue(RobotContainer.hopper.startHopper())
             .onFalse(RobotContainer.hopper.stopHopper());
         return AutoAimAndSpinCommand(getGoalPose2d())
