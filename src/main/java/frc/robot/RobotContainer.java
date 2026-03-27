@@ -178,7 +178,7 @@ public class RobotContainer {
         operator.leftTrigger(0.25).whileTrue(turret.AutoAimMasterCommand());
        // joystick.button(3).whileTrue(elevator.sysId());
        ParallelCommandGroup  stopshootercmd = (hopper.stopHopper().alongWith(agitator.stopHopper2()));
-       Command  stopshootercmd = (agitator.stopHopper2()).alongWith(hopper.stopHopper());
+      // Command  stopshootercmd = (agitator.stopHopper2()).alongWith(hopper.stopHopper());
         joystick.rightTrigger(0.05)
             .whileFalse(stopshootercmd); 
         ParallelCommandGroup shooterCmd = (hopper.startHopper().alongWith(agitator.startHopper2()));
