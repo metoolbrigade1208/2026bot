@@ -8,6 +8,9 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RevolutionsPerSecond;
+
+import java.util.function.Supplier;
+
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -93,12 +96,15 @@ public class Shooter extends SubsystemBase {
    */
   public Command setVelocity(AngularVelocity speed) {return shooter.run(speed);}
 
+  public Command setVelocity(Supplier<AngularVelocity> speed) {return shooter.run(speed);}
+
   public Command setToManualVelocity(){
-    return setVelocity(manualRPM);
+    System.out.println("new shppter speed" + manualRPM);
+    return setVelocity( ()-> manualRPM);
   }
   
   public Command bumpManualVelocity(AngularVelocity bump) {
-    return runOnce( () -> manualRPM.plus(bump));
+    return runOnce( () -> manualRPM = manualRPM.plus(bump)).andThen(setToManualVelocity());
   }
 
   /**
