@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.05,
-        "y": 7.353
+        "x": 3.562,
+        "y": 7.364
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.069623020633239,
-        "y": 6.453213949285038
+        "x": 3.812,
+        "y": 7.364
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.05,
-        "y": 4.708354203935598
+        "x": 3.0,
+        "y": 7.364
       },
       "prevControl": {
-        "x": 1.0337745974955277,
-        "y": 5.50339892665474
+        "x": 2.75,
+        "y": 7.364
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,35 +33,13 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "ArmUp",
-      "waypointRelativePos": 0,
+      "name": "RunShooter",
+      "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "ArmUp"
-        }
-      }
-    },
-    {
-      "name": "Climber Up",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Climber Up"
-        }
-      }
-    },
-    {
-      "name": "Climber Down",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Climber Down"
+          "name": "RunShooter"
         }
       }
     }
@@ -76,13 +54,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Only Shoot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

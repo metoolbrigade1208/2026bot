@@ -9,30 +9,6 @@
           "data": {
             "pathName": "Right Trench + Hub"
           }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climb After Right Trench + Hub"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Climber Down"
-          }
         }
       ]
     }

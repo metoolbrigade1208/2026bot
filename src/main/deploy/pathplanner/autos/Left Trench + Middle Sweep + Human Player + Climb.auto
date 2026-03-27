@@ -9,24 +9,6 @@
           "data": {
             "pathName": "Left Trench + Middle Sweep + Human Player"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Climb After Left Trench + Middle Sweep + Human Player"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Climber Down"
-          }
         }
       ]
     }
