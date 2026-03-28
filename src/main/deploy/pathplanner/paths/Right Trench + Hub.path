@@ -94,6 +94,14 @@
   ],
   "rotationTargets": [
     {
+      "waypointRelativePos": 1.069518716577542,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.1764705882352946,
+      "rotationDegrees": -90.0
+    },
+    {
       "waypointRelativePos": 2.2318840579710146,
       "rotationDegrees": -90.0
     },
@@ -121,17 +129,6 @@
       }
     },
     {
-      "name": "Initialize Vision",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Initialize Vision"
-        }
-      }
-    },
-    {
       "name": "StartIntake",
       "waypointRelativePos": 0.6328358208955229,
       "endWaypointRelativePos": null,
@@ -154,7 +151,7 @@
       }
     },
     {
-      "name": "RunShooter",
+      "name": "AutoAimMaster",
       "waypointRelativePos": 2.770149253731343,
       "endWaypointRelativePos": null,
       "command": {
@@ -192,7 +189,7 @@
   "folder": "Right Trench + Hub",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

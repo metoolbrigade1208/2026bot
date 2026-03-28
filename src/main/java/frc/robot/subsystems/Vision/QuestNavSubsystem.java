@@ -94,7 +94,7 @@ public class QuestNavSubsystem extends SubsystemBase {
 
         // Add the mesaurement to the pose Estimator
         if (swerveSubsystem != null) {
-          swerveSubsystem.addVisionMeasurement(robotPose.toPose2d(), timestamp, QUESTNAV_STD_DEVS);
+          //swerveSubsystem.addVisionMeasurement(robotPose.toPose2d(), timestamp, QUESTNAV_STD_DEVS);
         }
         roboPose = robotPose;
 

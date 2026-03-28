@@ -58,14 +58,14 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
     public  static Hopper hopper = new Hopper();
-    private final BumberIntake overBumberIntake = new BumberIntake();
+    // private final BumberIntake overBumberIntake = new BumberIntake();
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
     private final ElevatorSubsystem elevator = new ElevatorSubsystem();
    
 
     public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
+   
     public static final Turret turret = new Turret();
     //public static final LimelightSubsystem LIMELIGHT = new LimelightSubsystem();
 
@@ -83,18 +83,21 @@ public class RobotContainer {
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
 
         NamedCommands.registerCommand("StopShooter", shooter.StopShooterCommand());
-        NamedCommands.registerCommand("ArmDown", overBumberIntake.armDownCommand());
-        NamedCommands.registerCommand("StartIntake", overBumberIntake.startIntake());
-        NamedCommands.registerCommand("StopIntake", overBumberIntake.stopIntake());
-        NamedCommands.registerCommand("ArmUp", overBumberIntake.armUpCommand());
-        NamedCommands.registerCommand("RunFullIntake", overBumberIntake.startIntake());
-        NamedCommands.registerCommand("StopFullIntake", overBumberIntake.stopIntake());
-        NamedCommands.registerCommand("Initialize Vision", LL.initializedCommand());
+        // NamedCommands.registerCommand("ArmDown", overBumberIntake.armDownCommand());
+        // NamedCommands.registerCommand("StartIntake", overBumberIntake.startIntake());
+        // NamedCommands.registerCommand("StopIntake", overBumberIntake.stopIntake());
+        // NamedCommands.registerCommand("ArmUp", overBumberIntake.armUpCommand());
+        // NamedCommands.registerCommand("RunFullIntake", overBumberIntake.startIntake());
+        // NamedCommands.registerCommand("StopFullIntake", overBumberIntake.stopIntake());
+       // NamedCommands.registerCommand("Initialize Vision", LL.initializedCommand());
         NamedCommands.registerCommand("AutoAimMaster", turret.AutoAimMasterCommand());
+        NamedCommands.registerCommand("startHopper2", agitator.startHopper2());
+        NamedCommands.registerCommand("startHopper", hopper.startHopper());
+      //  NamedCommands.registerCommand("shooterCmd", RobotContainer.ParallelCommandGroup.shooterCmd);
         
     autoChooser = AutoBuilder.buildAutoChooser("Middle to Hub");
     SmartDashboard.putData("Autonomous/Select Autonomous Path", autoChooser);
-        
+
 
      
 
@@ -123,8 +126,8 @@ public class RobotContainer {
 
         //joystick.leftBumper().whileTrue(hopper.startHopper());
         //joystick.leftBumper().whileFalse(hopper.stopHopper());
-        joystick.start().whileTrue(overBumberIntake.startIntake());
-        joystick.start().whileFalse(overBumberIntake.stopIntake());
+        // joystick.start().whileTrue(overBumberIntake.startIntake());
+        // joystick.start().whileFalse(overBumberIntake.stopIntake());
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
@@ -142,8 +145,8 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         // Bindings for Arm control
-        operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
-        operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
+        // operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
+        // operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
 
         operator.y().onTrue(LL.initializedCommand());
 
@@ -183,9 +186,11 @@ public class RobotContainer {
             .whileFalse(stopshootercmd); 
         ParallelCommandGroup shooterCmd = (hopper.startHopper().alongWith(agitator.startHopper2()));
         joystick.rightTrigger(0.05)
+        
             //.onTrue(new InstantCommand( ()-> {MaxSpeed = MaxSpeed * driveSpeedPercentage;} ))
             //.onFalse(new InstantCommand( () -> {MaxSpeed = MaxSpeed/driveSpeedPercentage;}))
             .whileTrue(shooterCmd);
+            
     
 
     //Binds for reversing the hopper motor
@@ -197,7 +202,7 @@ public class RobotContainer {
    //path planner commands 
 
    public void TeleopInit(){
-        overBumberIntake.TeleopInit();
+        // overBumberIntake.TeleopInit();
    }
    
 
