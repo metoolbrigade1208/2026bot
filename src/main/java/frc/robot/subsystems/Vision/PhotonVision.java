@@ -19,10 +19,15 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTablesJNI;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.networktables.StructTopic;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import java.awt.Desktop;
 import java.util.ArrayList;
@@ -50,8 +55,15 @@ import swervelib.telemetry.SwerveDriveTelemetry;
  * https://gitlab.com/ironclad_code/ironclad-2024/-/blob/master/src/main/java/frc/robot/vision/Vision.java?ref_type=heads
  */
 @Logged
-public class PhotonVision {
+public class PhotonVision extends SubsystemBase {
   
+
+    private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Vision");
+    private StructTopic<Pose2d> leftCamTopic = telemetryTable.getStructTopic("Left Cam Pose", Pose2d.struct);
+    private StructTopic<Pose2d> rightCamTopic = telemetryTable.getStructTopic("Right Cam Pose", Pose2d.struct);
+    private StructPublisher<Pose2d> leftCamPublisher = leftCamTopic.publish();
+    private StructPublisher<Pose2d> rightCamPublisher = rightCamTopic.publish();
+    
   /**
    * April Tag Field Layout of the year.
    */
@@ -202,10 +214,10 @@ public class PhotonVision {
     for (PhotonPipelineResult result : camera.resultsList) {
       if (result.hasTargets()) {
         for (PhotonTrackedTarget i : result.getTargets()) {
-            int targetID = target.getFiducialId();
-            double poseAmbiguity = target.getPoseAmbiguity();
-            Transform3d bestCameraToTarget = target.getBestCameraToTarget();
-            Transform3d alternateCameraToTarget = target.getAlternateCameraToTarget();
+          //  int targetID = target.getFiducialId();
+           // double poseAmbiguity = target.getPoseAmbiguity();
+            // Transform3d bestCameraToTarget = target.getBestCameraToTarget();
+           // Transform3d alternateCameraToTarget = target.getAlternateCameraToTarget();
           if (i.getFiducialId() == id) {
             return i;
           }
@@ -218,7 +230,14 @@ public class PhotonVision {
   }
 
 
-  /**
+  @Override
+public void periodic() {
+    leftCamPublisher.set(Cameras.LEFT_CAM.estimatedRobotPose.get().estimatedPose.toPose2d());
+    rightCamPublisher.set(Cameras.RIGHT_CAM.estimatedRobotPose.get().estimatedPose.toPose2d());
+    super.periodic();
+}
+
+/**
    * Vision simulation.
    *
    * @return Vision Simulation
@@ -287,15 +306,15 @@ public class PhotonVision {
      * 
      * Source Camera
      */
-    SOURCE_CAM("Source",
+    LEFT_CAM("Source", //left cam
         new Rotation3d(Math.toRadians(0), Math.toRadians(45), Math.toRadians(90)),
         new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(9.5),
             Units.inchesToMeters(29.5)),
         VecBuilder.fill(2, 2, 4), VecBuilder.fill(0.5, 0.5, 1)),
-    /*
-     * Score Camera
+    /*  
+     * Score Camera right cam
      */
-    SCORE_CAM("Score", new Rotation3d(0, Units.degreesToRadians(0), Math.toRadians(-90)),
+    RIGHT_CAM("Score", new Rotation3d(0, Units.degreesToRadians(0), Math.toRadians(-90)),
         new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(-9.5),
             Units.inchesToMeters(12.5)),
         VecBuilder.fill(2, 2, 4), VecBuilder.fill(0.5, 0.5, 1));
