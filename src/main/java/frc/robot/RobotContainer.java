@@ -72,8 +72,8 @@ public class RobotContainer {
     public static final Shooter shooter = new Shooter();
     public static final agitatormotor agitator = new agitatormotor();
 
-    public static LimelightSubsystem LL;
-    public static QuestNavSubsystem QNS;
+   //public static LimelightSubsystem LL;
+    //public static QuestNavSubsystem QNS;
 
     public RobotContainer() {
         QNS = new QuestNavSubsystem(drivetrain);
