@@ -324,7 +324,7 @@ public class Turret extends SubsystemBase {
                 double targetDistanceMeters = Tad.getSecond().in(Meters);
                 Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
                         .plus(new Rotation2d(targetAngleField));
-                setAngle(targetAngleRobot.getMeasure());
+                //setAngle(targetAngleRobot.getMeasure());
                 RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
             },
             (interrupted) -> {

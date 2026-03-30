@@ -77,7 +77,7 @@ if (currentPipe == PipelineId.aprilTag) {
         .save();
 
     stdDevArray = stddevEntry.getDoubleArray(stdDevArray);
-    kLimelightSD = VecBuilder.fill(stdDevArray[6]*4, stdDevArray[7]*4, stdDevArray[11]*4);
+    kLimelightSD = VecBuilder.fill(stdDevArray[6]*4, stdDevArray[7]*4, 99999);
 
     // Get MegaTag2 pose
     Optional<PoseEstimate> visionEstimate = poseEstimator.getPoseEstimate();

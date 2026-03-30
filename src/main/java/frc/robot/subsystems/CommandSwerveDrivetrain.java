@@ -349,7 +349,9 @@ public Translation2d turretToTargetFieldRelative(Translation2d targetPosition, T
      Translation2d turretFieldRelative = robotPose.getTranslation().plus(turretOffset);
      return targetPosition.minus(turretFieldRelative);
     }
-
+    public Command resetRotation() {
+        return runOnce(() -> seedFieldCentric());
+    }
 
 
     
