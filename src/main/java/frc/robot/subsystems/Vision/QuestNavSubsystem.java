@@ -30,7 +30,7 @@ public class QuestNavSubsystem extends SubsystemBase {
   private final double QUEST_NAV_HEIGHT = 10.0;
   private final double QUEST_NAV_FORWARD_CENTER_OFFSET = +11;
   private final double QUEST_NAV_LEFT_CENTER_OFFSET = -11;
-  private final double QUEST_NAV_RADIAN_YAW_OFFSET = Math.atan2(-6.5, 7.5);
+  private final double QUEST_NAV_RADIAN_YAW_OFFSET = Math.atan2(-6.5,7.5);
   private boolean enabled = false;
 
   public boolean isTracking() {
