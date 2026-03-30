@@ -3,41 +3,57 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.493,
-        "y": 4.881
+        "x": 3.5732667617689007,
+        "y": 0.6386019971469341
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.7429997771123592,
-        "y": 4.881333831949834
+        "x": 4.572074102153658,
+        "y": 0.6987631278209445
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3876584507042262,
-        "y": 5.041003521126761
+        "x": 7.5066191155492135,
+        "y": 0.755049928676391
       },
       "prevControl": {
-        "x": 0.9405457746478882,
-        "y": 5.1208450704225354
+        "x": 6.9778635931688235,
+        "y": 0.4201714311665186
       },
       "nextControl": {
-        "x": 1.6337653445813467,
-        "y": 4.997055861505847
+        "x": 7.894778887301193,
+        "y": 1.0008844507876609
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.0682922535211277,
-        "y": 4.721637323943662
+        "x": 7.5066191155492135,
+        "y": 7.35376604850214
       },
       "prevControl": {
-        "x": 1.0842605633802826,
-        "y": 4.993098591549296
+        "x": 7.748199505592426,
+        "y": 7.210770855021334
+      },
+      "nextControl": {
+        "x": 7.037622617201106,
+        "y": 7.631372376611437
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.2368616262482157,
+        "y": 7.35376604850214
+      },
+      "prevControl": {
+        "x": 2.615805991438141,
+        "y": 7.340827389446718
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,25 +63,7 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "StopShooter",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "Climber Up",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Climber Up"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -76,13 +74,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Right Trench + Hub + Climb",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

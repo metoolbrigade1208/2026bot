@@ -41,7 +41,7 @@
       },
       "nextControl": {
         "x": 8.134810602170745,
-        "y": 7.391051661096592
+        "y": 7.391051661096593
       },
       "isLocked": false,
       "linkedName": null
@@ -94,6 +94,14 @@
   ],
   "rotationTargets": [
     {
+      "waypointRelativePos": 1.069518716577542,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.1764705882352946,
+      "rotationDegrees": -90.0
+    },
+    {
       "waypointRelativePos": 2.2318840579710146,
       "rotationDegrees": -90.0
     },
@@ -113,31 +121,56 @@
       "name": "ArmDown",
       "waypointRelativePos": 0.0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmDown"
+        }
+      }
     },
     {
       "name": "StartIntake",
       "waypointRelativePos": 0.6328358208955229,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StartIntake"
+        }
+      }
     },
     {
       "name": "StopIntake",
-      "waypointRelativePos": 2.376119402985072,
+      "waypointRelativePos": 2.0,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StopIntake"
+        }
+      }
     },
     {
-      "name": "RunShooter",
+      "name": "AutoAimMaster",
       "waypointRelativePos": 2.770149253731343,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RunShooter"
+        }
+      }
     },
     {
       "name": "StartIntake",
       "waypointRelativePos": 3.7164179104477624,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StartIntake"
+        }
+      }
     }
   ],
   "globalConstraints": {
@@ -153,10 +186,10 @@
     "rotation": 90.0
   },
   "reversed": false,
-  "folder": "Right Trench + Hub + Climb",
+  "folder": "Right Trench + Hub",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

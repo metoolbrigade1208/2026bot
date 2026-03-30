@@ -56,9 +56,10 @@ public class LimelightSubsystem extends SubsystemBase {
         .save();
     useAprilTags();
     poseEstimator = limelight.createPoseEstimator(EstimationMode.MEGATAG1);
-    botUninitialized().onTrue(useCameraCommand()
-      .beforeStarting(runOnce(() -> isUninitialized = false)
-          .alongWith(RobotContainer.QNS.enableQuestNavCommand())));
+    botUninitialized()
+    // .onTrue(useCameraCommand()
+      // .beforeStarting(runOnce(() -> isUninitialized = false)));
+         .onTrue(RobotContainer.QNS.enableQuestNavCommand());
   }
 
 
@@ -76,13 +77,13 @@ if (currentPipe == PipelineId.aprilTag) {
         .save();
 
     stdDevArray = stddevEntry.getDoubleArray(stdDevArray);
-    kLimelightSD = VecBuilder.fill(stdDevArray[6], stdDevArray[7], stdDevArray[11]);
+    kLimelightSD = VecBuilder.fill(stdDevArray[6]*4, stdDevArray[7]*4, 99999);
 
     // Get MegaTag2 pose
     Optional<PoseEstimate> visionEstimate = poseEstimator.getPoseEstimate();
     // If the pose is present
     visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
-      if(poseEstimate.tagCount > 1){
+      if(poseEstimate.tagCount > 0){
       // Add it to the pose estimator.
       RobotContainer.drivetrain.addVisionMeasurement(poseEstimate.pose.toPose2d(), poseEstimate.timestampSeconds,
           kLimelightSD);
@@ -126,8 +127,8 @@ if (currentPipe == PipelineId.aprilTag) {
   public Trigger botUninitialized() {
     return new Trigger(() -> isUninitialized)
       .and(isPoseNotNull)
-      .and(isPoseVelocityLow)
-      .and(RobotContainer.QNS::isTracking);
+      .and(isPoseVelocityLow);
+      // .and(RobotContainer.QNS::isTracking);
   }
 
   public Command useAprilTagsCommand() {

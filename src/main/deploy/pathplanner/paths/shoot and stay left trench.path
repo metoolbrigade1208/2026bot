@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.466,
-        "y": 0.714
+        "x": 3.562,
+        "y": 7.364
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.21600446026469244,
-        "y": 0.712506643896369
+        "x": 3.812,
+        "y": 7.364
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.8667077464784883,
-        "y": 4.194683098597643
+        "x": 2.185474060822898,
+        "y": 7.364
       },
       "prevControl": {
-        "x": 2.4202315511448287,
-        "y": 2.729473027427209
-      },
-      "nextControl": {
-        "x": 1.3237852112676065,
-        "y": 5.631830985915493
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.052,
-        "y": 4.817447183098592
-      },
-      "prevControl": {
-        "x": 0.901999999996689,
-        "y": 4.617447183101075
+        "x": 1.935474060822898,
+        "y": 7.364
       },
       "nextControl": null,
       "isLocked": false,
@@ -49,25 +33,41 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "ArmUp",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "Climber Up",
-      "waypointRelativePos": 0,
+      "name": "TurretReturnNeutral",
+      "waypointRelativePos": 0.5830508474576261,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Climber Up"
+          "name": "TurretReturnNeutral"
         }
       }
     },
     {
-      "name": "StopShooter",
-      "waypointRelativePos": 1.0208955223880598,
+      "name": "startHopper",
+      "waypointRelativePos": 0.7,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper"
+        }
+      }
+    },
+    {
+      "name": "startHopper2",
+      "waypointRelativePos": 0.7,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper2"
+        }
+      }
+    },
+    {
+      "name": "AutoAimMaster",
+      "waypointRelativePos": 0.8644067796610166,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -82,13 +82,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -45.0
   },
   "reversed": false,
-  "folder": "Left Trench + Middle Sweep + Human Player + Climb",
+  "folder": "Only Shoot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 59.99999999999999
   },
   "useDefaultConstraints": true
 }

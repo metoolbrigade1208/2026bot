@@ -39,7 +39,7 @@ public class ElevatorSubsystem extends SubsystemBase
   private Distance winchCircumference = Inches.of(11); // TODO: change circumference
   private double kV = winchCircumference.in(Meters) * 50.7; // Volts per (Meter per Second)
 
-  private final SparkMax elevatorMotor = new SparkMax(2, SparkLowLevel.MotorType.kBrushless);
+  private final SparkMax elevatorMotor = new SparkMax(50, SparkLowLevel.MotorType.kBrushless);
   //  private final SmartMotorControllerTelemetryConfig motorTelemetryConfig = new SmartMotorControllerTelemetryConfig()
 //          .withMechanismPosition()
 //          .withRotorPosition()

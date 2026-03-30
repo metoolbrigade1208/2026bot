@@ -13,13 +13,17 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.google.flatbuffers.Constants;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -43,8 +47,8 @@ import frc.robot.subsystems.agitatormotor;
 public class RobotContainer {
     private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 1/2 of a rotation per second max angular velocity
-
-
+    private double driveSpeedPercentage = 1/3;
+    private final SendableChooser<Command> autoChooser;
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -61,8 +65,9 @@ public class RobotContainer {
    
 
     public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
+   
     public static final Turret turret = new Turret();
+    //public static final LimelightSubsystem LIMELIGHT = new LimelightSubsystem();
 
     public static final Shooter shooter = new Shooter();
     public static final agitatormotor agitator = new agitatormotor();
@@ -77,16 +82,26 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
 
-        NamedCommands.registerCommand("RunShooter", shooter.RunShooterCommand());
-        NamedCommands.registerCommand("StopShooter", shooter.StopShooterCommand());
-        NamedCommands.registerCommand("ArmDown", overBumberIntake.armDownCommand());
-        NamedCommands.registerCommand("StartIntake", overBumberIntake.startIntake());
-        NamedCommands.registerCommand("StopIntake", overBumberIntake.stopIntake());
-        NamedCommands.registerCommand("ArmUp", overBumberIntake.armUpCommand());
-        NamedCommands.registerCommand("RunFullIntake", overBumberIntake.startIntake());
-        NamedCommands.registerCommand("StopFullIntake", overBumberIntake.stopIntake());
-  
-     
+         NamedCommands.registerCommand("StopShooter", shooter.StopShooterCommand());
+         NamedCommands.registerCommand("ArmDown", overBumberIntake.armDownCommand());
+         NamedCommands.registerCommand("StartIntake", overBumberIntake.startIntake());
+         NamedCommands.registerCommand("StopIntake", overBumberIntake.stopIntake());
+         NamedCommands.registerCommand("ArmUp", overBumberIntake.armUpCommand());
+         NamedCommands.registerCommand("RunFullIntake", overBumberIntake.startIntake());
+         NamedCommands.registerCommand("StopFullIntake", overBumberIntake.stopIntake());
+         NamedCommands.registerCommand("TurretLeft45", turret.SetpointCommand(Degrees.of(-45)));
+         NamedCommands.registerCommand("TurretRight45", turret.SetpointCommand(Degrees.of(45)));
+         NamedCommands.registerCommand("TurretReturnNeutral", turret.SetpointCommand(Degrees.of(0)));
+       // NamedCommands.registerCommand("Initialize Vision", LL.initializedCommand());
+        NamedCommands.registerCommand("AutoAimMaster", turret.AutoAimMasterCommand());
+        NamedCommands.registerCommand("startHopper2", agitator.startHopper2());
+        NamedCommands.registerCommand("startHopper", hopper.startHopper());
+
+      //  NamedCommands.registerCommand("shooterCmd", RobotContainer.ParallelCommandGroup.shooterCmd);
+        
+    autoChooser = AutoBuilder.buildAutoChooser("Middle to Hub");
+    SmartDashboard.putData("Autonomous/Select Autonomous Path", autoChooser);
+
 
      
 
@@ -115,10 +130,10 @@ public class RobotContainer {
 
         //joystick.leftBumper().whileTrue(hopper.startHopper());
         //joystick.leftBumper().whileFalse(hopper.stopHopper());
-        joystick.start().whileTrue(overBumberIntake.startIntake());
-        joystick.start().whileFalse(overBumberIntake.stopIntake());
+         //joystick.start().whileTrue(overBumberIntake.startIntake());
+         //joystick.start().whileFalse(overBumberIntake.stopIntake());
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+       // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
             point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))
         ));
@@ -134,15 +149,15 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         // Bindings for Arm control
-        operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
-        operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
+       //TODO operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
+        //TODO operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
 
         operator.y().onTrue(LL.initializedCommand());
 
 
         // Bindings for manual turret movement
-        operator.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-90))); // Point turret left at 90 degrees
-        operator.povRight().onTrue(turret.SetpointCommand(Degrees.of(90))); // Point turret right at 90 degrees\
+        operator.povLeft().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret left at 90 degrees
+        operator.povRight().onTrue(turret.SetpointCommand(Degrees.of(45))); // Point turret right at 90 degrees\
         operator.povUp().onTrue(turret.SetpointCommand(Degrees.of(0))); //rezeros the turret
 
         //Bindings for manual shooter control
@@ -162,25 +177,27 @@ public class RobotContainer {
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
         //ELevator subsystem bindings
-        joystick.x().whileTrue(elevator.setHeight(Meters.of(1)));
-        joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
-        joystick.leftBumper().whileTrue(elevator.sysId());
+      //  joystick.x().whileTrue(elevator.setHeight(Meters.of(1)));
+       // joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
+      //  joystick.leftBumper().whileTrue(elevator.sysId());
 
         // While held, autoaim (Operator), and shoot
         operator.leftTrigger(0.25).whileTrue(turret.AutoAimMasterCommand());
        // joystick.button(3).whileTrue(elevator.sysId());
-       ParallelCommandGroup  stopshootercmd = shooter.StopShooterCommand().alongWith(hopper.stopHopper().alongWith(agitator.stopHopper2()));
-        joystick.leftTrigger(0.05)
+       ParallelCommandGroup  stopshootercmd = (hopper.stopHopper().alongWith(agitator.stopHopper2()));
+      // Command  stopshootercmd = (agitator.stopHopper2()).alongWith(hopper.stopHopper());
+        joystick.rightTrigger(0.05)
             .whileFalse(stopshootercmd); 
-        ParallelCommandGroup shooterCmd = shooter.RunShooterCommand().alongWith(hopper.startHopper().alongWith(agitator.startHopper2()));
-        joystick.leftTrigger(0.05)
+        ParallelCommandGroup shooterCmd = (hopper.startHopper().alongWith(agitator.startHopper2()));
+        joystick.rightTrigger(0.05)
+        
+            //.onTrue(new InstantCommand( ()-> {MaxSpeed = MaxSpeed * driveSpeedPercentage;} ))
+            //.onFalse(new InstantCommand( () -> {MaxSpeed = MaxSpeed/driveSpeedPercentage;}))
             .whileTrue(shooterCmd);
-       ParallelCommandGroup  stopeverythingcommand = shooter.StopShooterCommand().alongWith(hopper.stopHopper().alongWith(agitator.stopHopper2()).alongWith(overBumberIntake.stopIntake()));
-        joystick.rightTrigger(0.05)
-            .whileFalse(stopeverythingcommand); 
-       ParallelCommandGroup runeverythingcommand = shooter.RunShooterCommand().alongWith(hopper.startHopper().alongWith(agitator.startHopper2()).alongWith(overBumberIntake.startIntake()));
-        joystick.rightTrigger(0.05)
-           .whileTrue(runeverythingcommand);
+        joystick.a().onTrue(drivetrain.resetRotation());
+            
+    
+
     //Binds for reversing the hopper motor
         joystick.rightBumper().whileTrue(agitator.invertHopper());
         joystick.rightBumper().whileFalse(agitator.stopHopper2());
@@ -190,26 +207,28 @@ public class RobotContainer {
    //path planner commands 
 
    public void TeleopInit(){
-        overBumberIntake.TeleopInit();
+      overBumberIntake.TeleopInit();
    }
    
-
     public Command getAutonomousCommand() {
-        // Simple drive forward auton
-        final var idle = new SwerveRequest.Idle();
-        return Commands.sequence(
-            // Reset our field centric heading to match the robot
-            // facing away from our alliance station wall (0 deg).
-            drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-            // Then slowly drive forward (away from us) for 5 seconds.
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(0.5)
-                    .withVelocityY(0)
-                    .withRotationalRate(0)
-            )
-            .withTimeout(5.0),
-            // Finally idle for the rest of auton
-            drivetrain.applyRequest(() -> idle)
-        );
+      
+        //final var idle = new SwerveRequest.Idle();
+        // return Commands.sequence(
+        //     // Reset our field centric heading to match the robot
+        //     // facing away from our alliance station wall (0 deg).
+        //     drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+        //     // Then slowly drive forward (away from us) for 5 seconds.
+        //     drivetrain.applyRequest(() ->
+        //         drive.withVelocityX(0.5)
+        //             .withVelocityY(0)
+        //             .withRotationalRate(0)
+        //     )
+        //     .withTimeout(5.0),
+         
+        //     // Finally idle for the rest of auton
+        //     drivetrain.applyRequest(() -> idle)
+            
+        // );
+        return autoChooser.getSelected(); 
     }
 }
