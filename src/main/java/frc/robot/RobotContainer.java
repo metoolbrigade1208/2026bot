@@ -16,9 +16,11 @@ import com.revrobotics.spark.SparkMax;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +38,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.TurretSubsystem.Shooter;
 import frc.robot.subsystems.Vision.LimelightSubsystem;
+import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.subsystems.Vision.QuestNavSubsystem;
 import frc.robot.subsystems.BumperIntake.BumberIntake;
 import frc.robot.subsystems.ElevatorSubsystem.ElevatorSubsystem;
@@ -72,12 +75,13 @@ public class RobotContainer {
     public static final Shooter shooter = new Shooter();
     public static final agitatormotor agitator = new agitatormotor();
 
-    public static LimelightSubsystem LL;
-    public static QuestNavSubsystem QNS;
-
+   // public static LimelightSubsystem LL;
+    //public static QuestNavSubsystem QNS;
+    public PhotonVision photonVisionCameras = new PhotonVision(() -> (drivetrain.getState().Pose), new Field2d());
+    
     public RobotContainer() {
-        QNS = new QuestNavSubsystem(drivetrain);
-        LL = new LimelightSubsystem();
+        //QNS = new QuestNavSubsystem(drivetrain);
+        //LL = new LimelightSubsystem();
         configureBindings();
 
         NamedCommands.registerCommand("test", new PrintCommand("Test command executed!"));
@@ -152,7 +156,7 @@ public class RobotContainer {
        //TODO operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
         //TODO operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
 
-        operator.y().onTrue(LL.initializedCommand());
+       // operator.y().onTrue(LL.initializedCommand());
 
 
         // Bindings for manual turret movement

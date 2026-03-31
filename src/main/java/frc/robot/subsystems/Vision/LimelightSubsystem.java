@@ -45,7 +45,7 @@ public class LimelightSubsystem extends SubsystemBase {
       0.1, 0.1, 0.0, 0.0, 0.0, 0.1 };
 
   /** Creates a new Limelight. */
-  public LimelightSubsystem() {
+  /*public LimelightSubsystem() {
     limelight = new Limelight("limelight");
     // Set the limelight to use Pipeline LED control, with the Camera offset of 0,
     // and save.
@@ -59,8 +59,8 @@ public class LimelightSubsystem extends SubsystemBase {
     botUninitialized()
     // .onTrue(useCameraCommand()
       // .beforeStarting(runOnce(() -> isUninitialized = false)));
-         .onTrue(RobotContainer.QNS.enableQuestNavCommand());
-  }
+         .onTrue(RobotContainer.QNS.enableQuestNavCommand());*/
+  
 
 
   @Override
@@ -152,7 +152,7 @@ if (currentPipe == PipelineId.aprilTag) {
     usePipeline(PipelineId.camera);
   }
 
-  public Command reInitializeCommand () {
+ /*  public Command reInitializeCommand () {
     return runOnce(() -> {isUninitialized = true;})
       .alongWith(RobotContainer.QNS.disableQuestNavCommand())
       .withName("reinitialize bot Pose");
@@ -161,6 +161,6 @@ if (currentPipe == PipelineId.aprilTag) {
   public Command initializedCommand () {
     return useCameraCommand().ignoringDisable(true)
             .alongWith(RobotContainer.QNS.enableQuestNavCommand());
-  }
+  }*/
 
 }
