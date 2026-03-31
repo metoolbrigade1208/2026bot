@@ -47,10 +47,7 @@ import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
-import org.photonvision.targeting.TargetCorner;
-
 import swervelib.SwerveDrive;
-import swervelib.telemetry.SwerveDriveTelemetry;
 
 /**
  * Example PhotonVision class to aid in the pursuit of accurate odometry. Taken
@@ -59,14 +56,13 @@ import swervelib.telemetry.SwerveDriveTelemetry;
  */
 @Logged
 public class PhotonVision extends SubsystemBase {
-  
 
-    private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Vision");
-    private StructTopic<Pose2d> leftCamTopic = telemetryTable.getStructTopic("Left Cam Pose", Pose2d.struct);
-    private StructTopic<Pose2d> rightCamTopic = telemetryTable.getStructTopic("Right Cam Pose", Pose2d.struct);
-    private StructPublisher<Pose2d> leftCamPublisher = leftCamTopic.publish();
-    private StructPublisher<Pose2d> rightCamPublisher = rightCamTopic.publish();
-    
+  private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Vision");
+  private StructTopic<Pose2d> leftCamTopic = telemetryTable.getStructTopic("Left Cam Pose", Pose2d.struct);
+  private StructTopic<Pose2d> rightCamTopic = telemetryTable.getStructTopic("Right Cam Pose", Pose2d.struct);
+  private StructPublisher<Pose2d> leftCamPublisher = leftCamTopic.publish();
+  private StructPublisher<Pose2d> rightCamPublisher = rightCamTopic.publish();
+
   /**
    * April Tag Field Layout of the year.
    */
@@ -135,23 +131,25 @@ public class PhotonVision extends SubsystemBase {
    * @param swerveDrive {@link SwerveDrive} instance.
    */
   public void updatePoseEstimation(CommandSwerveDrivetrain swerveDrive) {
- /*    if (SwerveDriveTelemetry.isSimulation
-        && swerveDrive.getSimulationDriveTrainPose().isPresent()) {
-      /*
-       * In the maple-sim, odometry is simulated using encoder values, accounting for
-       * factors like
-       * skidding and drifting. As a result, the odometry may not always be 100%
-       * accurate. However,
-       * the vision system should be able to provide a reasonably accurate pose
-       * estimation, even
-       * when odometry is incorrect. (This is why teams implement vision system to
-       * correct
-       * odometry.) Therefore, we must ensure that the actual robot pose is provided
-       * in the
-       * simulator when updating the vision simulation during the simulation.
-       
-      visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
-    }*/
+    /*
+     * if (SwerveDriveTelemetry.isSimulation
+     * && swerveDrive.getSimulationDriveTrainPose().isPresent()) {
+     * /*
+     * In the maple-sim, odometry is simulated using encoder values, accounting for
+     * factors like
+     * skidding and drifting. As a result, the odometry may not always be 100%
+     * accurate. However,
+     * the vision system should be able to provide a reasonably accurate pose
+     * estimation, even
+     * when odometry is incorrect. (This is why teams implement vision system to
+     * correct
+     * odometry.) Therefore, we must ensure that the actual robot pose is provided
+     * in the
+     * simulator when updating the vision simulation during the simulation.
+     * 
+     * visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
+     * }
+     */
     for (Cameras camera : Cameras.values()) {
       Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
       if (poseEst.isPresent()) {
@@ -217,14 +215,14 @@ public class PhotonVision extends SubsystemBase {
     for (PhotonPipelineResult result : camera.resultsList) {
       if (result.hasTargets()) {
         for (PhotonTrackedTarget i : result.getTargets()) {
-          //  int targetID = target.getFiducialId();
-           // double poseAmbiguity = target.getPoseAmbiguity();
-            // Transform3d bestCameraToTarget = target.getBestCameraToTarget();
-           // Transform3d alternateCameraToTarget = target.getAlternateCameraToTarget();
+          // int targetID = target.getFiducialId();
+          // double poseAmbiguity = target.getPoseAmbiguity();
+          // Transform3d bestCameraToTarget = target.getBestCameraToTarget();
+          // Transform3d alternateCameraToTarget = target.getAlternateCameraToTarget();
           if (i.getFiducialId() == id) {
             return i;
           }
-  
+
         }
       }
     }
@@ -232,16 +230,21 @@ public class PhotonVision extends SubsystemBase {
 
   }
 
-
   @Override
-public void periodic() {
-    leftCamPublisher.set(Cameras.LEFT_CAM.estimatedRobotPose.get().estimatedPose.toPose2d());
-    rightCamPublisher.set(Cameras.RIGHT_CAM.estimatedRobotPose.get().estimatedPose.toPose2d());
+  public void periodic() {
+    Cameras.LEFT_CAM.estimatedRobotPose.ifPresent(
+        (pose) -> {
+          leftCamPublisher.set(pose.estimatedPose.toPose2d());
+        });
+    Cameras.RIGHT_CAM.estimatedRobotPose.ifPresent(
+        (pose) -> {
+          rightCamPublisher.set(pose.estimatedPose.toPose2d());
+        });
     updatePoseEstimation(RobotContainer.drivetrain);
     super.periodic();
-}
+  }
 
-/**
+  /**
    * Vision simulation.
    *
    * @return Vision Simulation
@@ -310,20 +313,19 @@ public void periodic() {
      * 
      * Source Camera
      */
-    LEFT_CAM("Source", //left cam
-        new Rotation3d(Math.toRadians(0), Math.toRadians(0), Math.toRadians(45)), //TODO: change to the proper values
-        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(12), //TODO: change to the proper values
-            Units.inchesToMeters(8)), 
+    LEFT_CAM("Source", // left cam
+        new Rotation3d(Math.toRadians(0), Math.toRadians(0), Math.toRadians(45)), // TODO: change to the proper values
+        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(12), // TODO: change to the proper values
+            Units.inchesToMeters(8)),
         VecBuilder.fill(2, 2, 4), VecBuilder.fill(0.5, 0.5, 1)),
-    /*  
+    /*
      * Score Camera right cam
      */
-    RIGHT_CAM("Score", new Rotation3d(0, Units.degreesToRadians(0), Math.toRadians(-45)), //TODO: change to the proper values
-        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(-12), //TODO: change to the proper values
+    RIGHT_CAM("Score", new Rotation3d(0, Units.degreesToRadians(0), Math.toRadians(-45)), // TODO: change to the proper
+                                                                                          // values
+        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(-12), // TODO: change to the proper values
             Units.inchesToMeters(8)),
         VecBuilder.fill(2, 2, 4), VecBuilder.fill(0.5, 0.5, 1));
-
-
 
     /**
      * Latency alert to use when high latency is detected.
@@ -357,7 +359,7 @@ public void periodic() {
     /**
      * Estimated robot pose.
      */
-    public Optional<EstimatedRobotPose> estimatedRobotPose;
+    public Optional<EstimatedRobotPose> estimatedRobotPose = Optional.empty();
     /**
      * Simulated camera instance which only exists during simulations.
      */
@@ -398,9 +400,7 @@ public void periodic() {
       // https://docs.wpilib.org/en/stable/docs/software/basic-programming/coordinate-system.html
       robotToCamTransform = new Transform3d(robotToCamTranslation, robotToCamRotation);
 
-      poseEstimator = new PhotonPoseEstimator(PhotonVision.fieldLayout,
-          PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCamTransform);
-      poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+      poseEstimator = new PhotonPoseEstimator(PhotonVision.fieldLayout, robotToCamTransform);
 
       this.singleTagStdDevs = singleTagStdDevs;
       this.multiTagStdDevs = multiTagStdDevsMatrix;
@@ -433,7 +433,7 @@ public void periodic() {
       if (Robot.isSimulation()) {
         systemSim.addCamera(cameraSim, robotToCamTransform);
       }
-      
+
     }
 
     /**
@@ -527,12 +527,14 @@ public void periodic() {
      */
     private void updateEstimatedGlobalPose() {
       Optional<EstimatedRobotPose> visionEst = Optional.empty();
-      for (var change : resultsList) {
-        visionEst = poseEstimator.update(change);
-        updateEstimationStdDevs(visionEst, change.getTargets());
+      for (var result : resultsList) {
+        visionEst = poseEstimator.estimateCoprocMultiTagPose(result);
+        if (visionEst.isEmpty()) {
+          visionEst = poseEstimator.estimateLowestAmbiguityPose(result);
+        }
+        updateEstimationStdDevs(visionEst, result.getTargets());
       }
       estimatedRobotPose = visionEst;
-      
 
     }
 
