@@ -29,6 +29,9 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+
 import java.awt.Desktop;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,8 +134,8 @@ public class PhotonVision extends SubsystemBase {
    *
    * @param swerveDrive {@link SwerveDrive} instance.
    */
-  public void updatePoseEstimation(SwerveDrive swerveDrive) {
-    if (SwerveDriveTelemetry.isSimulation
+  public void updatePoseEstimation(CommandSwerveDrivetrain swerveDrive) {
+ /*    if (SwerveDriveTelemetry.isSimulation
         && swerveDrive.getSimulationDriveTrainPose().isPresent()) {
       /*
        * In the maple-sim, odometry is simulated using encoder values, accounting for
@@ -146,9 +149,9 @@ public class PhotonVision extends SubsystemBase {
        * odometry.) Therefore, we must ensure that the actual robot pose is provided
        * in the
        * simulator when updating the vision simulation during the simulation.
-       */
+       
       visionSim.update(swerveDrive.getSimulationDriveTrainPose().get());
-    }
+    }*/
     for (Cameras camera : Cameras.values()) {
       Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
       if (poseEst.isPresent()) {
@@ -234,6 +237,7 @@ public class PhotonVision extends SubsystemBase {
 public void periodic() {
     leftCamPublisher.set(Cameras.LEFT_CAM.estimatedRobotPose.get().estimatedPose.toPose2d());
     rightCamPublisher.set(Cameras.RIGHT_CAM.estimatedRobotPose.get().estimatedPose.toPose2d());
+    updatePoseEstimation(RobotContainer.drivetrain);
     super.periodic();
 }
 
@@ -307,17 +311,19 @@ public void periodic() {
      * Source Camera
      */
     LEFT_CAM("Source", //left cam
-        new Rotation3d(Math.toRadians(0), Math.toRadians(45), Math.toRadians(90)),
-        new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(9.5),
-            Units.inchesToMeters(29.5)),
+        new Rotation3d(Math.toRadians(0), Math.toRadians(0), Math.toRadians(45)), //TODO: change to the proper values
+        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(12), //TODO: change to the proper values
+            Units.inchesToMeters(8)), 
         VecBuilder.fill(2, 2, 4), VecBuilder.fill(0.5, 0.5, 1)),
     /*  
      * Score Camera right cam
      */
-    RIGHT_CAM("Score", new Rotation3d(0, Units.degreesToRadians(0), Math.toRadians(-90)),
-        new Translation3d(Units.inchesToMeters(0), Units.inchesToMeters(-9.5),
-            Units.inchesToMeters(12.5)),
+    RIGHT_CAM("Score", new Rotation3d(0, Units.degreesToRadians(0), Math.toRadians(-45)), //TODO: change to the proper values
+        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(-12), //TODO: change to the proper values
+            Units.inchesToMeters(8)),
         VecBuilder.fill(2, 2, 4), VecBuilder.fill(0.5, 0.5, 1));
+
+
 
     /**
      * Latency alert to use when high latency is detected.
