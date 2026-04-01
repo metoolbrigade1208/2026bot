@@ -41,7 +41,7 @@
       },
       "nextControl": {
         "x": 8.107745974955277,
-        "y": 0.3112701252236124
+        "y": 0.3112701252236123
       },
       "isLocked": false,
       "linkedName": null
@@ -77,6 +77,10 @@
     }
   ],
   "rotationTargets": [
+    {
+      "waypointRelativePos": 0.06307053941909113,
+      "rotationDegrees": 180.0
+    },
     {
       "waypointRelativePos": 0.95,
       "rotationDegrees": 90.0
@@ -151,10 +155,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Left Trench + Middle Sweep + Human Player",
+  "folder": "Left Trench",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 59.99999999999999
+    "velocity": 0.0,
+    "rotation": -130.0
   },
   "useDefaultConstraints": true
 }
