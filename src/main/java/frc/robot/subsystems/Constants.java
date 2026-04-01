@@ -142,25 +142,22 @@ public static class TurretConstants {
     public static final Translation2d turretOffset = new Translation2d(Inches.of(10), Inches.of(0));
     static public AngularVelocity threshold = DegreesPerSecond.of(5); // Set a threshold
     static public Angle toleranceAngle = Degrees.of(1); // Set a threshold
-    public static final Translation3d TurretPos = new Translation3d(Inches.of(-8.0), Inches.of(0.0), Inches.of(20.0));
+    public static final Translation3d TurretPos = new Translation3d(Inches.of(8.0), Inches.of(0.0), Inches.of(20.0));
 
    
   }
   public class Field{
   public static final Rectangle2d blueAlianceHubZone = new Rectangle2d(Translation2d.kZero, new Translation2d(Meters.of(4.0), Meters.of(8.0)));
-  public static final Rectangle2d redAlianceHubZone = new Rectangle2d(new Translation2d(Meters.of(12.50), Meters.of(0.0)), new Translation2d(Meters.of(4.0), Meters.of(8.0)));
+  public static final Rectangle2d redAlianceHubZone = new Rectangle2d(new Translation2d(Meters.of(12.50), Meters.of(0.0)), new Translation2d(Meters.of(16.5), Meters.of(8.0)));
   public static final Rectangle2d topZone = new Rectangle2d(new Translation2d(Meters.of(0.0), Meters.of(4.0)), new Translation2d(Meters.of(16.50), Meters.of(8.0)));
   public static final Rectangle2d bottomZone = new Rectangle2d(Translation2d.kZero, new Translation2d(Meters.of(16.5), Meters.of(4.0)));
   
  public static final AprilTagFieldLayout Field = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
  public static final Transform2d sideTopOffset = new Transform2d(Meters.of(0.0), Meters.of(1.0), Rotation2d.kZero);
  public static final Transform2d sideBottomOffset = new Transform2d(Meters.of(0.0), Meters.of(-1.0), Rotation2d.kZero);
-    public static final Pose2d RedGoalPose2D = Field.getTagPose(4).get()
-        .interpolate(Field.getTagPose(10).get(), .5)
-        .toPose2d();
-    public static final Pose2d BlueGoalPose2D = Field.getTagPose(20).get()
-        .interpolate(Field.getTagPose(26).get(), .5)
-        .toPose2d();
+    public static final Pose2d RedGoalPose2D = new Pose2d(Inches.of(650.12 - 181.56), Inches.of(158.32), new Rotation2d(Degrees.of(0)));
+        
+    public static final Pose2d BlueGoalPose2D = new Pose2d(Inches.of(181.56), Inches.of(158.32), new Rotation2d(Degrees.of(0)));
     public static final Pose2d BlueSideTop = Field.getTagPose(26).get().toPose2d().plus(sideTopOffset);
     public static final Pose2d BlueSideBottom = Field.getTagPose(26).get().toPose2d().plus(sideBottomOffset);
     public static final Pose2d RedSideTop = Field.getTagPose(10).get().toPose2d().plus(sideTopOffset);
