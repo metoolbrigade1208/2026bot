@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.9485915492957755,
-        "y": 7.292535211267606
+        "x": 6.0829260990451095,
+        "y": 7.329741326231927
       },
       "isLocked": false,
       "linkedName": null
@@ -20,12 +20,12 @@
         "y": 7.260598591549296
       },
       "prevControl": {
-        "x": 8.25403169012474,
-        "y": 7.510598591549296
+        "x": 8.178326587783351,
+        "y": 7.931339776715277
       },
       "nextControl": {
-        "x": 8.254031690146057,
-        "y": 7.010598591549296
+        "x": 8.318676207513418,
+        "y": 6.687853309481216
       },
       "isLocked": false,
       "linkedName": null
@@ -36,12 +36,12 @@
         "y": 1.0251878354203927
       },
       "prevControl": {
-        "x": 8.304215400660606,
-        "y": 1.2700992381723313
+        "x": 8.27,
+        "y": 2.29076923076923
       },
       "nextControl": {
-        "x": 8.107745974955277,
-        "y": 0.3112701252236124
+        "x": 8.245200233455332,
+        "y": 0.3252435480853877
       },
       "isLocked": false,
       "linkedName": null
@@ -52,12 +52,12 @@
         "y": 0.5698767605654849
       },
       "prevControl": {
-        "x": 4.394443464263355,
-        "y": 0.5955162388923795
+        "x": 4.00162033852452,
+        "y": 0.7335281862264866
       },
       "nextControl": {
-        "x": 1.8277449961455496,
-        "y": 0.5428805995154014
+        "x": 2.679235519046276,
+        "y": 0.48113945755466353
       },
       "isLocked": false,
       "linkedName": null
@@ -68,8 +68,8 @@
         "y": 0.713591549297879
       },
       "prevControl": {
-        "x": 0.8062570574671931,
-        "y": 0.6837862909233348
+        "x": 0.748349260144588,
+        "y": 0.7124407502009514
       },
       "nextControl": null,
       "isLocked": false,
@@ -77,10 +77,6 @@
     }
   ],
   "rotationTargets": [
-    {
-      "waypointRelativePos": 0.95,
-      "rotationDegrees": 90.0
-    },
     {
       "waypointRelativePos": 1.8609625668449195,
       "rotationDegrees": 90.0
@@ -116,7 +112,7 @@
       }
     },
     {
-      "name": "AutoAimMaster",
+      "name": "RunShooter",
       "waypointRelativePos": 2.901694915254241,
       "endWaypointRelativePos": null,
       "command": {
@@ -151,10 +147,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Left Trench + Middle Sweep + Human Player",
+  "folder": "Left Trench",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.99999999999999
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "shoot and stay left trench"
+            "pathName": "Middle Back and Shoot"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "Only Shoot",
   "choreoAuto": false
 }

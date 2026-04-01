@@ -3,12 +3,17 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "Left Trench + Middle Sweep + Human Player",
-    "Middle + Hub",
+    "Left Trench",
+    "Middle",
     "Only Shoot",
-    "Right Trench + Hub"
+    "Right Trench"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Left Trench",
+    "Middle",
+    "Only Shoot",
+    "Right Trench"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

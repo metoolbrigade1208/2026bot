@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.812,
-        "y": 7.364
+        "x": 3.809768884225442,
+        "y": 7.33067463414035
       },
       "isLocked": false,
       "linkedName": null
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 2.185474060822898,
-        "y": 7.364
+        "y": 6.99613595706619
       },
       "prevControl": {
-        "x": 1.935474060822898,
-        "y": 7.364
+        "x": 1.7557644480754826,
+        "y": 6.91313089483534
       },
       "nextControl": null,
       "isLocked": false,
@@ -69,7 +69,12 @@
       "name": "AutoAimMaster",
       "waypointRelativePos": 0.8644067796610166,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AutoAimMaster"
+        }
+      }
     }
   ],
   "globalConstraints": {
