@@ -90,6 +90,7 @@ public class Turret extends SubsystemBase {
     private DoublePublisher distancePublisher = distanceTopic.publish();
     private StructPublisher<Pose2d> targetPosePublisher = targetPoseTopic.publish();
     private StructPublisher<Pose2d> turretPosePublisher = turretPoseTopic.publish();
+    private StructPublisher<Pose2d> targetRelativePosePub = telemetryTable.getStructTopic("targetRelativePose", Pose2d.struct).publish();
 
     // Suppose: mechanism : drive gear = 12:1, drive gear = 50T, encoders use 19T
     // and 23T pinions.
@@ -299,10 +300,12 @@ public class Turret extends SubsystemBase {
             ));
     }
 
+    private Transform2d turretTransform = new Transform2d(Constants.Turret.TurretPos.toTranslation2d(), Rotation2d.kZero);
     public void periodic() {
         // set the current CRT angle and publish it
         // not solving every iteration will improve loop time
         turretPosePublisher.set(getTurretPose());
+        targetRelativePosePub.set(RobotContainer.drivetrain.targetToRobotRelative(getGoalPose2d(), turretTransform ));
         if (solveCRTperiodic) {
             easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
                 turretCRTAngle = crtAngle;

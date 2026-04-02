@@ -355,6 +355,12 @@ public Translation2d turretToTargetFieldRelative(Translation2d targetPosition, T
             ));
      return  targetPosition.minus(turretFieldRelative.getTranslation());
     }
+
+    public Pose2d targetToRobotRelative(Pose2d target, Transform2d offset) {
+        Pose2d botPose = getState().Pose.plus(offset);
+        return target.relativeTo(botPose);
+    }
+    
     public Command resetRotation() {
         return runOnce(() -> seedFieldCentric());
     }
