@@ -33,6 +33,17 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
+      "name": "startHopper2",
+      "waypointRelativePos": 0.9074949358541391,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper2"
+        }
+      }
+    },
+    {
       "name": "AutoAimMaster",
       "waypointRelativePos": 0.9152542372881356,
       "endWaypointRelativePos": null,
@@ -40,6 +51,17 @@
         "type": "named",
         "data": {
           "name": "AutoAimMaster"
+        }
+      }
+    },
+    {
+      "name": "startHopper",
+      "waypointRelativePos": 0.9155975692099974,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper"
         }
       }
     }

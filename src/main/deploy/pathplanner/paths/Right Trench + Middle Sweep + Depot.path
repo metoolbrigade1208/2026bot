@@ -72,7 +72,7 @@
         "y": 7.515348837209302
       },
       "nextControl": {
-        "x": 0.15558439139913927,
+        "x": 0.15558439139913938,
         "y": 7.5169779573416795
       },
       "isLocked": false,
@@ -110,30 +110,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "ArmDown",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "ArmDown"
-        }
-      }
-    },
-    {
-      "name": "Initialize Vision",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Initialize Vision"
-        }
-      }
-    },
-    {
       "name": "StartIntake",
-      "waypointRelativePos": 0.6328358208955229,
+      "waypointRelativePos": 0.4861580013504456,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -143,8 +121,30 @@
       }
     },
     {
+      "name": "ArmDown",
+      "waypointRelativePos": 0.48615800135046344,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmDown"
+        }
+      }
+    },
+    {
+      "name": "ArmUp",
+      "waypointRelativePos": 1.8230925050641593,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmUp"
+        }
+      }
+    },
+    {
       "name": "StopIntake",
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.8636056718433465,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -154,13 +154,13 @@
       }
     },
     {
-      "name": "RunShooter",
+      "name": "AutoAimMaster",
       "waypointRelativePos": 2.770149253731343,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "RunShooter"
+          "name": "AutoAimMaster"
         }
       }
     },
@@ -172,6 +172,17 @@
         "type": "named",
         "data": {
           "name": "StartIntake"
+        }
+      }
+    },
+    {
+      "name": "ArmDown",
+      "waypointRelativePos": 3.7947332883187226,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmDown"
         }
       }
     }
