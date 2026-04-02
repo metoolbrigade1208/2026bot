@@ -153,8 +153,8 @@ public class RobotContainer {
         joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         // Bindings for Arm control
-       //TODO operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
-        //TODO operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
+        operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
+        operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
 
        // operator.y().onTrue(LL.initializedCommand());
 
