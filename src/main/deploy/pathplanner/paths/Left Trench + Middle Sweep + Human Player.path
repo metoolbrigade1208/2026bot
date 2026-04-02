@@ -41,7 +41,7 @@
       },
       "nextControl": {
         "x": 8.107745974955277,
-        "y": 0.3112701252236123
+        "y": 0.3112701252236122
       },
       "isLocked": false,
       "linkedName": null
@@ -110,12 +110,67 @@
     },
     {
       "name": "ArmDown",
-      "waypointRelativePos": 0.35254237288135604,
+      "waypointRelativePos": 1.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "ArmDown"
+        }
+      }
+    },
+    {
+      "name": "StartIntake",
+      "waypointRelativePos": 1.15,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StartIntake"
+        }
+      }
+    },
+    {
+      "name": "StopIntake",
+      "waypointRelativePos": 1.75,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StopIntake"
+        }
+      }
+    },
+    {
+      "name": "ArmUp",
+      "waypointRelativePos": 1.75,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmUp"
+        }
+      }
+    },
+    {
+      "name": "startHopper",
+      "waypointRelativePos": 2.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper"
+        }
+      }
+    },
+    {
+      "name": "startHopper2",
+      "waypointRelativePos": 2.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper2"
         }
       }
     },
@@ -127,17 +182,6 @@
         "type": "named",
         "data": {
           "name": "RunShooter"
-        }
-      }
-    },
-    {
-      "name": "StopIntake",
-      "waypointRelativePos": 3.0101694915254242,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "StopIntake"
         }
       }
     }
