@@ -94,30 +94,36 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Initialize Vision",
-      "waypointRelativePos": 0,
+      "name": "AutoAimMaster",
+      "waypointRelativePos": 0.6,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "startHopper",
+      "waypointRelativePos": 0.6,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "Initialize Vision"
+          "name": "startHopper"
         }
       }
     },
     {
-      "name": "ArmDown",
-      "waypointRelativePos": 0.3912082514734773,
+      "name": "startHopper2",
+      "waypointRelativePos": 0.6,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "ArmDown"
+          "name": "startHopper2"
         }
       }
     },
     {
       "name": "StartIntake",
-      "waypointRelativePos": 0.5975257858546167,
+      "waypointRelativePos": 0.9,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -127,25 +133,19 @@
       }
     },
     {
-      "name": "AutoAimMaster",
-      "waypointRelativePos": 0.6,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "StopIntake",
-      "waypointRelativePos": 3.263844548133586,
+      "name": "ArmDown",
+      "waypointRelativePos": 0.9074949358541757,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "StopIntake"
+          "name": "ArmDown"
         }
       }
     },
     {
       "name": "ArmUp",
-      "waypointRelativePos": 3.27,
+      "waypointRelativePos": 2.808912896691418,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -155,13 +155,13 @@
       }
     },
     {
-      "name": "RunShooter",
-      "waypointRelativePos": 3.571310166994107,
+      "name": "StopIntake",
+      "waypointRelativePos": 3.26,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "RunShooter"
+          "name": "StopIntake"
         }
       }
     }
