@@ -127,6 +127,12 @@
       }
     },
     {
+      "name": "AutoAimMaster",
+      "waypointRelativePos": 0.6,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
       "name": "StopIntake",
       "waypointRelativePos": 3.263844548133586,
       "endWaypointRelativePos": null,

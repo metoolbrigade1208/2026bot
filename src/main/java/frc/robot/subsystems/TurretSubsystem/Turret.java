@@ -138,12 +138,12 @@ public class Turret extends SubsystemBase {
         final DCMotor turretGearbox = DCMotor.getNEO(1);
         final double gearingRatio = 30.0;
         // Estimate a small moment of inertia: radius 0.2 m, mass 5 kg (conservative)
-        final double mechRadius = 0.2;
-        final double mechMass = 5.0;
+        final double mechRadius = 0.1;
+        final double mechMass = 2.0;
         final double mechMOI = SingleJointedArmSim.estimateMOI(mechRadius, mechMass);
 
         m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio, mechMOI, mechRadius,
-                -Math.PI, Math.PI, /* addGearingInertia */ false,
+                -Math.PI * 100, Math.PI * 100, /* addGearingInertia */ false,
                 Units.degreesToRadians(0), /* encoderDistPerPulse */ 1.0, 0.0);
 
         m_turretMotorSim = new SparkMaxSim(turretMotor, turretGearbox);
@@ -161,7 +161,7 @@ public class Turret extends SubsystemBase {
             };
             Supplier<Angle> simEnc2Supplier = () -> {
                 double mechRot = -Units.radiansToRotations(m_turretSim.getAngleRads());
-                double encRot = Constants.Turret.enc2Zero.in(Rotations) + mechRot * (200.0 / 23.0);
+                double encRot = Constants.Turret.enc2Zero.in(Rotations) + mechRot * (200.0 / 21.0);
                 return Rotations.of(encRot);
             };
 
@@ -170,11 +170,11 @@ public class Turret extends SubsystemBase {
                             /* commonRatio (mech:drive) */ 1,
                             /* driveGearTeeth */ 200,
                             /* encoder1Pinion */ 19,
-                            /* encoder2Pinion */ 23)
+                            /* encoder2Pinion */ 21)
                     .withAbsoluteEncoderOffsets(Constants.Turret.enc1Zero, Constants.Turret.enc2Zero)
                     .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5))
                     .withMatchTolerance(Rotations.of(0.0265))
-                    .withAbsoluteEncoderInversions(false, false);
+                    .withAbsoluteEncoderInversions(true, true);
 
             easyCrtSolver = new EasyCRT(simCfg);
         } else {
@@ -305,7 +305,7 @@ public class Turret extends SubsystemBase {
         // set the current CRT angle and publish it
         // not solving every iteration will improve loop time
         turretPosePublisher.set(getTurretPose());
-        targetRelativePosePub.set(RobotContainer.drivetrain.targetToRobotRelative(getGoalPose2d(), turretTransform ));
+        targetRelativePosePub.set(RobotContainer.drivetrain.targetToRobotRelative(getGoalPose2d(), turretTransform));
         if (solveCRTperiodic) {
             easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
                 turretCRTAngle = crtAngle;
@@ -323,7 +323,7 @@ public class Turret extends SubsystemBase {
                 ControlType.kPosition);
         setPointPublisher.set(targetAngle.in(Degrees));
     }
-
+    
     public Command publishCRTangle() {
         return runOnce(() -> solveCRTperiodic = true);
     }
