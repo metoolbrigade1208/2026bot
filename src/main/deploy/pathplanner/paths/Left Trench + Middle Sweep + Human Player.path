@@ -236,6 +236,7 @@
   },
   "reversed": false,
   "folder": "Left Trench",
+  "folder": "Left Trench",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 90.0

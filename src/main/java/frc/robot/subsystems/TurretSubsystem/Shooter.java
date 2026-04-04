@@ -144,7 +144,6 @@ public class Shooter extends SubsystemBase {
 public Command StopShooterCommand() {
   return runOnce(
     () -> {
-      shooter.setMeasurementVelocitySetpoint(FeetPerSecond.of(0.0));
       shooter.set(0.0);
     });
 }

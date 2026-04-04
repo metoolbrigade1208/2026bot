@@ -312,9 +312,9 @@ public class Turret extends SubsystemBase {
                 crtAnglePublisher.set(turretCRTAngle.in(Degrees));
                 turretMotor.getEncoder().setPosition(turretCRTAngle.in(Constants.Turret.turretAngleUnit));
             });
-            enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
-            enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
         }
+        enc1AnglePublisher.set(enc1Supplier.get().in(Degrees));
+        enc2AnglePublisher.set(enc2Supplier.get().in(Degrees));
         distancePublisher.set(turretAngleDistance(getGoalPose2d()).getSecond().baseUnitMagnitude());
     }
 
