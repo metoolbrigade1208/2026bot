@@ -32,16 +32,16 @@
     },
     {
       "anchor": {
-        "x": 0.8565611245598592,
-        "y": 4.9776527655516425
+        "x": 0.6690845070422542,
+        "y": 5.16713266761769
       },
       "prevControl": {
-        "x": 0.610140609174648,
-        "y": 5.019806408303923
+        "x": 0.42266399165704294,
+        "y": 5.20928631036997
       },
       "nextControl": {
-        "x": 1.1029816399450705,
-        "y": 4.935499122799362
+        "x": 0.9155050224274655,
+        "y": 5.124979024865409
       },
       "isLocked": false,
       "linkedName": null
@@ -66,6 +66,10 @@
       "rotationDegrees": 90.0
     },
     {
+      "waypointRelativePos": 2.0,
+      "rotationDegrees": 180.0
+    },
+    {
       "waypointRelativePos": 2.2443399234693877,
       "rotationDegrees": -90.0
     }
@@ -75,7 +79,7 @@
   "eventMarkers": [
     {
       "name": "ArmDown",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.34841323430113624,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -85,19 +89,8 @@
       }
     },
     {
-      "name": "Initialize Vision",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Initialize Vision"
-        }
-      }
-    },
-    {
       "name": "StartIntake",
-      "waypointRelativePos": 0.6711864406779725,
+      "waypointRelativePos": 0.37272113436866827,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -107,35 +100,41 @@
       }
     },
     {
-      "name": "RunShooter",
-      "waypointRelativePos": 0.7,
+      "name": "startHopper2",
+      "waypointRelativePos": 1.7015530047264757,
+      "endWaypointRelativePos": null,
+      "command": null
+    },
+    {
+      "name": "startHopper",
+      "waypointRelativePos": 1.7015530047265324,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "RunShooter"
+          "name": "startHopper"
         }
       }
     },
     {
-      "name": "StopFullIntake",
-      "waypointRelativePos": 3.0,
+      "name": "AutoAimMaster",
+      "waypointRelativePos": 1.717758271438188,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "StopFullIntake"
+          "name": "AutoAimMaster"
         }
       }
     },
     {
-      "name": "StopShooter",
-      "waypointRelativePos": 3.0,
+      "name": "ArmUp",
+      "waypointRelativePos": 2.8035111411208353,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "StopShooter"
+          "name": "ArmUp"
         }
       }
     }
