@@ -27,6 +27,8 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.networktables.StructTopic;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -36,6 +38,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -77,12 +80,17 @@ public class Turret extends SubsystemBase {
     private DoubleTopic enc1AngleTopic = telemetryTable.getDoubleTopic("Enc1Angle");
     private DoubleTopic enc2AngleTopic = telemetryTable.getDoubleTopic("Enc2Angle");
     private DoubleTopic distanceTopic = telemetryTable.getDoubleTopic("Target Distance");
+    private StructTopic<Pose2d> targetPoseTopic = telemetryTable.getStructTopic("Target Angle", Pose2d.struct);
+    private StructTopic<Pose2d> turretPoseTopic = telemetryTable.getStructTopic("Turret Pose", Pose2d.struct);
     private DoublePublisher crtAnglePublisher = crtAngleTopic.publish();
     private DoublePublisher enc1AnglePublisher = enc1AngleTopic.publish();
     private DoublePublisher enc2AnglePublisher = enc2AngleTopic.publish();
     private DoubleTopic setPointTopic = telemetryTable.getDoubleTopic("setPoint");
     private DoublePublisher setPointPublisher = setPointTopic.publish();
     private DoublePublisher distancePublisher = distanceTopic.publish();
+    private StructPublisher<Pose2d> targetPosePublisher = targetPoseTopic.publish();
+    private StructPublisher<Pose2d> turretPosePublisher = turretPoseTopic.publish();
+    private StructPublisher<Pose2d> targetRelativePosePub = telemetryTable.getStructTopic("targetRelativePose", Pose2d.struct).publish();
 
     // Suppose: mechanism : drive gear = 12:1, drive gear = 50T, encoders use 19T
     // and 23T pinions.
@@ -116,6 +124,7 @@ public class Turret extends SubsystemBase {
     private final Mechanism2d m_mech2d;
     private final MechanismRoot2d m_root;
     private final MechanismLigament2d m_turretLigament;
+
     public Turret() {
         // Setup visualization
         m_mech2d = new Mechanism2d(60, 60);
@@ -129,13 +138,13 @@ public class Turret extends SubsystemBase {
         final DCMotor turretGearbox = DCMotor.getNEO(1);
         final double gearingRatio = 30.0;
         // Estimate a small moment of inertia: radius 0.2 m, mass 5 kg (conservative)
-        final double mechRadius = 0.2;
-        final double mechMass = 5.0;
+        final double mechRadius = 0.1;
+        final double mechMass = 2.0;
         final double mechMOI = SingleJointedArmSim.estimateMOI(mechRadius, mechMass);
 
         m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio, mechMOI, mechRadius,
-                -Math.PI, Math.PI, /* addGearingInertia */ false,
-                Units.degreesToRadians(300), /* encoderDistPerPulse */ 1.0, 0.0);
+                -Math.PI * 100, Math.PI * 100, /* addGearingInertia */ false,
+                Units.degreesToRadians(0), /* encoderDistPerPulse */ 1.0, 0.0);
 
         m_turretMotorSim = new SparkMaxSim(turretMotor, turretGearbox);
 
@@ -152,7 +161,7 @@ public class Turret extends SubsystemBase {
             };
             Supplier<Angle> simEnc2Supplier = () -> {
                 double mechRot = -Units.radiansToRotations(m_turretSim.getAngleRads());
-                double encRot = Constants.Turret.enc2Zero.in(Rotations) + mechRot * (200.0 / 23.0);
+                double encRot = Constants.Turret.enc2Zero.in(Rotations) + mechRot * (200.0 / 21.0);
                 return Rotations.of(encRot);
             };
 
@@ -161,11 +170,11 @@ public class Turret extends SubsystemBase {
                             /* commonRatio (mech:drive) */ 1,
                             /* driveGearTeeth */ 200,
                             /* encoder1Pinion */ 19,
-                            /* encoder2Pinion */ 23)
+                            /* encoder2Pinion */ 21)
                     .withAbsoluteEncoderOffsets(Constants.Turret.enc1Zero, Constants.Turret.enc2Zero)
                     .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5))
                     .withMatchTolerance(Rotations.of(0.0265))
-                    .withAbsoluteEncoderInversions(false, false);
+                    .withAbsoluteEncoderInversions(true, true);
 
             easyCrtSolver = new EasyCRT(simCfg);
         } else {
@@ -201,24 +210,24 @@ public class Turret extends SubsystemBase {
                 .allowedProfileError(Constants.Turret.toleranceAngle.in(Rotations));
         turretMotor.configure(turretConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        //set turret position
+        // set turret position
         easyCrtSolver.getAngleOptional().ifPresent((angle) -> {
             turretMotor.getEncoder().setPosition(angle.in(Rotations));
         });
 
-        //setup distance speed table
+        // setup distance speed table
         // meters -> RPM
         table.put(0.0, 3000.0);
         table.put(3.2, 3000.0);
         table.put(3.7, 3200.0);
         table.put(4.7, 3600.0);
         table.put(5.56, 3900.0);
-        table.put (6.7, 4200.0);
+        table.put(6.7, 4200.0);
     }
 
     public Angle getAngle() {
         // Get the current angle of the turret
-        return Constants.Turret.turretAngleUnit.of(turretMotor.getEncoder().getPosition()); 
+        return Constants.Turret.turretAngleUnit.of(turretMotor.getEncoder().getPosition());
     }
 
     public Pair<Angle, Distance> turretAngleDistance(Pose2d target) {
@@ -228,23 +237,24 @@ public class Turret extends SubsystemBase {
                 Meter.of(turretToTarget.getDistance(Translation2d.kZero)));
     }
 
-
     public Pose2d getGoalPose2d() {
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Blue);
         if (alliance == Alliance.Blue) {
-            if (Constants.Field.blueAlianceHubZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
+            if (Constants.Field.blueAlianceHubZone
+                    .contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
                 return Constants.Field.BlueGoalPose2D;
             } else {
                 if (Constants.Field.topZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
-                    return Constants.Field.BlueSideTop;
+                    return Constants.Field.BlueSideBottom;
                 }
                 if (Constants.Field.bottomZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
-                    return Constants.Field.BlueSideBottom;
+                    return Constants.Field.BlueSideTop;
                 }
             }
             return Constants.Field.BlueGoalPose2D;
         } else {
-            if (Constants.Field.redAlianceHubZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
+            if (Constants.Field.redAlianceHubZone
+                    .contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
                 return Constants.Field.RedGoalPose2D;
             } else {
                 if (Constants.Field.topZone.contains(RobotContainer.drivetrain.getState().Pose.getTranslation())) {
@@ -270,7 +280,7 @@ public class Turret extends SubsystemBase {
                 RoboRioSim.getVInVoltage(), 0.020);
 
         // Step the mechanism simulation forward one robot loop (20ms)
-        m_turretSim.update(0.020);
+     m_turretSim.update(0.020);
 
         // Update simulated battery voltage based on current draw
         RoboRioSim.setVInVoltage(
@@ -281,11 +291,22 @@ public class Turret extends SubsystemBase {
 
     }
 
+    public Pose2d getTurretPose() {
+        return RobotContainer.drivetrain.getState().Pose
+        .plus(
+            new Transform2d(
+                Constants.Turret.TurretPos.toTranslation2d(), 
+                new Rotation2d(Rotations.of(turretMotor.getEncoder().getPosition()))
+            ));
+    }
+
+    private Transform2d turretTransform = new Transform2d(Constants.Turret.TurretPos.toTranslation2d(), Rotation2d.kZero);
     public void periodic() {
         // set the current CRT angle and publish it
         // not solving every iteration will improve loop time
-        if (solveCRTperiodic) 
-        {
+        turretPosePublisher.set(getTurretPose());
+        targetRelativePosePub.set(RobotContainer.drivetrain.targetToRobotRelative(getGoalPose2d(), turretTransform));
+        if (solveCRTperiodic) {
             easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
                 turretCRTAngle = crtAngle;
                 crtAnglePublisher.set(turretCRTAngle.in(Degrees));
@@ -297,15 +318,14 @@ public class Turret extends SubsystemBase {
         distancePublisher.set(turretAngleDistance(getGoalPose2d()).getSecond().baseUnitMagnitude());
     }
 
-
     public void setAngle(Angle targetAngle) {
         turretMotor.getClosedLoopController().setSetpoint(targetAngle.in(Rotations),
                 ControlType.kPosition);
         setPointPublisher.set(targetAngle.in(Degrees));
     }
-
+    
     public Command publishCRTangle() {
-        return runOnce( () -> solveCRTperiodic = true );
+        return runOnce(() -> solveCRTperiodic = true);
     }
 
     public Command SetpointCommand(Angle targetAngle) {
@@ -316,37 +336,41 @@ public class Turret extends SubsystemBase {
         return runOnce(() -> turretMotor.set(speed)).withName(getName() + " setSpeed");
     }
 
-    public Command AutoAimAndSpinCommand(Pose2d target) {
-        return new FunctionalCommand(() -> {}, 
-            () -> {
-                var Tad = turretAngleDistance(target);
-                Angle targetAngleField = Tad.getFirst();
-                double targetDistanceMeters = Tad.getSecond().in(Meters);
-                Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
-                        .plus(new Rotation2d(targetAngleField));
-                //setAngle(targetAngleRobot.getMeasure());
-                RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
-            },
-            (interrupted) -> {
-                // turret will just go to it's last setpoint and stop, but shooter motor will keep going unless told otherwise
-                RobotContainer.shooter.setVelocitySetpoint(RPM.zero());
-            }, 
-            () -> false, // isFinished
-            this, RobotContainer.shooter);
+    public Command AutoAimAndSpinCommand(Supplier<Pose2d> targetSupplier) {
+        return new FunctionalCommand(() -> {
+        },
+                () -> {
+                    Pose2d target = targetSupplier.get();
+                    var Tad = turretAngleDistance(target);
+                    Angle targetAngleField = Tad.getFirst();
+                    double targetDistanceMeters = Tad.getSecond().in(Meters);
+                    Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
+                            .plus(new Rotation2d(targetAngleField));
+                    targetPosePublisher.set(target);
+                    setAngle(targetAngleRobot.getMeasure());
+                    RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
+                },
+                (interrupted) -> {
+                    // turret will just go to it's last setpoint and stop, but shooter motor will
+                    // keep going unless told otherwise
+                    RobotContainer.shooter.setVelocitySetpoint(RPM.zero());
+                },
+                () -> false, // isFinished
+                this, RobotContainer.shooter);
     }
 
     BooleanSupplier atTurretSetpoint = () -> turretMotor.getClosedLoopController().isAtSetpoint();
-    BooleanSupplier atShooterSetpoint = ()-> RobotContainer.shooter.isShooterAtSetSpeed();
+    BooleanSupplier atShooterSetpoint = () -> RobotContainer.shooter.isShooterAtSetSpeed();
     boolean shooterEnabled = true;
 
     public Command AutoAimMasterCommand() {
-        
-        new Trigger( () -> shooterEnabled)
-            .onTrue(RobotContainer.hopper.startHopper())
-            .onFalse(RobotContainer.hopper.stopHopper());
-        return AutoAimAndSpinCommand(getGoalPose2d())
-            .beforeStarting( () -> shooterEnabled = true)
-            .finallyDo( () -> shooterEnabled = false );
+
+        new Trigger(() -> shooterEnabled)
+                .onTrue(RobotContainer.hopper.startHopper())
+                .onFalse(RobotContainer.hopper.stopHopper());
+        return AutoAimAndSpinCommand(this::getGoalPose2d)
+                .beforeStarting(() -> shooterEnabled = true)
+                .finallyDo(() -> shooterEnabled = false);
     }
 
 }

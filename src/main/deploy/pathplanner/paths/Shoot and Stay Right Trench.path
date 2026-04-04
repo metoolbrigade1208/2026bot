@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.562,
-        "y": 7.364
+        "x": 3.625722891566265,
+        "y": 0.669265060240964
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.809768884225442,
-        "y": 7.33067463414035
+        "x": 3.875722891566265,
+        "y": 0.669265060240964
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.185474060822898,
-        "y": 6.99613595706619
+        "x": 2.1723373493975906,
+        "y": 0.669265060240964
       },
       "prevControl": {
-        "x": 1.7557644480754826,
-        "y": 6.91313089483534
+        "x": 1.9223373493975906,
+        "y": 0.669265060240964
       },
       "nextControl": null,
       "isLocked": false,
@@ -69,12 +69,7 @@
       "name": "AutoAimMaster",
       "waypointRelativePos": 0.8644067796610166,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AutoAimMaster"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {
@@ -87,13 +82,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.0
+    "rotation": 45.0
   },
   "reversed": false,
   "folder": "Only Shoot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
