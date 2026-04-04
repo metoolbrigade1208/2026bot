@@ -102,7 +102,7 @@
     },
     {
       "name": "ArmDown",
-      "waypointRelativePos": 0.35254237288135604,
+      "waypointRelativePos": 1.1,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -118,18 +118,62 @@
       "command": {
         "type": "named",
         "data": {
-          "name": "RunShooter"
+          "name": "StartIntake"
         }
       }
     },
     {
       "name": "StopIntake",
-      "waypointRelativePos": 3.0101694915254242,
+      "waypointRelativePos": 1.75,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "StopIntake"
+        }
+      }
+    },
+    {
+      "name": "ArmUp",
+      "waypointRelativePos": 1.75,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmUp"
+        }
+      }
+    },
+    {
+      "name": "startHopper",
+      "waypointRelativePos": 2.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper"
+        }
+      }
+    },
+    {
+      "name": "startHopper2",
+      "waypointRelativePos": 2.9,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper2"
+        }
+      }
+    },
+    {
+      "name": "AutoAimMaster",
+      "waypointRelativePos": 2.901694915254241,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RunShooter"
         }
       }
     }
@@ -147,6 +191,7 @@
     "rotation": 0.0
   },
   "reversed": false,
+  "folder": "Left Trench",
   "folder": "Left Trench",
   "idealStartingState": {
     "velocity": 0,

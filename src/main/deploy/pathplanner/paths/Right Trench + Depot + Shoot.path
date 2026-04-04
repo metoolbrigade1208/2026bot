@@ -1,0 +1,226 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.527411971830987,
+        "y": 0.6177816901408448
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.63512498882329,
+        "y": 0.5253994311596418
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.27,
+        "y": 0.6177816901408448
+      },
+      "prevControl": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Right Trench + Middle Sweep + Depot.path
+        "x": 8.27,
+        "y": 0.36778169014084466
+      },
+      "nextControl": {
+        "x": 8.27,
+        "y": 0.8958583842206078
+========
+        "x": 7.537843373493976,
+        "y": 0.6801927710843368
+      },
+      "nextControl": {
+        "x": 8.519096628309889,
+        "y": 0.596547996052205
+>>>>>>>> origin/main:src/main/deploy/pathplanner/paths/Right Trench + Depot + Shoot.path
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.27,
+        "y": 7.18075704225302
+      },
+      "prevControl": {
+        "x": 8.427502520163245,
+        "y": 6.986610303567492
+      },
+      "nextControl": {
+        "x": 7.891993951608211,
+        "y": 7.646709215098286
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 2.8831663685152056,
+        "y": 7.320644007155635
+      },
+      "prevControl": {
+        "x": 3.1319760248029875,
+        "y": 7.296276919969109
+      },
+      "nextControl": {
+        "x": 2.4044204881188067,
+        "y": 7.367529818509823
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.9245774647903762,
+        "y": 7.516091549295274
+      },
+      "prevControl": {
+        "x": 1.5689087656529512,
+        "y": 7.515348837209302
+      },
+      "nextControl": {
+        "x": 0.15558439139913927,
+        "y": 7.5169779573416795
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.49343309859155016,
+        "y": 4.881320422535212
+      },
+      "prevControl": {
+        "x": 0.7109095618322534,
+        "y": 6.30423331274353
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Right Trench + Middle Sweep + Depot.path
+========
+      "waypointRelativePos": 0.3858921161825721,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.069518716577542,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.1764705882352946,
+      "rotationDegrees": -90.0
+    },
+    {
+>>>>>>>> origin/main:src/main/deploy/pathplanner/paths/Right Trench + Depot + Shoot.path
+      "waypointRelativePos": 2.2318840579710146,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 2.5483091787439616,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 4.202898550724641,
+      "rotationDegrees": 90.0
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "ArmDown",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmDown"
+        }
+      }
+    },
+    {
+      "name": "Initialize Vision",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Initialize Vision"
+        }
+      }
+    },
+    {
+      "name": "StartIntake",
+      "waypointRelativePos": 0.6328358208955229,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StartIntake"
+        }
+      }
+    },
+    {
+      "name": "StopIntake",
+      "waypointRelativePos": 2.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StopIntake"
+        }
+      }
+    },
+    {
+      "name": "RunShooter",
+      "waypointRelativePos": 2.770149253731343,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "RunShooter"
+        }
+      }
+    },
+    {
+      "name": "StartIntake",
+      "waypointRelativePos": 3.7164179104477624,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StartIntake"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0.0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Right Trench",
+  "idealStartingState": {
+    "velocity": 0.0,
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Right Trench + Middle Sweep + Depot.path
+    "rotation": -90.0
+========
+    "rotation": 180.0
+>>>>>>>> origin/main:src/main/deploy/pathplanner/paths/Right Trench + Depot + Shoot.path
+  },
+  "useDefaultConstraints": true
+}

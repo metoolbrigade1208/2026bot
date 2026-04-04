@@ -18,6 +18,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
@@ -29,7 +30,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
+import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -346,9 +347,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 public Translation2d turretToTargetFieldRelative(Translation2d targetPosition, Translation2d turretOffset) {
      Pose2d robotPose = getState().Pose;
-     Translation2d turretFieldRelative = robotPose.getTranslation().plus(turretOffset);
-     return targetPosition.minus(turretFieldRelative);
+     Pose2d turretFieldRelative = robotPose
+        .plus(
+            new Transform2d(
+                Constants.Turret.TurretPos.toTranslation2d(), 
+                new Rotation2d(Rotations.of(0))
+            ));
+     return  targetPosition.minus(turretFieldRelative.getTranslation());
     }
+
+    public Pose2d targetToRobotRelative(Pose2d target, Transform2d offset) {
+        Pose2d botPose = getState().Pose.plus(offset);
+        return target.relativeTo(botPose);
+    }
+    
     public Command resetRotation() {
         return runOnce(() -> seedFieldCentric());
     }
