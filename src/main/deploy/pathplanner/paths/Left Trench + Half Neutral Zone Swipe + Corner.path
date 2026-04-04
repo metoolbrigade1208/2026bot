@@ -76,20 +76,7 @@
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.1294605809128652,
-      "rotationDegrees": -90.0
-    },
-    {
-      "waypointRelativePos": 0.4414937759336049,
-      "rotationDegrees": -90.0
-    },
-    {
-      "waypointRelativePos": 0.8597510373443941,
-      "rotationDegrees": 90.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
@@ -180,9 +167,10 @@
   },
   "reversed": false,
   "folder": "Left Trench",
+  "folder": "Left Trench",
   "idealStartingState": {
     "velocity": 0.0,
-    "rotation": -119.99999999999999
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

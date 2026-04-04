@@ -20,21 +20,12 @@
         "y": 0.6177816901408448
       },
       "prevControl": {
-<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Right Trench + Middle Sweep + Depot.path
         "x": 8.27,
         "y": 0.36778169014084466
       },
       "nextControl": {
         "x": 8.27,
         "y": 0.8958583842206078
-========
-        "x": 7.537843373493976,
-        "y": 0.6801927710843368
-      },
-      "nextControl": {
-        "x": 8.519096628309889,
-        "y": 0.596547996052205
->>>>>>>> origin/main:src/main/deploy/pathplanner/paths/Right Trench + Depot + Shoot.path
       },
       "isLocked": false,
       "linkedName": null
@@ -103,21 +94,6 @@
   ],
   "rotationTargets": [
     {
-<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Right Trench + Middle Sweep + Depot.path
-========
-      "waypointRelativePos": 0.3858921161825721,
-      "rotationDegrees": 180.0
-    },
-    {
-      "waypointRelativePos": 1.069518716577542,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 1.1764705882352946,
-      "rotationDegrees": -90.0
-    },
-    {
->>>>>>>> origin/main:src/main/deploy/pathplanner/paths/Right Trench + Depot + Shoot.path
       "waypointRelativePos": 2.2318840579710146,
       "rotationDegrees": -90.0
     },
@@ -216,11 +192,7 @@
   "folder": "Right Trench",
   "idealStartingState": {
     "velocity": 0.0,
-<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Right Trench + Middle Sweep + Depot.path
     "rotation": -90.0
-========
-    "rotation": 180.0
->>>>>>>> origin/main:src/main/deploy/pathplanner/paths/Right Trench + Depot + Shoot.path
   },
   "useDefaultConstraints": true
 }
