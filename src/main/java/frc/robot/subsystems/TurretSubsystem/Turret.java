@@ -80,7 +80,7 @@ public class Turret extends SubsystemBase {
     private DoubleTopic enc1AngleTopic = telemetryTable.getDoubleTopic("Enc1Angle");
     private DoubleTopic enc2AngleTopic = telemetryTable.getDoubleTopic("Enc2Angle");
     private DoubleTopic distanceTopic = telemetryTable.getDoubleTopic("Target Distance");
-    private StructTopic<Pose2d> targetPoseTopic = telemetryTable.getStructTopic("Target Angle", Pose2d.struct);
+    private StructTopic<Pose2d> targetPoseTopic = telemetryTable.getStructTopic("Target Pose", Pose2d.struct);
     private StructTopic<Pose2d> turretPoseTopic = telemetryTable.getStructTopic("Turret Pose", Pose2d.struct);
     private DoublePublisher crtAnglePublisher = crtAngleTopic.publish();
     private DoublePublisher enc1AnglePublisher = enc1AngleTopic.publish();
@@ -136,13 +136,13 @@ public class Turret extends SubsystemBase {
         // Setup simulation objects
         // Use a single NEO motor model and a 30:1 gearing (motor:mech)
         final DCMotor turretGearbox = DCMotor.getNEO(1);
-        final double gearingRatio = 30.0;
+        final double gearingRatio = 1.0 / Constants.Turret.gearing.in(Constants.Turret.turretAngleUnit);
         // Estimate a small moment of inertia: radius 0.2 m, mass 5 kg (conservative)
         final double mechRadius = 0.1;
         final double mechMass = 2.0;
         final double mechMOI = SingleJointedArmSim.estimateMOI(mechRadius, mechMass);
 
-        m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio, mechMOI, mechRadius,
+        m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio/10.0, mechMOI, mechRadius,
                 -Math.PI * 100, Math.PI * 100, /* addGearingInertia */ false,
                 Units.degreesToRadians(0), /* encoderDistPerPulse */ 1.0, 0.0);
 
@@ -305,7 +305,6 @@ public class Turret extends SubsystemBase {
         // set the current CRT angle and publish it
         // not solving every iteration will improve loop time
         turretPosePublisher.set(getTurretPose());
-        targetRelativePosePub.set(RobotContainer.drivetrain.targetToRobotRelative(getGoalPose2d(), turretTransform));
         if (solveCRTperiodic) {
             easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
                 turretCRTAngle = crtAngle;
@@ -341,13 +340,13 @@ public class Turret extends SubsystemBase {
         },
                 () -> {
                     Pose2d target = targetSupplier.get();
-                    var Tad = turretAngleDistance(target);
-                    Angle targetAngleField = Tad.getFirst();
-                    double targetDistanceMeters = Tad.getSecond().in(Meters);
-                    Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
-                            .plus(new Rotation2d(targetAngleField));
+                    Pose2d targetRelative = RobotContainer.drivetrain.targetToRobotRelative(target, turretTransform);
+                    Translation2d targetRelativeT2d = targetRelative.getTranslation();
+                    Rotation2d targetAngleField = targetRelativeT2d.getAngle();
+                    double targetDistanceMeters = targetRelativeT2d.getNorm();
                     targetPosePublisher.set(target);
-                    setAngle(targetAngleRobot.getMeasure());
+                    targetRelativePosePub.set(targetRelative);
+                    setAngle(targetAngleField.getMeasure());
                     RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
                 },
                 (interrupted) -> {
