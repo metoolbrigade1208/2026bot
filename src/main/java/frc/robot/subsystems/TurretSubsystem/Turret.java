@@ -104,7 +104,7 @@ public class Turret extends SubsystemBase {
                                                                                               // zero
             .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5)) // -180 deg to +180 deg
             .withMatchTolerance(Rotations.of(0.0265)) // ~1.08 deg at encoder2 for the example ratio
-            .withAbsoluteEncoderInversions(true, true);
+            .withAbsoluteEncoderInversions(false, false);
 
     // you can inspect:
     // easyCrt.getUniqueCoverage(); // Optional<Angle> coverage from prime counts
@@ -181,17 +181,17 @@ public class Turret extends SubsystemBase {
             easyCrtSolver = new EasyCRT(easyCrt);
         }
 
-        turretConfig
-                .closedLoopRampRate(.25)
-                .openLoopRampRate(.25)
-                .smartCurrentLimit(20) // Neo550
-                .idleMode(IdleMode.kBrake).encoder
-                .positionConversionFactor(Constants.Turret.gearing.in(Constants.Turret.turretAngleUnit))
-                .velocityConversionFactor(Constants.Turret.gearSpeed.in(Constants.Turret.turretAngleUnit.per(Minute))); // default
-                                                                                                                        // is
-                                                                                                                        // RPM,
-                                                                                                                        // not
-                                                                                                                        // RPS
+    turretConfig
+        .closedLoopRampRate(.25)
+        .openLoopRampRate(.25)
+        .smartCurrentLimit(20) // Neo550
+        .idleMode(IdleMode.kBrake)
+        // Invert the motor output so positive setpoints produce CCW rotation
+        .inverted(true)
+        .encoder
+        .positionConversionFactor(Constants.Turret.gearing.in(Constants.Turret.turretAngleUnit))
+        .velocityConversionFactor(Constants.Turret.gearSpeed.in(Constants.Turret.turretAngleUnit.per(Minute)));
+        // default is RPM, not RPS
         turretConfig.softLimit
                 .forwardSoftLimit(Constants.Turret.fwdLimit.in(Constants.Turret.turretAngleUnit))
                 .reverseSoftLimit(Constants.Turret.revLimit.in(Constants.Turret.turretAngleUnit))
