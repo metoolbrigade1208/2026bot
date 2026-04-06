@@ -17,6 +17,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -62,6 +63,8 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class Turret extends SubsystemBase {
+    private static final double kTargetLeadVelocityScale = 0.5;
+    private static final double kTOFerror = 0.1;
     InterpolatingDoubleTreeMap tableSpeeds = new InterpolatingDoubleTreeMap();
     InterpolatingDoubleTreeMap tableTime = new InterpolatingDoubleTreeMap();
     // Motor control
@@ -93,7 +96,8 @@ public class Turret extends SubsystemBase {
     private DoublePublisher distancePublisher = distanceTopic.publish();
     private StructPublisher<Pose2d> targetPosePublisher = targetPoseTopic.publish();
     private StructPublisher<Pose2d> turretPosePublisher = turretPoseTopic.publish();
-    private StructPublisher<Pose2d> targetRelativePosePub = telemetryTable.getStructTopic("targetRelativePose", Pose2d.struct).publish();
+    private StructPublisher<Pose2d> targetRelativePosePub = telemetryTable
+            .getStructTopic("targetRelativePose", Pose2d.struct).publish();
 
     // Suppose: mechanism : drive gear = 12:1, drive gear = 50T, encoders use 19T
     // and 23T pinions.
@@ -145,7 +149,7 @@ public class Turret extends SubsystemBase {
         final double mechMass = 2.0;
         final double mechMOI = SingleJointedArmSim.estimateMOI(mechRadius, mechMass);
 
-        m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio/10.0, mechMOI, mechRadius,
+        m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio / 10.0, mechMOI, mechRadius,
                 -Math.PI * 100, Math.PI * 100, /* addGearingInertia */ false,
                 Units.degreesToRadians(0), /* encoderDistPerPulse */ 1.0, 0.0);
 
@@ -184,16 +188,15 @@ public class Turret extends SubsystemBase {
             easyCrtSolver = new EasyCRT(easyCrt);
         }
 
-    turretConfig
-        .closedLoopRampRate(.25)
-        .openLoopRampRate(.25)
-        .smartCurrentLimit(20) // Neo550
-        .idleMode(IdleMode.kBrake)
-        // Invert the motor output so positive setpoints produce CCW rotation
-        .inverted(true)
-        .encoder
-        .positionConversionFactor(Constants.Turret.gearing.in(Constants.Turret.turretAngleUnit))
-        .velocityConversionFactor(Constants.Turret.gearSpeed.in(Constants.Turret.turretAngleUnit.per(Minute)));
+        turretConfig
+                .closedLoopRampRate(.25)
+                .openLoopRampRate(.25)
+                .smartCurrentLimit(20) // Neo550
+                .idleMode(IdleMode.kBrake)
+                // Invert the motor output so positive setpoints produce CCW rotation
+                .inverted(true).encoder
+                .positionConversionFactor(Constants.Turret.gearing.in(Constants.Turret.turretAngleUnit))
+                .velocityConversionFactor(Constants.Turret.gearSpeed.in(Constants.Turret.turretAngleUnit.per(Minute)));
         // default is RPM, not RPS
         turretConfig.softLimit
                 .forwardSoftLimit(Constants.Turret.fwdLimit.in(Constants.Turret.turretAngleUnit))
@@ -226,17 +229,17 @@ public class Turret extends SubsystemBase {
         tableSpeeds.put(4.7, 3600.0);
         tableSpeeds.put(5.56, 3900.0);
         tableSpeeds.put(6.7, 4200.0);
-    
 
         // setup distance time table
         // meters -> time of flight
-        tableTime.put(0.0, 0.5);
-        tableTime.put(3.2, 0.5);
-        tableTime.put(3.7, 0.6);
-        tableTime.put(4.7, 0.7);
-        tableTime.put(5.56, 0.8);
-        tableTime.put(6.7, 0.9);
-     }
+        tableTime.put(0.0, 0.0);
+        tableTime.put(3.2, 0.624);
+        tableTime.put(3.7, 0.676);
+        tableTime.put(4.7, 0.764);
+        tableTime.put(5.56, 0.834);
+        tableTime.put(6.7, 0.933);
+    }
+
     public Angle getAngle() {
         // Get the current angle of the turret
         return Constants.Turret.turretAngleUnit.of(turretMotor.getEncoder().getPosition());
@@ -292,7 +295,7 @@ public class Turret extends SubsystemBase {
                 RoboRioSim.getVInVoltage(), 0.020);
 
         // Step the mechanism simulation forward one robot loop (20ms)
-     m_turretSim.update(0.020);
+        m_turretSim.update(0.020);
 
         // Update simulated battery voltage based on current draw
         RoboRioSim.setVInVoltage(
@@ -305,14 +308,15 @@ public class Turret extends SubsystemBase {
 
     public Pose2d getTurretPose() {
         return RobotContainer.drivetrain.getState().Pose
-        .plus(
-            new Transform2d(
-                Constants.Turret.TurretPos.toTranslation2d(), 
-                new Rotation2d(Rotations.of(turretMotor.getEncoder().getPosition()))
-            ));
+                .plus(
+                        new Transform2d(
+                                Constants.Turret.TurretPos.toTranslation2d(),
+                                new Rotation2d(Rotations.of(turretMotor.getEncoder().getPosition()))));
     }
 
-    private Transform2d turretTransform = new Transform2d(Constants.Turret.TurretPos.toTranslation2d(), Rotation2d.kZero);
+    private Transform2d turretTransform = new Transform2d(Constants.Turret.TurretPos.toTranslation2d(),
+            Rotation2d.kZero);
+
     public void periodic() {
         // set the current CRT angle and publish it
         // not solving every iteration will improve loop time
@@ -334,7 +338,7 @@ public class Turret extends SubsystemBase {
                 ControlType.kPosition);
         setPointPublisher.set(targetAngle.in(Degrees));
     }
-    
+
     public Command publishCRTangle() {
         return runOnce(() -> solveCRTperiodic = true);
     }
@@ -352,23 +356,25 @@ public class Turret extends SubsystemBase {
         },
                 () -> {
                     Pose2d target = targetSupplier.get();
-                    ChassisSpeeds robotSpeeds = RobotContainer.drivetrain.getState().Speeds;
-                    ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(robotSpeeds, RobotContainer.drivetrain.getState().Pose.getRotation()).unaryMinus().times(0.5);
+                    SwerveDriveState state = RobotContainer.drivetrain.getState();
+                    ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(state.Speeds,
+                            state.Pose.getRotation()).unaryMinus().times(kTargetLeadVelocityScale);
+                    fieldSpeeds.omegaRadiansPerSecond = 0;
                     double timeOfFlight = 0;
                     double previousTimeOfFlight;
-                    Pose2d targetRelative; 
+                    Pose2d targetRelative;
                     Rotation2d targetAngleField;
                     double targetDistanceMeters;
                     Translation2d targetRelativeT2d;
                     do {
-                    previousTimeOfFlight = timeOfFlight;
-                    targetRelative = RobotContainer.drivetrain.targetToRobotRelative(target, turretTransform);
-                    targetRelativeT2d = targetRelative.getTranslation();
-                    targetAngleField = targetRelativeT2d.getAngle();
-                    targetDistanceMeters = targetRelativeT2d.getNorm();
-                    timeOfFlight = tableTime.get(targetDistanceMeters);
-                    target = target.exp(fieldSpeeds.toTwist2d(timeOfFlight));
-                } while (timeOfFlight - previousTimeOfFlight < 0.1);
+                        previousTimeOfFlight = timeOfFlight;
+                        targetRelative = RobotContainer.drivetrain.targetToRobotRelative(target, turretTransform);
+                        targetRelativeT2d = targetRelative.getTranslation();
+                        targetAngleField = targetRelativeT2d.getAngle();
+                        targetDistanceMeters = targetRelativeT2d.getNorm();
+                        timeOfFlight = tableTime.get(targetDistanceMeters);
+                        target = target.exp(fieldSpeeds.toTwist2d(timeOfFlight));
+                    } while (timeOfFlight - previousTimeOfFlight < kTOFerror);
                     targetPosePublisher.set(target);
                     targetRelativePosePub.set(new Pose2d(targetRelativeT2d, targetAngleField));
                     setAngle(targetAngleField.getMeasure());
