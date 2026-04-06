@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.util.function.BooleanSupplier;
@@ -31,6 +32,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructTopic;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
@@ -352,7 +354,7 @@ public class Turret extends SubsystemBase {
                 (interrupted) -> {
                     // turret will just go to it's last setpoint and stop, but shooter motor will
                     // keep going unless told otherwise
-                    RobotContainer.shooter.setVelocitySetpoint(RPM.zero());
+                    RobotContainer.shooter.setVoltageSetpoint(Volts.zero());
                 },
                 () -> false, // isFinished
                 this, RobotContainer.shooter);
