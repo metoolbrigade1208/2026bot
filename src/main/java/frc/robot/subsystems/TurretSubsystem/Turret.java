@@ -75,7 +75,7 @@ public class Turret extends SubsystemBase {
     /**
      * telemetry table.
      */
-    private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Telemetry\\Turret");
+    private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Turret");
     private DoubleTopic crtAngleTopic = telemetryTable.getDoubleTopic("CRTAngle");
     private DoubleTopic enc1AngleTopic = telemetryTable.getDoubleTopic("Enc1Angle");
     private DoubleTopic enc2AngleTopic = telemetryTable.getDoubleTopic("Enc2Angle");
@@ -345,7 +345,7 @@ public class Turret extends SubsystemBase {
                     Rotation2d targetAngleField = targetRelativeT2d.getAngle();
                     double targetDistanceMeters = targetRelativeT2d.getNorm();
                     targetPosePublisher.set(target);
-                    targetRelativePosePub.set(targetRelative);
+                    targetRelativePosePub.set(new Pose2d(targetRelativeT2d, targetAngleField));
                     setAngle(targetAngleField.getMeasure());
                     RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
                 },
