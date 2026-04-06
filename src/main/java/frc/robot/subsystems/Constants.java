@@ -135,7 +135,7 @@ public static class TurretConstants {
     public static final int enc2Id = 1; // DIO port of encoder 2    
     public static final Angle enc1Zero = Degrees.of(-332); // actual zero location of encoder 1
     public static final Angle enc2Zero = Degrees.of(-101); // actual zero location of encoder 2
-    public static final double kP = 2.5; // output per angle difference (V/rotation)
+    public static final double kP = 5; // output per angle difference (V/rotation)
     public static final double kD = 0.25; // output per angle difference derivative (V/rps)
     public static final Voltage kS = Volts.of(0.5);
     public static final Voltage kV = Volts.of(30.0 / 917); // really Volts/rps, but dimensions get wonky with doing all that.
