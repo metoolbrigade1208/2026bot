@@ -88,7 +88,7 @@ public class Constants {
     public static final int armmotorLeaderCanId = 57;
     public static final double OverBumperCurrentLimitmotorReduction = 15.0;
     public static final int overbumperCurrentLimit = 40;
-    public static final double overBumperIntakeSpeed = 2300; //RPM
+    public static final double overBumperIntakeSpeed = -2300; //RPM
     public static final double kArmKp = 1.0;
     public static final double kArmKi = 0;
     public static final double kArmKd =  0.01;

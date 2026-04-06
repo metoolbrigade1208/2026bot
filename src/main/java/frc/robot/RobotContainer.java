@@ -134,8 +134,8 @@ public class RobotContainer {
 
         //joystick.leftBumper().whileTrue(hopper.startHopper());
         //joystick.leftBumper().whileFalse(hopper.stopHopper());
-         //joystick.start().whileTrue(overBumberIntake.startIntake());
-         //joystick.start().whileFalse(overBumberIntake.stopIntake());
+         joystick.start().whileTrue(overBumberIntake.startIntake());
+         joystick.start().whileFalse(overBumberIntake.stopIntake());
 
        // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
         joystick.b().whileTrue(drivetrain.applyRequest(() ->
@@ -148,11 +148,11 @@ public class RobotContainer {
         // Note that each routine should be run exactly once in a single log.
 
         //Drive Code Binds
-        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-        // Bindings for Arm control
+        // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // // Bindings for Arm control
         operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
         operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
 
