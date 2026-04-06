@@ -59,10 +59,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import yams.units.EasyCRT;
 import yams.units.EasyCRTConfig;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class Turret extends SubsystemBase {
-    InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
-
+    InterpolatingDoubleTreeMap tableSpeeds = new InterpolatingDoubleTreeMap();
+    InterpolatingDoubleTreeMap tableTime = new InterpolatingDoubleTreeMap();
     // Motor control
     SparkMax turretMotor = new SparkMax(Constants.Turret.motorID, MotorType.kBrushless);
     SparkMaxConfig turretConfig = new SparkMaxConfig();
@@ -219,14 +220,23 @@ public class Turret extends SubsystemBase {
 
         // setup distance speed table
         // meters -> RPM
-        table.put(0.0, 3000.0);
-        table.put(3.2, 3000.0);
-        table.put(3.7, 3200.0);
-        table.put(4.7, 3600.0);
-        table.put(5.56, 3900.0);
-        table.put(6.7, 4200.0);
-    }
+        tableSpeeds.put(0.0, 3000.0);
+        tableSpeeds.put(3.2, 3000.0);
+        tableSpeeds.put(3.7, 3200.0);
+        tableSpeeds.put(4.7, 3600.0);
+        tableSpeeds.put(5.56, 3900.0);
+        tableSpeeds.put(6.7, 4200.0);
+    
 
+        // setup distance time table
+        // meters -> time of flight
+        tableTime.put(0.0, 0.5);
+        tableTime.put(3.2, 0.5);
+        tableTime.put(3.7, 0.6);
+        tableTime.put(4.7, 0.7);
+        tableTime.put(5.56, 0.8);
+        tableTime.put(6.7, 0.9);
+     }
     public Angle getAngle() {
         // Get the current angle of the turret
         return Constants.Turret.turretAngleUnit.of(turretMotor.getEncoder().getPosition());
@@ -342,14 +352,27 @@ public class Turret extends SubsystemBase {
         },
                 () -> {
                     Pose2d target = targetSupplier.get();
-                    Pose2d targetRelative = RobotContainer.drivetrain.targetToRobotRelative(target, turretTransform);
-                    Translation2d targetRelativeT2d = targetRelative.getTranslation();
-                    Rotation2d targetAngleField = targetRelativeT2d.getAngle();
-                    double targetDistanceMeters = targetRelativeT2d.getNorm();
+                    ChassisSpeeds robotSpeeds = RobotContainer.drivetrain.getState().Speeds;
+                    ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(robotSpeeds, RobotContainer.drivetrain.getState().Pose.getRotation()).unaryMinus().times(0.5);
+                    double timeOfFlight = 0;
+                    double previousTimeOfFlight;
+                    Pose2d targetRelative; 
+                    Rotation2d targetAngleField;
+                    double targetDistanceMeters;
+                    Translation2d targetRelativeT2d;
+                    do {
+                    previousTimeOfFlight = timeOfFlight;
+                    targetRelative = RobotContainer.drivetrain.targetToRobotRelative(target, turretTransform);
+                    targetRelativeT2d = targetRelative.getTranslation();
+                    targetAngleField = targetRelativeT2d.getAngle();
+                    targetDistanceMeters = targetRelativeT2d.getNorm();
+                    timeOfFlight = tableTime.get(targetDistanceMeters);
+                    target = target.exp(fieldSpeeds.toTwist2d(timeOfFlight));
+                } while (timeOfFlight - previousTimeOfFlight < 0.1);
                     targetPosePublisher.set(target);
                     targetRelativePosePub.set(new Pose2d(targetRelativeT2d, targetAngleField));
                     setAngle(targetAngleField.getMeasure());
-                    RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
+                    RobotContainer.shooter.setVelocitySetpoint(RPM.of(tableSpeeds.get(targetDistanceMeters)));
                 },
                 (interrupted) -> {
                     // turret will just go to it's last setpoint and stop, but shooter motor will
