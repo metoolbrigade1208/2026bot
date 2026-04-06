@@ -68,9 +68,9 @@ public class Constants {
     public static final int motorCanId2 = 9;
     public static final double motorReduction = 15.0;
     public static final int currentLimit = 40;
-    public static final double hopperSpeed = 0.9;
-    public static final double hopper2Speed = -0.9; // Adjust as needed
-    public static final double invertedHopperSpeed = 0.9;
+    public static final double hopperSpeed = 5100;
+    public static final double hopper2Speed = -3000; // Adjust as needed
+    public static final double invertedHopperSpeed = 3000;
       }
     static Optional<RobotConfig> loadConfig(String path) {
     ObjectMapper objectMapper = new ObjectMapper();
