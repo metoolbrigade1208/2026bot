@@ -97,6 +97,7 @@ public class Constants {
     public static final double kArmCos = 0;
     public static final double kArmKv = kArmEncoderGearing / 565.0;
     public static final double kArmDownPosition = 0;
+    public static final double kArmPartiallyUpPostion = 0.175;
     public static final double kArmUpPosition = 0.35; //TODO: find correct angle
     public static final double kArmMaxSpeed = 10;
     public static final double kArmMaxAcceleration = 15;

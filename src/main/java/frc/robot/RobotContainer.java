@@ -155,6 +155,7 @@ public class RobotContainer {
         // // Bindings for Arm control
         operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
         operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
+        operator.rightTrigger(0.3).onTrue(overBumberIntake.armAgitateCommand()).onFalse(overBumberIntake.armDownCommand());
 
        // operator.y().onTrue(LL.initializedCommand());
 
