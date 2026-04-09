@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5593485915492966,
-        "y": 7.468186619711903
+        "x": 3.508573466476462,
+        "y": 6.655078459343795
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.0829260990451095,
-        "y": 7.329741326231927
+        "x": 2.369971469329529,
+        "y": 7.6125392296718974
       },
       "isLocked": false,
       "linkedName": null
@@ -101,8 +101,30 @@
       }
     },
     {
+      "name": "StartIntake",
+      "waypointRelativePos": 1.15,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AutoAimMaster"
+        }
+      }
+    },
+    {
       "name": "ArmUp",
       "waypointRelativePos": 1.7177582714382063,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmUp"
+        }
+      }
+    },
+    {
+      "name": "ArmUp",
+      "waypointRelativePos": 1.75,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -119,50 +141,6 @@
         "type": "named",
         "data": {
           "name": "StopIntake"
-        }
-      }
-    },
-    {
-      "name": "StartIntake",
-      "waypointRelativePos": 1.15,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AutoAimMaster"
-        }
-      }
-    },
-    {
-      "name": "startHopper2",
-      "waypointRelativePos": 2.9277515192437282,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "startHopper2"
-        }
-      }
-    },
-    {
-      "name": "startHopper",
-      "waypointRelativePos": 2.927751519243753,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "startHopper"
-        }
-      }
-    },
-    {
-      "name": "ArmUp",
-      "waypointRelativePos": 1.75,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "ArmUp"
         }
       }
     },
@@ -211,6 +189,28 @@
       }
     },
     {
+      "name": "startHopper2",
+      "waypointRelativePos": 2.9277515192437282,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper2"
+        }
+      }
+    },
+    {
+      "name": "startHopper",
+      "waypointRelativePos": 2.927751519243753,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper"
+        }
+      }
+    },
+    {
       "name": "StopIntake",
       "waypointRelativePos": 3.0101694915254242,
       "endWaypointRelativePos": null,
@@ -235,7 +235,6 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Left Trench",
   "folder": "Left Trench",
   "idealStartingState": {
     "velocity": 0,
