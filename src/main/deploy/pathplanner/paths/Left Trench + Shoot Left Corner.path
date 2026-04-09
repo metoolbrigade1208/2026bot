@@ -3,65 +3,70 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.499731663685152,
-        "y": 0.7980322003577818
+        "x": 3.7414693295292434,
+        "y": 7.392582025677603
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.7148973518565054,
-        "y": 0.6707383409860592
+        "x": 4.741469329529241,
+        "y": 7.392582025677603
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.5526833631484793,
-        "y": 1.479499105545617
+        "x": 7.7653922967189715,
+        "y": 5.878758915834522
       },
       "prevControl": {
-        "x": 1.7972171963597183,
-        "y": 1.427506755963992
+        "x": 6.575035663338086,
+        "y": 7.987760342368045
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7484008528784598,
+      "rotationDegrees": 131.30515523310766
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "startHopper2",
-      "waypointRelativePos": 0.9074949358541391,
+      "name": "ArmDown",
+      "waypointRelativePos": 0.7103308575286915,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "startHopper2"
+          "name": "ArmDown"
+        }
+      }
+    },
+    {
+      "name": "StartIntake",
+      "waypointRelativePos": 0.8129642133693458,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "StartIntake"
         }
       }
     },
     {
       "name": "AutoAimMaster",
-      "waypointRelativePos": 0.9152542372881356,
+      "waypointRelativePos": 0.8696826468602317,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "AutoAimMaster"
-        }
-      }
-    },
-    {
-      "name": "startHopper",
-      "waypointRelativePos": 0.9155975692099974,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "startHopper"
         }
       }
     }
@@ -76,13 +81,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 30.96375653207355
+    "rotation": 131.30861401354852
   },
   "reversed": false,
-  "folder": "Only Shoot",
+  "folder": "Left Trench",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 178.15238973400548
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

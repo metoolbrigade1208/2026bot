@@ -36,12 +36,12 @@
         "y": 1.0251878354203927
       },
       "prevControl": {
-        "x": 8.27,
-        "y": 2.29076923076923
+        "x": 8.248631327511164,
+        "y": 2.290858444724634
       },
       "nextControl": {
-        "x": 8.245200233455332,
-        "y": 0.3252435480853877
+        "x": 8.25706134094151,
+        "y": 0.31513552068473705
       },
       "isLocked": false,
       "linkedName": null
@@ -52,24 +52,24 @@
         "y": 0.5698767605654849
       },
       "prevControl": {
-        "x": 4.00162033852452,
-        "y": 0.7335281862264866
+        "x": 4.349586305278173,
+        "y": 0.832681883024252
       },
       "nextControl": {
-        "x": 2.679235519046276,
-        "y": 0.48113945755466353
+        "x": 2.6817067180782246,
+        "y": 0.4690496514652137
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 0.4655813953488368,
-        "y": 0.713591549297879
+        "x": 0.4809272467902993,
+        "y": 0.5698767605654849
       },
       "prevControl": {
-        "x": 0.748349260144588,
-        "y": 0.7124407502009514
+        "x": 0.7636951115860505,
+        "y": 0.5687259614685573
       },
       "nextControl": null,
       "isLocked": false,
@@ -82,27 +82,16 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 2.5314009661835764,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 2.31982942430706,
+      "rotationDegrees": 45.0
     }
   ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "Initialize Vision",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Initialize Vision"
-        }
-      }
-    },
-    {
       "name": "ArmDown",
-      "waypointRelativePos": 1.1,
+      "waypointRelativePos": 0.5401755570560371,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -112,24 +101,57 @@
       }
     },
     {
-      "name": "RunShooter",
-      "waypointRelativePos": 2.901694915254241,
+      "name": "ArmUp",
+      "waypointRelativePos": 1.7177582714382063,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "StartIntake"
+          "name": "ArmUp"
         }
       }
     },
     {
       "name": "StopIntake",
-      "waypointRelativePos": 1.75,
+      "waypointRelativePos": 1.8474004051316688,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
           "name": "StopIntake"
+        }
+      }
+    },
+    {
+      "name": "StartIntake",
+      "waypointRelativePos": 1.15,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "AutoAimMaster"
+        }
+      }
+    },
+    {
+      "name": "startHopper2",
+      "waypointRelativePos": 2.9277515192437282,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper2"
+        }
+      }
+    },
+    {
+      "name": "startHopper",
+      "waypointRelativePos": 2.927751519243753,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper"
         }
       }
     },
@@ -173,7 +195,29 @@
       "command": {
         "type": "named",
         "data": {
-          "name": "RunShooter"
+          "name": "AutoAimMaster"
+        }
+      }
+    },
+    {
+      "name": "startHopper2",
+      "waypointRelativePos": 2.9277515192437282,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper2"
+        }
+      }
+    },
+    {
+      "name": "StopIntake",
+      "waypointRelativePos": 3.0101694915254242,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper"
         }
       }
     }

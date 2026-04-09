@@ -20,12 +20,21 @@
         "y": 0.6177816901408448
       },
       "prevControl": {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Right Trench + Middle Sweep + Depot.path
         "x": 8.27,
         "y": 0.36778169014084466
       },
       "nextControl": {
         "x": 8.27,
         "y": 0.8958583842206078
+========
+        "x": 7.537843373493976,
+        "y": 0.6801927710843368
+      },
+      "nextControl": {
+        "x": 8.519096628309889,
+        "y": 0.596547996052205
+>>>>>>>> origin/main:src/main/deploy/pathplanner/paths/Right Trench + Depot + Shoot.path
       },
       "isLocked": false,
       "linkedName": null
@@ -72,7 +81,7 @@
         "y": 7.515348837209302
       },
       "nextControl": {
-        "x": 0.15558439139913927,
+        "x": 0.15558439139913938,
         "y": 7.5169779573416795
       },
       "isLocked": false,
@@ -94,6 +103,21 @@
   ],
   "rotationTargets": [
     {
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Right Trench + Middle Sweep + Depot.path
+========
+      "waypointRelativePos": 0.3858921161825721,
+      "rotationDegrees": 180.0
+    },
+    {
+      "waypointRelativePos": 1.069518716577542,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.1764705882352946,
+      "rotationDegrees": -90.0
+    },
+    {
+>>>>>>>> origin/main:src/main/deploy/pathplanner/paths/Right Trench + Depot + Shoot.path
       "waypointRelativePos": 2.2318840579710146,
       "rotationDegrees": -90.0
     },
@@ -110,30 +134,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "ArmDown",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "ArmDown"
-        }
-      }
-    },
-    {
-      "name": "Initialize Vision",
-      "waypointRelativePos": 0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Initialize Vision"
-        }
-      }
-    },
-    {
       "name": "StartIntake",
-      "waypointRelativePos": 0.6328358208955229,
+      "waypointRelativePos": 0.4861580013504456,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -143,8 +145,30 @@
       }
     },
     {
+      "name": "ArmDown",
+      "waypointRelativePos": 0.48615800135046344,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmDown"
+        }
+      }
+    },
+    {
+      "name": "ArmUp",
+      "waypointRelativePos": 1.8230925050641593,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmUp"
+        }
+      }
+    },
+    {
       "name": "StopIntake",
-      "waypointRelativePos": 2.0,
+      "waypointRelativePos": 1.8636056718433465,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -154,13 +178,13 @@
       }
     },
     {
-      "name": "RunShooter",
+      "name": "AutoAimMaster",
       "waypointRelativePos": 2.770149253731343,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "RunShooter"
+          "name": "AutoAimMaster"
         }
       }
     },
@@ -172,6 +196,17 @@
         "type": "named",
         "data": {
           "name": "StartIntake"
+        }
+      }
+    },
+    {
+      "name": "ArmDown",
+      "waypointRelativePos": 3.7947332883187226,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ArmDown"
         }
       }
     }
@@ -192,7 +227,11 @@
   "folder": "Right Trench",
   "idealStartingState": {
     "velocity": 0.0,
+<<<<<<<< HEAD:src/main/deploy/pathplanner/paths/Right Trench + Middle Sweep + Depot.path
     "rotation": -90.0
+========
+    "rotation": 180.0
+>>>>>>>> origin/main:src/main/deploy/pathplanner/paths/Right Trench + Depot + Shoot.path
   },
   "useDefaultConstraints": true
 }

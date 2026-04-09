@@ -42,6 +42,28 @@
           "name": "AutoAimMaster"
         }
       }
+    },
+    {
+      "name": "startHopper2",
+      "waypointRelativePos": 0.7346387575962129,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper2"
+        }
+      }
+    },
+    {
+      "name": "startHopper",
+      "waypointRelativePos": 0.7373396353814811,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "startHopper"
+        }
+      }
     }
   ],
   "globalConstraints": {
