@@ -154,6 +154,7 @@ public class PhotonVision extends SubsystemBase {
       Optional<EstimatedRobotPose> poseEst = getEstimatedGlobalPose(camera);
       if (poseEst.isPresent()) {
         var pose = poseEst.get();
+        camera.curStdDevs.set(2,0,99999);
         swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds,
             camera.curStdDevs);
       }
@@ -314,17 +315,17 @@ public class PhotonVision extends SubsystemBase {
      * Source Camera
      */
     LEFT_CAM("Source", // left cam
-        new Rotation3d(Math.toRadians(0), Math.toRadians(0), Math.toRadians(45)), // TODO: change to the proper values
-        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(12), // TODO: change to the proper values
-            Units.inchesToMeters(8)),
+        new Rotation3d(Math.toRadians(0), Math.toRadians(30), Math.toRadians(45)), // TODO: change to the proper values
+        new Translation3d(Units.inchesToMeters(11.5), Units.inchesToMeters(5.75), // TODO: change to the proper values
+            Units.inchesToMeters(12)),
         VecBuilder.fill(2, 2, 4), VecBuilder.fill(0.5, 0.5, 1)),
     /*
      * Score Camera right cam
      */
-    RIGHT_CAM("Score", new Rotation3d(0, Units.degreesToRadians(0), Math.toRadians(-45)), // TODO: change to the proper
+    RIGHT_CAM("Score", new Rotation3d(0, Units.degreesToRadians(30), Math.toRadians(-45)), // TODO: change to the proper
                                                                                           // values
-        new Translation3d(Units.inchesToMeters(12), Units.inchesToMeters(-12), // TODO: change to the proper values
-            Units.inchesToMeters(8)),
+        new Translation3d(Units.inchesToMeters(11.5), Units.inchesToMeters(-5.25), // TODO: change to the proper values
+            Units.inchesToMeters(12)),
         VecBuilder.fill(2, 2, 4), VecBuilder.fill(0.5, 0.5, 1));
 
     /**
@@ -530,7 +531,9 @@ public class PhotonVision extends SubsystemBase {
       for (var result : resultsList) {
         visionEst = poseEstimator.estimateCoprocMultiTagPose(result);
         if (visionEst.isEmpty()) {
-          visionEst = poseEstimator.estimateLowestAmbiguityPose(result);
+          if (result.hasTargets()){
+           visionEst = poseEstimator.estimateLowestAmbiguityPose(result);
+          }
         }
         updateEstimationStdDevs(visionEst, result.getTargets());
       }

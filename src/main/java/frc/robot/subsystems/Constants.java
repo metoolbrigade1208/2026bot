@@ -68,9 +68,9 @@ public class Constants {
     public static final int motorCanId2 = 9;
     public static final double motorReduction = 15.0;
     public static final int currentLimit = 40;
-    public static final double hopperSpeed = 0.9;
-    public static final double hopper2Speed = -0.9; // Adjust as needed
-    public static final double invertedHopperSpeed = 0.9;
+    public static final double hopperSpeed = 5100;
+    public static final double hopper2Speed = -6000; // Adjust as needed
+    public static final double invertedHopperSpeed = 3000;
       }
     static Optional<RobotConfig> loadConfig(String path) {
     ObjectMapper objectMapper = new ObjectMapper();
@@ -88,7 +88,7 @@ public class Constants {
     public static final int armmotorLeaderCanId = 57;
     public static final double OverBumperCurrentLimitmotorReduction = 15.0;
     public static final int overbumperCurrentLimit = 40;
-    public static final double overBumperIntakeSpeed = 2300; //RPM
+    public static final double overBumperIntakeSpeed = -4500; //RPM
     public static final double kArmKp = 1.0;
     public static final double kArmKi = 0;
     public static final double kArmKd =  0.01;
@@ -97,6 +97,7 @@ public class Constants {
     public static final double kArmCos = 0;
     public static final double kArmKv = kArmEncoderGearing / 565.0;
     public static final double kArmDownPosition = 0;
+    public static final double kArmPartiallyUpPostion = 0.175;
     public static final double kArmUpPosition = 0.35; //TODO: find correct angle
     public static final double kArmMaxSpeed = 10;
     public static final double kArmMaxAcceleration = 15;
@@ -126,8 +127,8 @@ public static class TurretConstants {
     public static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
     public static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
     public static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
-    public static final Angle fwdLimit = Degrees.of(180);
-    public static final Angle revLimit = Degrees.of(-180);
+    public static final Angle fwdLimit = Degrees.of(135);
+    public static final Angle revLimit = Degrees.of(-135);
     public static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
     public static final AngularVelocity gearSpeed = gearing.per(Second);
     public static final int motorID = 55;
@@ -135,7 +136,7 @@ public static class TurretConstants {
     public static final int enc2Id = 1; // DIO port of encoder 2    
     public static final Angle enc1Zero = Degrees.of(-332); // actual zero location of encoder 1
     public static final Angle enc2Zero = Degrees.of(-101); // actual zero location of encoder 2
-    public static final double kP = 2.5; // output per angle difference (V/rotation)
+    public static final double kP = 5; // output per angle difference (V/rotation)
     public static final double kD = 0.25; // output per angle difference derivative (V/rps)
     public static final Voltage kS = Volts.of(0.5);
     public static final Voltage kV = Volts.of(30.0 / 917); // really Volts/rps, but dimensions get wonky with doing all that.

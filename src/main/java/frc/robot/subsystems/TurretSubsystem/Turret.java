@@ -7,6 +7,7 @@ import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Volts;
 import static edu.wpi.first.units.Units.Meters;
 
 import java.util.function.BooleanSupplier;
@@ -16,6 +17,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.MAXMotionConfig.MAXMotionPositionMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -31,6 +33,7 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.networktables.StructTopic;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.RobotController;
@@ -57,10 +60,13 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import yams.units.EasyCRT;
 import yams.units.EasyCRTConfig;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class Turret extends SubsystemBase {
-    InterpolatingDoubleTreeMap table = new InterpolatingDoubleTreeMap();
-
+    private static final double kTargetLeadVelocityScale = 1.0;
+    private static final double kTOFerror = 0.1;
+    InterpolatingDoubleTreeMap tableSpeeds = new InterpolatingDoubleTreeMap();
+    InterpolatingDoubleTreeMap tableTime = new InterpolatingDoubleTreeMap();
     // Motor control
     SparkMax turretMotor = new SparkMax(Constants.Turret.motorID, MotorType.kBrushless);
     SparkMaxConfig turretConfig = new SparkMaxConfig();
@@ -75,12 +81,12 @@ public class Turret extends SubsystemBase {
     /**
      * telemetry table.
      */
-    private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Telemetry\\Turret");
+    private NetworkTable telemetryTable = NetworkTableInstance.getDefault().getTable("Turret");
     private DoubleTopic crtAngleTopic = telemetryTable.getDoubleTopic("CRTAngle");
     private DoubleTopic enc1AngleTopic = telemetryTable.getDoubleTopic("Enc1Angle");
     private DoubleTopic enc2AngleTopic = telemetryTable.getDoubleTopic("Enc2Angle");
     private DoubleTopic distanceTopic = telemetryTable.getDoubleTopic("Target Distance");
-    private StructTopic<Pose2d> targetPoseTopic = telemetryTable.getStructTopic("Target Angle", Pose2d.struct);
+    private StructTopic<Pose2d> targetPoseTopic = telemetryTable.getStructTopic("Target Pose", Pose2d.struct);
     private StructTopic<Pose2d> turretPoseTopic = telemetryTable.getStructTopic("Turret Pose", Pose2d.struct);
     private DoublePublisher crtAnglePublisher = crtAngleTopic.publish();
     private DoublePublisher enc1AnglePublisher = enc1AngleTopic.publish();
@@ -90,7 +96,8 @@ public class Turret extends SubsystemBase {
     private DoublePublisher distancePublisher = distanceTopic.publish();
     private StructPublisher<Pose2d> targetPosePublisher = targetPoseTopic.publish();
     private StructPublisher<Pose2d> turretPosePublisher = turretPoseTopic.publish();
-    private StructPublisher<Pose2d> targetRelativePosePub = telemetryTable.getStructTopic("targetRelativePose", Pose2d.struct).publish();
+    private StructPublisher<Pose2d> targetRelativePosePub = telemetryTable
+            .getStructTopic("targetRelativePose", Pose2d.struct).publish();
 
     // Suppose: mechanism : drive gear = 12:1, drive gear = 50T, encoders use 19T
     // and 23T pinions.
@@ -104,7 +111,7 @@ public class Turret extends SubsystemBase {
                                                                                               // zero
             .withMechanismRange(Rotations.of(-0.5), Rotations.of(0.5)) // -180 deg to +180 deg
             .withMatchTolerance(Rotations.of(0.0265)) // ~1.08 deg at encoder2 for the example ratio
-            .withAbsoluteEncoderInversions(true, true);
+            .withAbsoluteEncoderInversions(false, false);
 
     // you can inspect:
     // easyCrt.getUniqueCoverage(); // Optional<Angle> coverage from prime counts
@@ -136,13 +143,13 @@ public class Turret extends SubsystemBase {
         // Setup simulation objects
         // Use a single NEO motor model and a 30:1 gearing (motor:mech)
         final DCMotor turretGearbox = DCMotor.getNEO(1);
-        final double gearingRatio = 30.0;
+        final double gearingRatio = 1.0 / Constants.Turret.gearing.in(Constants.Turret.turretAngleUnit);
         // Estimate a small moment of inertia: radius 0.2 m, mass 5 kg (conservative)
         final double mechRadius = 0.1;
         final double mechMass = 2.0;
         final double mechMOI = SingleJointedArmSim.estimateMOI(mechRadius, mechMass);
 
-        m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio, mechMOI, mechRadius,
+        m_turretSim = new SingleJointedArmSim(turretGearbox, gearingRatio / 10.0, mechMOI, mechRadius,
                 -Math.PI * 100, Math.PI * 100, /* addGearingInertia */ false,
                 Units.degreesToRadians(0), /* encoderDistPerPulse */ 1.0, 0.0);
 
@@ -185,13 +192,12 @@ public class Turret extends SubsystemBase {
                 .closedLoopRampRate(.25)
                 .openLoopRampRate(.25)
                 .smartCurrentLimit(20) // Neo550
-                .idleMode(IdleMode.kBrake).encoder
+                .idleMode(IdleMode.kBrake)
+                // Invert the motor output so positive setpoints produce CCW rotation
+                .inverted(true).encoder
                 .positionConversionFactor(Constants.Turret.gearing.in(Constants.Turret.turretAngleUnit))
-                .velocityConversionFactor(Constants.Turret.gearSpeed.in(Constants.Turret.turretAngleUnit.per(Minute))); // default
-                                                                                                                        // is
-                                                                                                                        // RPM,
-                                                                                                                        // not
-                                                                                                                        // RPS
+                .velocityConversionFactor(Constants.Turret.gearSpeed.in(Constants.Turret.turretAngleUnit.per(Minute)));
+        // default is RPM, not RPS
         turretConfig.softLimit
                 .forwardSoftLimit(Constants.Turret.fwdLimit.in(Constants.Turret.turretAngleUnit))
                 .reverseSoftLimit(Constants.Turret.revLimit.in(Constants.Turret.turretAngleUnit))
@@ -217,12 +223,21 @@ public class Turret extends SubsystemBase {
 
         // setup distance speed table
         // meters -> RPM
-        table.put(0.0, 3000.0);
-        table.put(3.2, 3000.0);
-        table.put(3.7, 3200.0);
-        table.put(4.7, 3600.0);
-        table.put(5.56, 3900.0);
-        table.put(6.7, 4200.0);
+        tableSpeeds.put(0.0, 3000.0);
+        tableSpeeds.put(3.2, 3000.0);
+        tableSpeeds.put(3.7, 3200.0);
+        tableSpeeds.put(4.7, 3600.0);
+        tableSpeeds.put(5.56, 3900.0);
+        tableSpeeds.put(6.7, 4200.0);
+
+        // setup distance time table
+        // meters -> time of flight
+        tableTime.put(0.0, 0.0);
+        tableTime.put(3.2, 0.624);
+        tableTime.put(3.7, 0.676);
+        tableTime.put(4.7, 0.764);
+        tableTime.put(5.56, 0.834);
+        tableTime.put(6.7, 0.933);
     }
 
     public Angle getAngle() {
@@ -280,7 +295,7 @@ public class Turret extends SubsystemBase {
                 RoboRioSim.getVInVoltage(), 0.020);
 
         // Step the mechanism simulation forward one robot loop (20ms)
-     m_turretSim.update(0.020);
+        m_turretSim.update(0.020);
 
         // Update simulated battery voltage based on current draw
         RoboRioSim.setVInVoltage(
@@ -293,19 +308,19 @@ public class Turret extends SubsystemBase {
 
     public Pose2d getTurretPose() {
         return RobotContainer.drivetrain.getState().Pose
-        .plus(
-            new Transform2d(
-                Constants.Turret.TurretPos.toTranslation2d(), 
-                new Rotation2d(Rotations.of(turretMotor.getEncoder().getPosition()))
-            ));
+                .plus(
+                        new Transform2d(
+                                Constants.Turret.TurretPos.toTranslation2d(),
+                                new Rotation2d(Rotations.of(turretMotor.getEncoder().getPosition()))));
     }
 
-    private Transform2d turretTransform = new Transform2d(Constants.Turret.TurretPos.toTranslation2d(), Rotation2d.kZero);
+    private Transform2d turretTransform = new Transform2d(Constants.Turret.TurretPos.toTranslation2d(),
+            Rotation2d.kZero);
+
     public void periodic() {
         // set the current CRT angle and publish it
         // not solving every iteration will improve loop time
         turretPosePublisher.set(getTurretPose());
-        targetRelativePosePub.set(RobotContainer.drivetrain.targetToRobotRelative(getGoalPose2d(), turretTransform));
         if (solveCRTperiodic) {
             easyCrtSolver.getAngleOptional().ifPresent((crtAngle) -> {
                 turretCRTAngle = crtAngle;
@@ -323,7 +338,7 @@ public class Turret extends SubsystemBase {
                 ControlType.kPosition);
         setPointPublisher.set(targetAngle.in(Degrees));
     }
-    
+
     public Command publishCRTangle() {
         return runOnce(() -> solveCRTperiodic = true);
     }
@@ -341,19 +356,34 @@ public class Turret extends SubsystemBase {
         },
                 () -> {
                     Pose2d target = targetSupplier.get();
-                    var Tad = turretAngleDistance(target);
-                    Angle targetAngleField = Tad.getFirst();
-                    double targetDistanceMeters = Tad.getSecond().in(Meters);
-                    Rotation2d targetAngleRobot = RobotContainer.drivetrain.getState().Pose.getRotation()
-                            .plus(new Rotation2d(targetAngleField));
+                    SwerveDriveState state = RobotContainer.drivetrain.getState();
+                    ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(state.Speeds,
+                            state.Pose.getRotation()).unaryMinus().times(kTargetLeadVelocityScale);
+                    fieldSpeeds.omegaRadiansPerSecond = 0;
+                    double timeOfFlight = 0;
+                    double previousTimeOfFlight;
+                    Pose2d targetRelative;
+                    Rotation2d targetAngleField;
+                    double targetDistanceMeters;
+                    Translation2d targetRelativeT2d;
+                    do {
+                        previousTimeOfFlight = timeOfFlight;
+                        targetRelative = RobotContainer.drivetrain.targetToRobotRelative(target, turretTransform);
+                        targetRelativeT2d = targetRelative.getTranslation();
+                        targetAngleField = targetRelativeT2d.getAngle();
+                        targetDistanceMeters = targetRelativeT2d.getNorm();
+                        timeOfFlight = tableTime.get(targetDistanceMeters);
+                        target = target.exp(fieldSpeeds.toTwist2d(timeOfFlight));
+                    } while (timeOfFlight - previousTimeOfFlight < kTOFerror);
                     targetPosePublisher.set(target);
-                    setAngle(targetAngleRobot.getMeasure());
-                    RobotContainer.shooter.setVelocitySetpoint(RPM.of(table.get(targetDistanceMeters)));
+                    targetRelativePosePub.set(new Pose2d(targetRelativeT2d, targetAngleField));
+                    setAngle(targetAngleField.getMeasure());
+                    RobotContainer.shooter.setVelocitySetpoint(RPM.of(tableSpeeds.get(targetDistanceMeters)));
                 },
                 (interrupted) -> {
                     // turret will just go to it's last setpoint and stop, but shooter motor will
                     // keep going unless told otherwise
-                    RobotContainer.shooter.setVelocitySetpoint(RPM.zero());
+                    RobotContainer.shooter.setVoltageSetpoint(Volts.zero());
                 },
                 () -> false, // isFinished
                 this, RobotContainer.shooter);

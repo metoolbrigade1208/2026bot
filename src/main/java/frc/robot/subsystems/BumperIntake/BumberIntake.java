@@ -35,7 +35,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Constants;
 
@@ -209,8 +212,20 @@ public void maxPivotPosition() {
   public Command armUpCommand() {
     return runOnce(() -> this.reachSetpoint(Constants.OverBumperIntake.kArmUpPosition));
   }
+  public Command armPartiallyUpCommand() {
+    return runOnce(() -> this.reachSetpoint(Constants.OverBumperIntake.kArmPartiallyUpPostion));
+  }
+  public Command armAgitateCommand() {
+      return new RepeatCommand(
+      armDownCommand()
+      .andThen(new WaitCommand(.5))
+      .andThen(armPartiallyUpCommand())
+      .andThen(new WaitCommand(.5)));
+    }
 
-  
+    public Command setArmZero() {
+return runOnce(() -> m_armMotorLeader.getEncoder().setPosition(0));
+    }
   BooleanSupplier excessCurrent = () -> Math.abs(m_armMotorLeader.getOutputCurrent()) > 20;
   BooleanSupplier zeroVelocity = () -> m_armMotorLeader.getEncoder().getVelocity() < 1e-4;
     BooleanSupplier negativeOutput = () -> m_armMotorLeader.getAppliedOutput() < 0;
