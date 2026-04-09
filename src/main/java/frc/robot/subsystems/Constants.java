@@ -159,6 +159,11 @@ public static class TurretConstants {
     public static final Pose2d RedGoalPose2D = new Pose2d(Inches.of(650.12 - 181.56), Inches.of(158.32), new Rotation2d(Degrees.of(0)));
         
     public static final Pose2d BlueGoalPose2D = new Pose2d(Inches.of(181.56), Inches.of(158.32), new Rotation2d(Degrees.of(0)));
+    public static final Pose2d RightBlueBumpPose2D = new Pose2d(Inches.of(0), Inches.of(158.32/2), new Rotation2d(Degrees.of(0)));
+    public static final Pose2d LeftBlueBumpPose2D = new Pose2d(Inches.of(0), Inches.of(158.32 * 1.5), new Rotation2d(Degrees.of(0)));
+    public static final Pose2d RightRedBumpPose2D = new Pose2d(Inches.of(0), Inches.of(158.32/2), new Rotation2d(Degrees.of(0)));
+    public static final Pose2d LeftRedBumpPose2D = new Pose2d(Inches.of(0), Inches.of(158.32 * 1.5), new Rotation2d(Degrees.of(0)));
+
     public static final Pose2d BlueSideTop = Field.getTagPose(26).get().toPose2d().plus(sideTopOffset);
     public static final Pose2d BlueSideBottom = Field.getTagPose(26).get().toPose2d().plus(sideBottomOffset);
     public static final Pose2d RedSideTop = Field.getTagPose(10).get().toPose2d().plus(sideTopOffset);
