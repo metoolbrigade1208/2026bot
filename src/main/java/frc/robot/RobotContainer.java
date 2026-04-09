@@ -149,7 +149,7 @@ public class RobotContainer {
         //joystick.leftBumper().whileFalse(hopper.stopHopper());
         joystick.start().whileTrue(overBumberIntake.startIntake());
          joystick.start().whileFalse(overBumberIntake.stopIntake());
-
+        operator.start().onTrue(overBumberIntake.setArmZero());
        // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
    
       //  operator.axisMagnitudeGreaterThan(4, 0.025).whileTrue(turret.SetMotorSpeedCommand(operator.getRawAxis(4) * 0.5));

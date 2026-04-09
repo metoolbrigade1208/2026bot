@@ -63,7 +63,7 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class Turret extends SubsystemBase {
-    private static final double kTargetLeadVelocityScale = 0.5;
+    private static final double kTargetLeadVelocityScale = 1.0;
     private static final double kTOFerror = 0.1;
     InterpolatingDoubleTreeMap tableSpeeds = new InterpolatingDoubleTreeMap();
     InterpolatingDoubleTreeMap tableTime = new InterpolatingDoubleTreeMap();

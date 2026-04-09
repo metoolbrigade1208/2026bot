@@ -222,7 +222,10 @@ public void maxPivotPosition() {
       .andThen(armPartiallyUpCommand())
       .andThen(new WaitCommand(.5)));
     }
-  
+
+    public Command setArmZero() {
+return runOnce(() -> m_armMotorLeader.getEncoder().setPosition(0));
+    }
   BooleanSupplier excessCurrent = () -> Math.abs(m_armMotorLeader.getOutputCurrent()) > 20;
   BooleanSupplier zeroVelocity = () -> m_armMotorLeader.getEncoder().getVelocity() < 1e-4;
     BooleanSupplier negativeOutput = () -> m_armMotorLeader.getAppliedOutput() < 0;

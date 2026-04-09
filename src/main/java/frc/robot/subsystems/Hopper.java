@@ -40,7 +40,7 @@ public static Hopper getInstance() {
 
   public Hopper() {
     hopperConfig.smartCurrentLimit(20).closedLoop
-                .pid(0.1, 0,0)
+                .pid(0.0001, 0,0)
                 .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                 .feedForward.kV(1.0/473);
     hopperMotor = new SparkMax(Constants.Hopper.motorCanId, MotorType.kBrushless);

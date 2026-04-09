@@ -69,7 +69,7 @@ public class Constants {
     public static final double motorReduction = 15.0;
     public static final int currentLimit = 40;
     public static final double hopperSpeed = 5100;
-    public static final double hopper2Speed = -3000; // Adjust as needed
+    public static final double hopper2Speed = -6000; // Adjust as needed
     public static final double invertedHopperSpeed = 3000;
       }
     static Optional<RobotConfig> loadConfig(String path) {
@@ -88,7 +88,7 @@ public class Constants {
     public static final int armmotorLeaderCanId = 57;
     public static final double OverBumperCurrentLimitmotorReduction = 15.0;
     public static final int overbumperCurrentLimit = 40;
-    public static final double overBumperIntakeSpeed = -2300; //RPM
+    public static final double overBumperIntakeSpeed = -4500; //RPM
     public static final double kArmKp = 1.0;
     public static final double kArmKi = 0;
     public static final double kArmKd =  0.01;
@@ -127,8 +127,8 @@ public static class TurretConstants {
     public static AngularAccelerationUnit turretAccelerationUnit = turretVelocityUnit.per(Second);
     public static final AngularAcceleration turretAccel = DegreesPerSecondPerSecond.of(900);
     public static final AngularVelocity turretVelocity = DegreesPerSecond.of(300);
-    public static final Angle fwdLimit = Degrees.of(180);
-    public static final Angle revLimit = Degrees.of(-180);
+    public static final Angle fwdLimit = Degrees.of(135);
+    public static final Angle revLimit = Degrees.of(-135);
     public static final Angle gearing = Rotations.of(1.0).div(30); // sparkMax native unit is rotations
     public static final AngularVelocity gearSpeed = gearing.per(Second);
     public static final int motorID = 55;

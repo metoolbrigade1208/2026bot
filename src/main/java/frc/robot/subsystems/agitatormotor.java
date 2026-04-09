@@ -20,19 +20,23 @@ public class agitatormotor extends SubsystemBase {
   private SparkMax hopperMotor2;
   private DCMotorSim hopperMotorSim;
   private SparkMaxConfig agitatorConfig = new SparkMaxConfig();
+  private boolean isStalled = false;
 
   public agitatormotor() {
 
     hopperMotor2 = new SparkMax(Constants.Hopper.motorCanId2, MotorType.kBrushless);
-    agitatorConfig.smartCurrentLimit(20).closedLoop
-        .pid(0.1, 0, 0)
+    agitatorConfig.smartCurrentLimit(20)
+    .inverted(true)
+      .closedLoop
+        .pid(0.0001, 0, 0)
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder).feedForward.kV(1.0 / 917);
     hopperMotor2.configure(agitatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     new Trigger(() -> { return hopperMotor2.getOutputCurrent() >= 15.0; })
       .and(() -> { return Math.abs(hopperMotor2.getEncoder().getVelocity()) <= 10;})
-        .onTrue(invertHopper()
+      .and( ()-> false ) //  !isStalled)
+        .onTrue(invertHopper().beforeStarting( () -> isStalled = true )
         .andThen(new WaitCommand(.5))
-        .andThen(startHopper2()));
+        .andThen(startHopper2()).finallyDo( () -> isStalled = false));
   }
 
   @Override
@@ -45,7 +49,7 @@ public class agitatormotor extends SubsystemBase {
   }
 
   public Command startHopper2() {
-    return run(() -> setHopper2Power(Constants.Hopper.hopper2Speed)); // Set to full power, adjust as needed
+    return run(() -> setHopper2Power(Constants.Hopper.hopper2Speed)).andThen(new WaitCommand(2)); // Set to full power, adjust as needed
   }
 
   public Command stopHopper2() {
