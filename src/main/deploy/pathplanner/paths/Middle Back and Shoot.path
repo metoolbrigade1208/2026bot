@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 1.666261180679785,
-        "y": 4.043112701252236
+        "x": 1.714937388193202,
+        "y": 5.211341681574241
       },
       "prevControl": {
-        "x": 1.9133541050924392,
-        "y": 4.081126997315721
+        "x": 1.961535869151238,
+        "y": 5.1702419347479
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,8 +34,8 @@
   "eventMarkers": [
     {
       "name": "AutoAimMaster",
-      "waypointRelativePos": 0.7254237288135562,
-      "endWaypointRelativePos": null,
+      "waypointRelativePos": 0.15,
+      "endWaypointRelativePos": 1.0,
       "command": {
         "type": "named",
         "data": {
@@ -45,7 +45,7 @@
     },
     {
       "name": "startHopper2",
-      "waypointRelativePos": 0.7346387575962129,
+      "waypointRelativePos": 0.35,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -55,15 +55,10 @@
       }
     },
     {
-      "name": "startHopper",
-      "waypointRelativePos": 0.7373396353814811,
+      "name": "ArmDown",
+      "waypointRelativePos": 0.35,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "startHopper"
-        }
-      }
+      "command": null
     }
   ],
   "globalConstraints": {

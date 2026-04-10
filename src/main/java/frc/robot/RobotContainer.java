@@ -69,7 +69,7 @@ public class RobotContainer {
     private final BumberIntake overBumberIntake = new BumberIntake();
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
-    private final ElevatorSubsystem elevator = new ElevatorSubsystem();
+    //private final ElevatorSubsystem elevator = new ElevatorSubsystem();
    
 
     public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -105,7 +105,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("AutoAimMaster", turret.AutoAimMasterCommand());
         NamedCommands.registerCommand("startHopper2", agitator.startHopper2());
         NamedCommands.registerCommand("startHopper", hopper.startHopper());
-
+        NamedCommands.registerCommand("invertHopper", agitator.invertHopper());
       //  NamedCommands.registerCommand("shooterCmd", RobotContainer.ParallelCommandGroup.shooterCmd);
         
     autoChooser = AutoBuilder.buildAutoChooser("Middle to Hub");
@@ -150,6 +150,7 @@ public class RobotContainer {
         joystick.start().whileTrue(overBumberIntake.startIntake());
          joystick.start().whileFalse(overBumberIntake.stopIntake());
         operator.start().onTrue(overBumberIntake.setArmZero());
+        
        // joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
    
       //  operator.axisMagnitudeGreaterThan(4, 0.025).whileTrue(turret.SetMotorSpeedCommand(operator.getRawAxis(4) * 0.5));
@@ -164,6 +165,7 @@ public class RobotContainer {
         // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
         // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         // // Bindings for Arm control
+        //HEY COMMENT THESE OUT IF WERE COOKED
         operator.leftBumper().onTrue(overBumberIntake.armDownCommand());
         operator.rightBumper().onTrue(overBumberIntake.armUpCommand());
         operator.rightTrigger(0.3).onTrue(overBumberIntake.armAgitateCommand()).onFalse(overBumberIntake.armDownCommand());
@@ -176,15 +178,16 @@ public class RobotContainer {
         operator.povRight().onTrue(turret.SetpointCommand(Degrees.of(-45))); // Point turret right at 90 degrees\
         operator.povUp().onTrue(turret.SetpointCommand(Degrees.of(0))); //rezeros the turret
 
-        //Bindings for manual shooter control
-        operator.a().onTrue(shooter.setToManualVelocity());
-        operator.y().onTrue(shooter.StopShooterCommand());
-        operator.b().onTrue(shooter.bumpManualVelocity(RPM.of(-100)));
-        operator.x().onTrue(shooter.bumpManualVelocity(RPM.of(100)));
+        //OH SHIT EVERYTHING WENT WRONG UNCOMMENT THESE LIKE NOW 
+       // operator.rightTrigger(0.3).whileTrue(shooter.setToManualVelocity());
+       // operator.rightTrigger(0.3).whileFalse(shooter.StopShooterCommand());
+       // operator.rightBumper().onTrue(shooter.bumpManualVelocity(RPM.of(-100)));
+      //  operator.leftBumper().onTrue(shooter.bumpManualVelocity(RPM.of(100)));
+
 
     /*  joystick.povDown().onTrue(turret.StopSetpointCommand(Degrees.of(0)));
         // Reset the field-centric heading on left bumper press.
-        joystick.povLeft().whileTrue(new TurretCommand(TurretDirection.LEFT));
+        joystick.povLeft().whileTrue(ne`[;w TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
         joystick.leftTrigger(0.05)
             .onTrue(shooter.RunShooterCommand())
@@ -197,8 +200,10 @@ public class RobotContainer {
        // joystick.y().whileTrue(elevator.setHeight(Meters.of(0)));
       //  joystick.leftBumper().whileTrue(elevator.sysId());
 
+        //COMMENT THESE OUT INCASE OF EMERGENCY
         // While held, autoaim (Operator), and shoot
         operator.leftTrigger(0.25).whileTrue(turret.AutoAimMasterCommand());
+        
        // joystick.button(3).whileTrue(elevator.sysId());
        ParallelCommandGroup  stopshootercmd = (hopper.stopHopper().alongWith(agitator.stopHopper2()));
       // Command  stopshootercmd = (agitator.stopHopper2()).alongWith(hopper.stopHopper());

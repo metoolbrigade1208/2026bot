@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.562,
-        "y": 7.364
+        "x": 3.591285211267606,
+        "y": 6.525599284436494
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.809768884225442,
-        "y": 7.33067463414035
+        "x": 3.839354680446023,
+        "y": 6.49459060078919
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 2.185474060822898,
-        "y": 6.99613595706619
+        "x": 3.591285211267606,
+        "y": 6.525599284436494
       },
       "prevControl": {
-        "x": 1.7557644480754826,
-        "y": 6.91313089483534
+        "x": 3.341285211267606,
+        "y": 6.525599284436494
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,18 +34,12 @@
   "eventMarkers": [
     {
       "name": "ArmDown",
-      "waypointRelativePos": 0.69,
-      "endWaypointRelativePos": null,
-      "command": null
-    },
-    {
-      "name": "startHopper",
-      "waypointRelativePos": 0.7,
+      "waypointRelativePos": 0.5,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
         "data": {
-          "name": "startHopper"
+          "name": "ArmDown"
         }
       }
     },
@@ -57,17 +51,6 @@
         "type": "named",
         "data": {
           "name": "startHopper2"
-        }
-      }
-    },
-    {
-      "name": "AutoAimMaster",
-      "waypointRelativePos": 0.8644067796610166,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AutoAimMaster"
         }
       }
     }
@@ -82,13 +65,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -45.0
+    "rotation": -2.812234236117331
   },
   "reversed": false,
   "folder": "Only Shoot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 2.7357067413223852
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
