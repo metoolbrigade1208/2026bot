@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.fasterxml.jackson.databind.util.Named;
 import com.revrobotics.spark.SparkFlex;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -61,7 +62,6 @@ public class Shooter extends SubsystemBase {
   .withStatorCurrentLimit(Amps.of(80))
   .withFollowers(Pair.of(spark2, true));
   //increases efficency of shooter
-
 
   
 

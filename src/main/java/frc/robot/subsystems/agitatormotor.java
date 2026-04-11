@@ -50,26 +50,31 @@ public class agitatormotor extends SubsystemBase {
   }
 
   public Command startHopper2() {
-    return run(() -> setHopper2Power(Constants.Hopper.hopper2Speed)).andThen(new WaitCommand(2)); // Set to full power, adjust as needed
+    return run(
+      () -> 
+      setHopper2Power(Constants.Hopper.hopper2Speed)
+    );//.andThen(new WaitCommand(2)); // Set to full power, adjust as needed
   }
 
   public Command stopHopper2() {
-    return run(() -> setHopper2Power(0.0)); // Stop the intake
+    return run(() -> 
+    setHopper2Power(0.0)); // Stop the intake
   }
 
   public Command invertHopper() {
-    return run(() -> setHopper2Power(Constants.Hopper.invertedHopperSpeed));
+    return run(() -> 
+    setHopper2Power(Constants.Hopper.invertedHopperSpeed));
   }
 
   public Command spinCycleCommand() {
-    return new RepeatCommand(startHopper2()
+    return startHopper2()
     .andThen(new WaitCommand(2))
     .andThen(stopHopper2())
     .andThen(new WaitCommand(.25))
     .andThen(invertHopper())
     .andThen(new WaitCommand(.5))
     .andThen(stopHopper2())
-    .andThen(new WaitCommand(.25))
+    .andThen(new WaitCommand(.25)
   );
   }
 

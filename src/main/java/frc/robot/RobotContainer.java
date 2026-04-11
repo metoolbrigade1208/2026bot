@@ -143,7 +143,8 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
-
+       //joystick.povDown().toggleOnTrue(agitator.spinCycleCommand());
+        
         
 
         //joystick.leftBumper().whileTrue(hopper.startHopper());

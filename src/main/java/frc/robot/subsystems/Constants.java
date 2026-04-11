@@ -69,8 +69,8 @@ public class Constants {
     public static final double motorReduction = 15.0;
     public static final int currentLimit = 40;
     public static final double hopperSpeed = 5100;
-    public static final double hopper2Speed = -8000; // Adjust as needed
-    public static final double invertedHopperSpeed = 8000;
+    public static final double hopper2Speed = -9000; // Adjust as needed
+    public static final double invertedHopperSpeed = 9000;
       }
     static Optional<RobotConfig> loadConfig(String path) {
     ObjectMapper objectMapper = new ObjectMapper();
@@ -134,8 +134,8 @@ public static class TurretConstants {
     public static final int motorID = 55;
     public static final int enc1Id = 0; // DIO port of encoder 1
     public static final int enc2Id = 1; // DIO port of encoder 2    
-    public static final Angle enc1Zero = Degrees.of(-275); // actual zero location of encoder 1
-    public static final Angle enc2Zero = Degrees.of(-114.5); // actual zero location of encoder 2
+    public static final Angle enc1Zero = Degrees.of(157.5).unaryMinus(); // actual zero location of encoder 1
+    public static final Angle enc2Zero = Degrees.of(114.5).unaryMinus(); // actual zero location of encoder 2
     public static final double kP = 5; // output per angle difference (V/rotation)
     public static final double kD = 0.25; // output per angle difference derivative (V/rps)
     public static final Voltage kS = Volts.of(0.5);

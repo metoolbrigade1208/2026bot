@@ -15,12 +15,6 @@
                 }
               },
               {
-                "type": "named",
-                "data": {
-                  "name": "spinCycleCommand"
-                }
-              },
-              {
                 "type": "deadline",
                 "data": {
                   "commands": [
