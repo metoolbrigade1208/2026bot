@@ -60,6 +60,8 @@ public class Shooter extends SubsystemBase {
   .withIdleMode(MotorMode.COAST)
   .withStatorCurrentLimit(Amps.of(80))
   .withFollowers(Pair.of(spark2, true));
+  //increases efficency of shooter
+
 
   
 

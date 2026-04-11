@@ -42,17 +42,6 @@
           "name": "ArmDown"
         }
       }
-    },
-    {
-      "name": "startHopper2",
-      "waypointRelativePos": 0.7,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "startHopper2"
-        }
-      }
     }
   ],
   "globalConstraints": {

@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -58,6 +59,18 @@ public class agitatormotor extends SubsystemBase {
 
   public Command invertHopper() {
     return run(() -> setHopper2Power(Constants.Hopper.invertedHopperSpeed));
+  }
+
+  public Command spinCycleCommand() {
+    return new RepeatCommand(startHopper2()
+    .andThen(new WaitCommand(2))
+    .andThen(stopHopper2())
+    .andThen(new WaitCommand(.25))
+    .andThen(invertHopper())
+    .andThen(new WaitCommand(.5))
+    .andThen(stopHopper2())
+    .andThen(new WaitCommand(.25))
+  );
   }
 
 }

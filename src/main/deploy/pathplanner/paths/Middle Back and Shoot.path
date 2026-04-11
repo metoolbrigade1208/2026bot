@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.249731663685152,
-        "y": 4.043112701252236
+        "x": 3.1589982110912342,
+        "y": 4.5298747763864045
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.714937388193202,
-        "y": 5.211341681574241
+        "x": 1.2119499105545615,
+        "y": 4.8706082289803225
       },
       "prevControl": {
-        "x": 1.961535869151238,
-        "y": 5.1702419347479
+        "x": 1.7636135957066186,
+        "y": 4.886833631484794
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,28 +32,6 @@
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
-    {
-      "name": "AutoAimMaster",
-      "waypointRelativePos": 0.15,
-      "endWaypointRelativePos": 1.0,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "AutoAimMaster"
-        }
-      }
-    },
-    {
-      "name": "startHopper2",
-      "waypointRelativePos": 0.35,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "startHopper2"
-        }
-      }
-    },
     {
       "name": "ArmDown",
       "waypointRelativePos": 0.35,

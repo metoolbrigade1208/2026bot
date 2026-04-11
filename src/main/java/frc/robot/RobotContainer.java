@@ -106,6 +106,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("startHopper2", agitator.startHopper2());
         NamedCommands.registerCommand("startHopper", hopper.startHopper());
         NamedCommands.registerCommand("invertHopper", agitator.invertHopper());
+        NamedCommands.registerCommand("spinCycleCommand", agitator.spinCycleCommand());
       //  NamedCommands.registerCommand("shooterCmd", RobotContainer.ParallelCommandGroup.shooterCmd);
         
     autoChooser = AutoBuilder.buildAutoChooser("Middle to Hub");
