@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5164457831325304,
-        "y": 7.422590361445783
+        "x": 3.52151212553495,
+        "y": 6.629201141226819
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.751277108433735,
-        "y": 7.63021686746988
+        "x": 1.7359771754636228,
+        "y": 8.052453637660484
       },
       "isLocked": false,
       "linkedName": null
@@ -184,7 +184,6 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Left Trench",
   "folder": "Left Trench",
   "idealStartingState": {
     "velocity": 0.0,
