@@ -3,13 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.0,
-        "y": 0.6256633380884444
+        "x": 3.560328102710413,
+        "y": 1.4278601997146938
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.989072753209699,
-        "y": 0.48333808844507875
+        "x": 1.7230385164051354,
+        "y": -0.37061340941511944
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 4.6730527817403695,
+        "y": 0.4574607703281026
+      },
+      "prevControl": {
+        "x": 3.6894774065339266,
+        "y": 0.42521239737051375
+      },
+      "nextControl": {
+        "x": 6.251569186875892,
+        "y": 0.5092154065620549
       },
       "isLocked": false,
       "linkedName": null
@@ -30,11 +46,15 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.40938166311300117,
+      "waypointRelativePos": 1.1,
+      "rotationDegrees": 0.0
+    },
+    {
+      "waypointRelativePos": 1.45,
       "rotationDegrees": -160.0
     },
     {
-      "waypointRelativePos": 1.0,
+      "waypointRelativePos": 2.0,
       "rotationDegrees": -160.0
     }
   ],
@@ -43,7 +63,7 @@
   "eventMarkers": [
     {
       "name": "ArmDown",
-      "waypointRelativePos": 0.42673869007426474,
+      "waypointRelativePos": 0.85,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -54,7 +74,7 @@
     },
     {
       "name": "StartIntake",
-      "waypointRelativePos": 0.6347062795408485,
+      "waypointRelativePos": 1.25,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -65,7 +85,7 @@
     },
     {
       "name": "AutoAimMaster",
-      "waypointRelativePos": 0.6590141796083772,
+      "waypointRelativePos": 1.3,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.fasterxml.jackson.databind.util.Named;
 import com.revrobotics.spark.SparkFlex;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -60,6 +61,7 @@ public class Shooter extends SubsystemBase {
   .withIdleMode(MotorMode.COAST)
   .withStatorCurrentLimit(Amps.of(80))
   .withFollowers(Pair.of(spark2, true));
+  //increases efficency of shooter
 
   
 
@@ -142,7 +144,7 @@ public class Shooter extends SubsystemBase {
     return runOnce(
         () -> {
           // Example of setting a velocity setpoint
-          shooter.setMeasurementVelocitySetpoint(FeetPerSecond.of(50.0));
+          shooter.setMeasurementVelocitySetpoint(FeetPerSecond.of(62));
         });
       
   }

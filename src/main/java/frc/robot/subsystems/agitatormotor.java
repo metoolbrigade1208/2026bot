@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -49,15 +50,32 @@ public class agitatormotor extends SubsystemBase {
   }
 
   public Command startHopper2() {
-    return run(() -> setHopper2Power(Constants.Hopper.hopper2Speed)).andThen(new WaitCommand(2)); // Set to full power, adjust as needed
+    return run(
+      () -> 
+      setHopper2Power(Constants.Hopper.hopper2Speed)
+    );//.andThen(new WaitCommand(2)); // Set to full power, adjust as needed
   }
 
   public Command stopHopper2() {
-    return run(() -> setHopper2Power(0.0)); // Stop the intake
+    return run(() -> 
+    setHopper2Power(0.0)); // Stop the intake
   }
 
   public Command invertHopper() {
-    return run(() -> setHopper2Power(Constants.Hopper.invertedHopperSpeed));
+    return run(() -> 
+    setHopper2Power(Constants.Hopper.invertedHopperSpeed));
+  }
+
+  public Command spinCycleCommand() {
+    return startHopper2()
+    .andThen(new WaitCommand(2))
+    .andThen(stopHopper2())
+    .andThen(new WaitCommand(.25))
+    .andThen(invertHopper())
+    .andThen(new WaitCommand(.5))
+    .andThen(stopHopper2())
+    .andThen(new WaitCommand(.25)
+  );
   }
 
 }

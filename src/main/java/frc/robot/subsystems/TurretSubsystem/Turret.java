@@ -223,12 +223,12 @@ public class Turret extends SubsystemBase {
 
         // setup distance speed table
         // meters -> RPM
-        tableSpeeds.put(0.0, 3000.0);
-        tableSpeeds.put(3.2, 3000.0);
-        tableSpeeds.put(3.7, 3200.0);
-        tableSpeeds.put(4.7, 3600.0);
-        tableSpeeds.put(5.56, 3900.0);
-        tableSpeeds.put(6.7, 4200.0);
+        tableSpeeds.put(0.0, 2900.0);
+        tableSpeeds.put(3.2, 3100.0);
+        tableSpeeds.put(3.7, 3300.0);
+        tableSpeeds.put(4.7, 3800.0);
+        tableSpeeds.put(5.56, 4100.0);
+        tableSpeeds.put(6.7, 4400.0);
 
         // setup distance time table
         // meters -> time of flight

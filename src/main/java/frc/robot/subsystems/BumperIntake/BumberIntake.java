@@ -218,9 +218,9 @@ public void maxPivotPosition() {
   public Command armAgitateCommand() {
       return new RepeatCommand(
       armDownCommand()
-      .andThen(new WaitCommand(.5))
+      .andThen(new WaitCommand(.2))
       .andThen(armPartiallyUpCommand())
-      .andThen(new WaitCommand(.5)));
+      .andThen(new WaitCommand(.2)));
     }
 
     public Command setArmZero() {

@@ -69,8 +69,8 @@ public class Constants {
     public static final double motorReduction = 15.0;
     public static final int currentLimit = 40;
     public static final double hopperSpeed = 5100;
-    public static final double hopper2Speed = -6000; // Adjust as needed
-    public static final double invertedHopperSpeed = 3000;
+    public static final double hopper2Speed = -9000; // Adjust as needed
+    public static final double invertedHopperSpeed = 9000;
       }
     static Optional<RobotConfig> loadConfig(String path) {
     ObjectMapper objectMapper = new ObjectMapper();
@@ -134,8 +134,8 @@ public static class TurretConstants {
     public static final int motorID = 55;
     public static final int enc1Id = 0; // DIO port of encoder 1
     public static final int enc2Id = 1; // DIO port of encoder 2    
-    public static final Angle enc1Zero = Degrees.of(-332); // actual zero location of encoder 1
-    public static final Angle enc2Zero = Degrees.of(-101); // actual zero location of encoder 2
+    public static final Angle enc1Zero = Degrees.of(157.5).unaryMinus(); // actual zero location of encoder 1
+    public static final Angle enc2Zero = Degrees.of(114.5).unaryMinus(); // actual zero location of encoder 2
     public static final double kP = 5; // output per angle difference (V/rotation)
     public static final double kD = 0.25; // output per angle difference derivative (V/rps)
     public static final Voltage kS = Volts.of(0.5);
@@ -159,11 +159,17 @@ public static class TurretConstants {
     public static final Pose2d RedGoalPose2D = new Pose2d(Inches.of(650.12 - 181.56), Inches.of(158.32), new Rotation2d(Degrees.of(0)));
         
     public static final Pose2d BlueGoalPose2D = new Pose2d(Inches.of(181.56), Inches.of(158.32), new Rotation2d(Degrees.of(0)));
+    public static final Pose2d RightBlueBumpPose2D = new Pose2d(Inches.of(0), Inches.of(158.32/2), new Rotation2d(Degrees.of(0)));
+    public static final Pose2d LeftBlueBumpPose2D = new Pose2d(Inches.of(0), Inches.of(158.32 * 1.5), new Rotation2d(Degrees.of(0)));
+    public static final Pose2d RightRedBumpPose2D = new Pose2d(Inches.of(0), Inches.of(158.32/2), new Rotation2d(Degrees.of(0)));
+    public static final Pose2d LeftRedBumpPose2D = new Pose2d(Inches.of(0), Inches.of(158.32 * 1.5), new Rotation2d(Degrees.of(0)));
+
     public static final Pose2d BlueSideTop = Field.getTagPose(26).get().toPose2d().plus(sideTopOffset);
     public static final Pose2d BlueSideBottom = Field.getTagPose(26).get().toPose2d().plus(sideBottomOffset);
     public static final Pose2d RedSideTop = Field.getTagPose(10).get().toPose2d().plus(sideTopOffset);
     public static final Pose2d RedSideBottom = Field.getTagPose(10).get().toPose2d().plus(sideBottomOffset);
   }
+
 }
 /*
  * public static class TurretConstants {

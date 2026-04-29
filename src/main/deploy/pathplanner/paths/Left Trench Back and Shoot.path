@@ -33,15 +33,10 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "TurretReturnNeutral",
-      "waypointRelativePos": 0.5830508474576261,
+      "name": "ArmDown",
+      "waypointRelativePos": 0.69,
       "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "TurretReturnNeutral"
-        }
-      }
+      "command": null
     },
     {
       "name": "startHopper",
@@ -93,7 +88,7 @@
   "folder": "Only Shoot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.99999999999999
+    "rotation": 2.7357067413223852
   },
   "useDefaultConstraints": true
 }
