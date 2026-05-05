@@ -20,6 +20,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -122,6 +123,12 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
+        if(DriverStation.isTest()){
+            joystick.rightTrigger(0.05)
+            .onTrue(shooter.RunShooterCommand())
+            .onFalse(shooter.StopShooterCommand()); 
+
+        } else {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
@@ -224,7 +231,7 @@ public class RobotContainer {
     //Binds for reversing the hopper motor
         joystick.rightBumper().whileTrue(agitator.invertHopper());
         joystick.rightBumper().whileFalse(agitator.stopHopper2());
-       
+        }
         
     }
    //path planner commands 
