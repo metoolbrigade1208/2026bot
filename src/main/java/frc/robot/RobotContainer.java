@@ -50,7 +50,7 @@ import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.agitatormotor;
 
 public class RobotContainer {
-    private double MaxSpeed = 1 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    private double MaxSpeed = 0.2 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 1/2 of a rotation per second max angular velocity
     private double driveSpeedPercentage = 1/3;
     private final SendableChooser<Command> autoChooser;
@@ -83,7 +83,7 @@ public class RobotContainer {
 
    // public static LimelightSubsystem LL;
     //public static QuestNavSubsystem QNS;
-    public PhotonVision photonVisionCameras = new PhotonVision(() -> (drivetrain.getState().Pose), new Field2d());
+    //public PhotonVision photonVisionCameras = new PhotonVision(() -> (drivetrain.getState().Pose), new Field2d());
     
     public RobotContainer() {
         //QNS = new QuestNavSubsystem(drivetrain);
@@ -123,12 +123,7 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        if(DriverStation.isTest()){
-            joystick.rightTrigger(0.05)
-            .onTrue(shooter.RunShooterCommand())
-            .onFalse(shooter.StopShooterCommand()); 
-
-        } else {
+      
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
@@ -199,8 +194,8 @@ public class RobotContainer {
         joystick.povLeft().whileTrue(ne`[;w TurretCommand(TurretDirection.LEFT));
         joystick.povRight().whileTrue(new TurretCommand(TurretDirection.RIGHT)); */
         joystick.leftTrigger(0.05)
-            .onTrue(shooter.RunShooterCommand())
-            .onFalse(shooter.StopShooterCommand()); 
+        .onTrue(shooter.setToManualVelocity())
+        .onFalse(shooter.StopShooterCommand());
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
       //  joystick.povUp().whileTrue(turret.SysIDCommand()); // Run turret SysId routine while holding right bumper
         drivetrain.registerTelemetry(logger::telemeterize);
@@ -233,7 +228,7 @@ public class RobotContainer {
         joystick.rightBumper().whileFalse(agitator.stopHopper2());
         }
         
-    }
+    
    //path planner commands 
 
    public void TeleopInit(){

@@ -169,7 +169,9 @@ public static class TurretConstants {
     public static final Pose2d RedSideTop = Field.getTagPose(10).get().toPose2d().plus(sideTopOffset);
     public static final Pose2d RedSideBottom = Field.getTagPose(10).get().toPose2d().plus(sideBottomOffset);
   }
-
+public class Shooter {
+  public static final double shooterSpeed = 0;
+}
 }
 /*
  * public static class TurretConstants {

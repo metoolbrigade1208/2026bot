@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RevolutionsPerSecond;
+import static edu.wpi.first.units.Units.Volt;
 
 import java.util.function.Supplier;
 
@@ -15,6 +16,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Pounds;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.fasterxml.jackson.databind.util.Named;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkFlex;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -24,6 +26,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Constants;
 import yams.mechanisms.config.FlyWheelConfig;
 import yams.mechanisms.velocity.FlyWheel;
 import yams.motorcontrollers.SmartMotorController;
@@ -34,7 +37,7 @@ import yams.motorcontrollers.SmartMotorControllerConfig.TelemetryVerbosity;
 import yams.motorcontrollers.local.SparkWrapper;
 public class Shooter extends SubsystemBase {
   
-  private AngularVelocity manualRPM = RPM.of(3000);
+  private AngularVelocity manualRPM = RPM.of(7000);
   // Vendor motor controller object
   private SparkFlex spark1 = new SparkFlex(52, MotorType.kBrushless);
   private SparkFlex spark2 = new SparkFlex(53, MotorType.kBrushless);
@@ -122,7 +125,8 @@ public class Shooter extends SubsystemBase {
       .minus(sparkSmartMotorController.getMechanismVelocity())
       .lt(RPM.of(250));
   }
-
+  public void setShooterSpeed(double speed) {
+  }
   /**
    * Set the dutycycle of the shooter.
    *
@@ -149,10 +153,7 @@ public class Shooter extends SubsystemBase {
       
   }
 public Command StopShooterCommand() {
-  return runOnce(
-    () -> {
-      shooter.set(0.0);
-    });
+ return shooter.setVoltage(Volt.zero());
 }
 
   /**
